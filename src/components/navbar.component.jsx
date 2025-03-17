@@ -59,6 +59,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="navbar z-50">
+        {/* LOGO */}
         <Link to="/">
           <img
             src={theme == "light" ? darkLogo : lightLogo}
@@ -67,6 +68,7 @@ const Navbar = () => {
           />
         </Link>
 
+        {/* SEARCH BOX */}
         <div
           className={
             " absolute bg-white w-full left-0 top-full mt-0.5 border-b border-grey py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:show " +
@@ -82,7 +84,9 @@ const Navbar = () => {
 
           <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
         </div>
+
         <div className="flex items-center gap-3 md:gap-6 ml-auto ">
+          {/* SEARCH BUTTON */}
           <button
             className="md:hidden  bg-grey w-12 h-12 rounded-full flex items-center justify-center"
             onClick={() => setSearchBoxVisibility((currentVal) => !currentVal)}
@@ -90,11 +94,15 @@ const Navbar = () => {
             <i className="fi fi-rr-search text-xl"></i>
           </button>
 
-          <Link to="/editor" className="hidden md:flex gap-2 link ">
-            <p>write</p>
-            <i className="fi fi-rr-file-edit"></i>
-          </Link>
+          {/* NEW POST */}
+          {access_token && (
+            <Link to="/editor" className="hidden md:flex gap-2 link ">
+              <p>write</p>
+              <i className="fi fi-rr-file-edit"></i>
+            </Link>
+          )}
 
+          {/* THEME CHANGE */}
           <button className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10 ">
             <i
               className={
@@ -105,8 +113,11 @@ const Navbar = () => {
               onClick={changeChage}
             ></i>
           </button>
+
+          {/* AUTH */}
           {access_token ? (
             <>
+              {/* NOTIFICATIONS */}
               <Link to="/dashboard/notifications">
                 <button className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10 ">
                   <i className="fi fi-rr-bell text2xl block mt-1"></i>
@@ -120,6 +131,7 @@ const Navbar = () => {
                 onClick={handleUserNavPanel}
                 onBlur={handleBlur}
               >
+                {/* PROFILE */}
                 <button className="w-12 h-12 mt1">
                   <img
                     src={profile_img}
@@ -132,6 +144,7 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              {/* AUTH BUTTONS */}
               <Link className="btn-dark py-2 " to="/signin">
                 Sign In
               </Link>
