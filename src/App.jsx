@@ -32,6 +32,7 @@ const App = () => {
   useEffect(() => {
     let userInSession = lookInSession("user");
     let themeInSession = lookInSession("theme");
+
     // console.log(JSON.parse(userInSession))
     userInSession
       ? setUserAuth(JSON.parse(userInSession))
@@ -46,12 +47,14 @@ const App = () => {
     } else document.body.setAttribute("data-theme", theme);
   }, []);
   // console.log(userAuth)
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <UserContext.Provider value={{ userAuth, setUserAuth }}>
         <Routes>
           <Route path="/editor" element={<Editor />} />
           <Route path="/editor/:blog_id" element={<Editor />} />
+
           <Route path="/" element={<Navbar />}>
             <Route index element={<Home />} />
 
@@ -64,6 +67,7 @@ const App = () => {
               <Route path="edit-profile" element={<EditProfile />} />
               <Route path="change-password" element={<ChangePassword />} />
             </Route>
+
             <Route path="signin" element={<UserAuthForm type="sign-in" />} />
             <Route path="signup" element={<UserAuthForm type="sign-up" />} />
             <Route path="search/:query" element={<SearchPage />} />

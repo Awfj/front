@@ -24,6 +24,7 @@ const Home = () => {
     "tech",
     "travel",
   ];
+
   const fetchLatestBlogs = ({ page = 1 }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", { page })
@@ -42,6 +43,7 @@ const Home = () => {
         console.log(err);
       });
   };
+
   const fetchTrendingBlogs = () => {
     axios
       .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blog")
@@ -52,6 +54,7 @@ const Home = () => {
         console.log(err);
       });
   };
+
   const fetchBlogByCategory = ({ page = 1 }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
@@ -73,6 +76,7 @@ const Home = () => {
         console.log(err);
       });
   };
+
   const loadBlogbyCategory = (e) => {
     let category = e.target.innerText.toLowerCase();
     setBlogs(null);
@@ -83,6 +87,7 @@ const Home = () => {
     }
     setPageState(category);
   };
+
   useEffect(() => {
     activeTabRef.current.click();
     if (pageState === "home") fetchLatestBlogs({ page: 1 });
@@ -91,6 +96,7 @@ const Home = () => {
     }
     if (!trendingBlogs) fetchTrendingBlogs();
   }, [pageState]);
+
   return (
     <AnimationWrapper>
       <section className="h-cover flex justify-center gap-10">
@@ -145,6 +151,7 @@ const Home = () => {
             )}
           </InPageNavigaion>
         </div>
+
         {/* filter and trending */}
         <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
           <div className="flex flex-col gap-10">

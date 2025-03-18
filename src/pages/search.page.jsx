@@ -14,6 +14,7 @@ const SearchPage = () => {
   const { query } = useParams();
   const [blogs, setBlogs] = useState(null);
   const [users, setUsers] = useState(null);
+
   const searchBlog = ({ page = 1, create_new_arr = false }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
@@ -35,16 +36,18 @@ const SearchPage = () => {
         console.log(err);
       });
   };
+
   const fetchUsers = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-users", { query })
-      .then(({ data : {users}}) => {
+      .then(({ data: { users } }) => {
         setUsers(users);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
   useEffect(() => {
     resetState();
     searchBlog({ page: 1, create_new_arr: true });
@@ -63,9 +66,14 @@ const SearchPage = () => {
           <Loader />
         ) : users.length ? (
           users.map((user, i) => {
-            return <AnimationWrapper key={i} transition={{duration: 1, delay: i * 0.08}}>
-                <UserCard user={user}/>
-            </AnimationWrapper>
+            return (
+              <AnimationWrapper
+                key={i}
+                transition={{ duration: 1, delay: i * 0.08 }}
+              >
+                <UserCard user={user} />
+              </AnimationWrapper>
+            );
           })
         ) : (
           <NoDataMessage message={"No User Found"} />
@@ -73,6 +81,7 @@ const SearchPage = () => {
       </>
     );
   };
+
   return (
     <section className="h-cover flex justify-center gap-10">
       <div className="w-full">
@@ -103,14 +112,16 @@ const SearchPage = () => {
             <LoadMoreDataBtn state={blogs} fetchDataFun={searchBlog} />
           </>
           <>
-              <UserCardWrapper/>
+            <UserCardWrapper />
           </>
         </InPageNavigaion>
       </div>
-      <div className="min-w-[40%] lg:min-w-[350px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
-        <h1 className="font-medium text-xl mb-8">Users Related to search <i className="fi fi-rr-user mt-1"></i></h1>
-        <UserCardWrapper/>
 
+      <div className="min-w-[40%] lg:min-w-[350px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
+        <h1 className="font-medium text-xl mb-8">
+          Users Related to search <i className="fi fi-rr-user mt-1"></i>
+        </h1>
+        <UserCardWrapper />
       </div>
     </section>
   );

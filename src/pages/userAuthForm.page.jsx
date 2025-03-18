@@ -42,7 +42,7 @@ const UserAuthForm = ({ type }) => {
     // form validation
     let { fullname, email, password } = formData;
     if (fullname && fullname.length < 3) {
-        console.log(fullname)
+      console.log(fullname);
       return toast.error("Full name must be 3 letters long");
     }
 
@@ -78,6 +78,7 @@ const UserAuthForm = ({ type }) => {
         return console.log(err);
       });
   };
+
   return access_token ? (
     <Navigate to="/" />
   ) : (
