@@ -72,6 +72,7 @@ const SideNav = () => {
             <h1 className="text-xl text-dark-grey mb-3">Dashboard</h1>
             <hr className="border-grey -ml-6 mb-8 mr-6" />
 
+            {/* Blogs */}
             <NavLink
               to={"/dashboard/blogs"}
               onClick={(e) => setPageState(e.target.innerText)}
@@ -81,6 +82,17 @@ const SideNav = () => {
               Blogs
             </NavLink>
 
+            {/* Bookmarks */}
+            <NavLink
+              to={"/dashboard/bookmarks"}
+              onClick={(e) => setPageState(e.target.innerText)}
+              className="sidebar-link"
+            >
+              <i className="fi fi-rr-document"></i>
+              Bookmarks
+            </NavLink>
+
+            {/* Notifications */}
             <NavLink
               to={"/dashboard/notifications"}
               onClick={(e) => setPageState(e.target.innerText)}
@@ -95,6 +107,7 @@ const SideNav = () => {
               Notification
             </NavLink>
 
+            {/* Write */}
             <NavLink
               to={"/editor"}
               onClick={(e) => setPageState(e.target.innerText)}
@@ -107,6 +120,7 @@ const SideNav = () => {
             <h1 className="text-xl text-dark-grey mb-3 mt-20">Setting</h1>
             <hr className="border-grey ml-6 mb-8 mr-6" />
 
+            {/* Edit Profile */}
             <NavLink
               to={"/settings/edit-profile"}
               onClick={(e) => setPageState(e.target.innerText)}
@@ -116,6 +130,7 @@ const SideNav = () => {
               Edit Profile
             </NavLink>
 
+            {/* Change Password */}
             <NavLink
               to={"/settings/change-password"}
               onClick={(e) => setPageState(e.target.innerText)}
