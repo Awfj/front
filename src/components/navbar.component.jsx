@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
-import darkLogo from "../imgs/logo-dark.png";
-import lightLogo from "../imgs/logo-light.png";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { ThemeContext, UserContext } from "../App";
 import UserNavigationPanel from "./user-navigation.component";
 import axios from "axios";
 import { storeInSession } from "../common/session";
+
+import logo from "../imgs/logo.png";
+
 const Navbar = () => {
   const navigate = useNavigate();
   const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
@@ -62,7 +63,7 @@ const Navbar = () => {
         {/* LOGO */}
         <Link to="/">
           <img
-            src={theme == "light" ? darkLogo : lightLogo}
+            src={logo}
             alt="logo"
             className="flex-none w-10"
           />
