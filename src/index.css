@@ -19,8 +19,12 @@
     @apply font-inter font-normal text-black bg-white;
   }
 
+  button {
+    @apply outline-none;
+  }
+
   i {
-    @apply mt-0.5;
+    /* @apply mt-0.5; */
   }
 
   section {
@@ -47,12 +51,32 @@
     @apply block mx-auto;
   }
 
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .border-custom {
+    @apply border border-magenta;
+  }
+
+  .interactivity {
+    @apply bg-white text-black focus:text-blue hover:text-purple focus:hover:text-purple active:text-blue hover:active:text-blue transition-all duration-200 ease-in-out;
+  }
+
+  .interactivity-border {
+    @apply interactivity border-custom focus:border-blue hover:border-purple focus:hover:border-purple active:border-blue  hover:active:border-blue;
+  }
+
+  .icon {
+    @apply text-magenta;
+  }
+
   .btn-dark {
-    @apply whitespace-nowrap bg-black text-white rounded-full py-3 px-6 text-xl capitalize hover:bg-opacity-80;
+    @apply interactivity-border whitespace-nowrap rounded-full py-3 px-6 text-xl capitalize;
   }
 
   .btn-light {
-    @apply btn-dark bg-grey text-black;
+    @apply btn-dark;
   }
 
   .input-box {
