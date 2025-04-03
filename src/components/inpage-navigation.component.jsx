@@ -63,7 +63,7 @@ const InPageNavigaion = ({
           })}
         <hr
           ref={activeTabLineRef}
-          className="absolute bottom-0 duration-300 border-black"
+          className="absolute bottom-0 duration-300 border-magenta"
         />
       </div>
       {Array.isArray(children) ? children[inPageNavIndex] : children}
