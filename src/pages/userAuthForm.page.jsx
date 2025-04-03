@@ -121,18 +121,20 @@ const UserAuthForm = ({ type }) => {
             {type.replace("-", " ")}
           </button>
 
-          <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
+          {/* <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
             <hr className="w-1/2 border-black" />
             <p>Or</p>
             <hr className="w-1/2 border-black" />
-          </div>
-          <button
+          </div> */}
+
+          {/* <button
             onClick={handleGoogleAuth}
             className="btn-dark flex items-center justify-center gap-4 w-[90%] center"
           >
             <img src={googleIcon} alt="googleImg" className="w-4" />
             Continue with google
-          </button>
+          </button> */}
+
           {type === "sign-in" ? (
             <p className="mt-6 text-dark-grey text-xl text-center">
               Don't have and account ?

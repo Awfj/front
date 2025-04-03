@@ -92,9 +92,8 @@ const Navbar = () => {
 
           {/* NEW POST */}
           {access_token && (
-            <Link to="/editor" className="hidden md:flex gap-2 link ">
-              <p>write</p>
-              <i className="fi fi-rr-file-edit"></i>
+            <Link to="/editor" className="hidden md:flex gap-2">
+              <i className="flex-center fi fi-tr-drawer-alt text-3xl interactivity icon"></i>
             </Link>
           )}
 
@@ -117,8 +116,8 @@ const Navbar = () => {
             <>
               {/* NOTIFICATIONS */}
               <Link to="/dashboard/notifications">
-                <button className="w-12 h-12 rounded-full bg-grey relative hover:bg-black/10 ">
-                  <i className="fi fi-rr-bell text2xl block mt-1"></i>
+                <button className="flex-center rounded-full interactivity icon relative">
+                  <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
                   {new_notification_available && (
                     <span className="bg-red w-3 h-3 rounded-full  absolute z-10 top-2 right-2"></span>
                   )}

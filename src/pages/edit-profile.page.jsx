@@ -123,7 +123,7 @@ const EditProfile = () => {
       bio,
       youtube,
       facebook,
-      twitter,
+      // twitter,
       github,
       instagram,
       website,
@@ -149,7 +149,7 @@ const EditProfile = () => {
           social_links: {
             youtube,
             facebook,
-            twitter,
+            // twitter,
             github,
             instagram,
             website,
@@ -262,11 +262,11 @@ const EditProfile = () => {
                 onChange={handleCharacterChange}
               ></textarea>
 
-              <p className="mt-1 text-dark-grey">
+              <p className="mt-1 text-dark-grey my-6">
                 {charactersLeft} characters left
               </p>
 
-              <p className="my-6 text-dark-grey">
+              {/* <p className="my-6 text-dark-grey">
                 Add your social handles below
               </p>
 
@@ -287,7 +287,7 @@ const EditProfile = () => {
                     />
                   );
                 })}
-              </div>
+              </div> */}
 
               <button
                 className="btn-dark w-auto px-10"

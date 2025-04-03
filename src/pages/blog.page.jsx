@@ -130,7 +130,7 @@ const BlogPage = () => {
               </div>
             </div>
 
-            <BlogInteraction />
+            {/* <BlogInteraction /> */}
 
             <div className="my-12 font-gelasio blog-page-content">
               {content[0].blocks.map((block, i) => {
