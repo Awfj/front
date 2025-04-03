@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import lightLogo from "../imgs/logo-light.png";
-import darkLogo from "../imgs/logo-dark.png";
+import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
 import lightBanner from "../imgs/blog banner light.png";
 import darkBanner from "../imgs/blog banner dark.png";
@@ -138,11 +137,12 @@ const BlogEditor = () => {
       });
     }
   };
+
   return (
     <>
       <nav className="navbar">
         <Link to={"/"} className="flex-none w-10">
-          <img src={theme == "dark" ? lightLogo : darkLogo} alt="Logo" />
+          <img src={logo} alt="Logo" />
         </Link>
         <p className="max-md:hidden text-black line-clamp-1 w-full">
           {title.length ? title : "New Blog"}

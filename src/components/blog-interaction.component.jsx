@@ -80,6 +80,7 @@ const BlogInteraction = () => {
       toast.error("Please login to like this blog");
     }
   };
+
   return (
     <>
       <Toaster />
@@ -89,22 +90,22 @@ const BlogInteraction = () => {
           <button
             onClick={handleLike}
             className={
-              "w-10 h-10 rounded-full flex items-center justify-center " +
+              "flex-center w-10 h-10 rounded-full flex items-center justify-center " +
               (isLikedByUser ? "bg-red/20 text-red" : "bg-grey/80")
             }
           >
             <i
               className={
-                "fi " + (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
+                "flex-center icon fi " + (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
               }
             ></i>
           </button>
           <p className="text-xl text-dark-grey">{total_likes}</p>
           <button
             onClick={() => setCommentsWrapper((preVal) => !preVal)}
-            className="w-10 h-10 rounded-full flex items-center justify-center bg-grey/80"
+            className="flex-center w-10 h-10 rounded-full flex items-center justify-center bg-grey/80"
           >
-            <i className="fi fi-rr-comment-dots"></i>
+            <i className="flex-center icon fi fi-rr-comment-dots"></i>
           </button>
           <p className="text-xl text-dark-grey">{total_comments}</p>
         </div>
@@ -120,11 +121,11 @@ const BlogInteraction = () => {
           ) : (
             ""
           )}
-          <Link
+          {/* <Link
             to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`}
           >
             <i className="fi fi-brands-twitter text-xl hover:text-twitter"></i>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

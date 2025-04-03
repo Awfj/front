@@ -33,6 +33,7 @@ const SideNav = () => {
     setShowSideNav(false);
     pageStateTap.current.click();
   }, [pageState]);
+
   return access_token === null ? (
     <Navigate to="/signin" />
   ) : (
@@ -78,19 +79,19 @@ const SideNav = () => {
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
-              <i className="fi fi-rr-document"></i>
+              <i className="fi fi-rr-document icon"></i>
               Blogs
             </NavLink>
 
             {/* Bookmarks */}
-            <NavLink
+            {/* <NavLink
               to={"/dashboard/bookmarks"}
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
               <i className="fi fi-rr-document"></i>
               Bookmarks
-            </NavLink>
+            </NavLink> */}
 
             {/* Notifications */}
             <NavLink
@@ -99,7 +100,7 @@ const SideNav = () => {
               className="sidebar-link"
             >
               <div className="relative">
-                <i className="fi fi-rr-bell"></i>
+                <i className="fi fi-rr-bell-ring icon"></i>
                 {new_notification_available && (
                   <span className="bg-red h-2 w-2 rounded-full absolute z-10 top-0 right-0"></span>
                 )}
@@ -113,12 +114,12 @@ const SideNav = () => {
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
-              <i className="fi fi-rr-file-edit"></i>
+              <i className="fi fi-rr-drawer-alt icon"></i>
               Write
             </NavLink>
 
-            <h1 className="text-xl text-dark-grey mb-3 mt-20">Setting</h1>
-            <hr className="border-grey ml-6 mb-8 mr-6" />
+            <h1 className="text-xl text-dark-grey mb-3 mt-20">Settings</h1>
+            <hr className="border-grey -ml-6 mb-8 mr-6" />
 
             {/* Edit Profile */}
             <NavLink
@@ -126,7 +127,7 @@ const SideNav = () => {
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
-              <i className="fi fi-rr-user"></i>
+              <i className="fi fi-rr-user icon"></i>
               Edit Profile
             </NavLink>
 
@@ -136,7 +137,7 @@ const SideNav = () => {
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
-              <i className="fi fi-rr-lock"></i>
+              <i className="fi fi-rr-lock icon"></i>
               Change Password
             </NavLink>
           </div>
