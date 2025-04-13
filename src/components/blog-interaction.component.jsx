@@ -22,19 +22,58 @@ const BlogInteraction = () => {
     setBlog,
     isLikedByUser,
     setLikedByUser,
+    isBookmarkedByUser,
+    setBookmarkedByUser,
     setCommentsWrapper,
   } = blogContexData;
+
+  let icon = isBookmarkedByUser ? "fi fi-ss-bookmark" : "fi fi-rs-bookmark"; // bs
 
   let {
     userAuth: { username, access_token },
   } = useContext(UserContext);
 
+  // useEffect(() => {
+  //   if (access_token) {
+  //     // make request to server to get like requrest
+  //     axios
+  //       .post(
+  //         import.meta.env.VITE_SERVER_DOMAIN + "/isLiked-by-user",
+  //         { _id },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${access_token}`,
+  //           },
+  //         }
+  //       )
+  //       .then(({ data: { result } }) => {
+  //         setLikedByUser(Boolean(result));
+  //         // console.log(result)
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+
+  //     axios
+  //       .post(
+  //         import.meta.env.VITE_SERVER_DOMAIN + "/isBookmarked-by-user",
+  //         { _id },
+  //         { headers: { Authorization: `Bearer ${access_token}` } }
+  //       )
+  //       .then(({ data: { result } }) => {
+  //         setBookmarkedByUser(Boolean(result));
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   }
+  // }, []);
+
   useEffect(() => {
     if (access_token) {
-      // make request to server to get like requrest
       axios
         .post(
-          import.meta.env.VITE_SERVER_DOMAIN + "/isLiked-by-user",
+          import.meta.env.VITE_SERVER_DOMAIN + "/user-interactions",
           { _id },
           {
             headers: {
@@ -42,15 +81,16 @@ const BlogInteraction = () => {
             },
           }
         )
-        .then(({ data: { result } }) => {
-          setLikedByUser(Boolean(result));
-          // console.log(result)
+        .then(({ data: { isLiked, isBookmarked } }) => {
+          setLikedByUser(Boolean(isLiked));
+          setBookmarkedByUser(Boolean(isBookmarked));
         })
         .catch((err) => {
           console.log(err);
         });
     }
   }, []);
+
   const handleLike = () => {
     if (access_token) {
       setLikedByUser((preVal) => !preVal);
@@ -81,6 +121,26 @@ const BlogInteraction = () => {
     }
   };
 
+  const handleBookmark = () => {
+    if (access_token) {
+      setBookmarkedByUser((preVal) => !preVal);
+      axios
+        .post(
+          import.meta.env.VITE_SERVER_DOMAIN + "/bookmark-blog",
+          { _id },
+          { headers: { Authorization: `Bearer ${access_token}` } }
+        )
+        .then(({ data }) => {
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      toast.error("Please login to bookmark this blog");
+    }
+  };
+
   return (
     <>
       <Toaster />
@@ -96,11 +156,13 @@ const BlogInteraction = () => {
           >
             <i
               className={
-                "flex-center icon fi " + (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
+                "flex-center icon fi " +
+                (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
               }
             ></i>
           </button>
           <p className="text-xl text-dark-grey">{total_likes}</p>
+
           <button
             onClick={() => setCommentsWrapper((preVal) => !preVal)}
             className="flex-center w-10 h-10 rounded-full flex items-center justify-center bg-grey/80"
@@ -108,6 +170,13 @@ const BlogInteraction = () => {
             <i className="flex-center icon fi fi-rr-comment-dots"></i>
           </button>
           <p className="text-xl text-dark-grey">{total_comments}</p>
+
+          <button
+            onClick={handleBookmark}
+            className="flex items-center gap-2 text-dark-grey"
+          >
+            <i className={`flex-center ${icon} text-xl icon`}></i>
+          </button>
         </div>
 
         <div className="flex gap-6 items-center">

@@ -29,6 +29,7 @@ const BlogPage = () => {
   const [similarBlog, setSimilarBlog] = useState(blogStructure);
   const [loading, setLoading] = useState(true);
   const [isLikedByUser, setLikedByUser] = useState(false);
+  const [isBookmarkedByUser, setBookmarkedByUser] = useState(false);
   const [commentsWrapper, setCommentsWrapper] = useState(false);
   const [totalParentComentsLoaded, setTotalCommentsLoaded] = useState(0);
 
@@ -83,6 +84,7 @@ const BlogPage = () => {
     setSimilarBlog(null);
     setLoading(true);
     setLikedByUser(false);
+    setBookmarkedByUser(false);
     // setCommentsWrapper(false)
     setTotalCommentsLoaded(0);
   };
@@ -98,6 +100,8 @@ const BlogPage = () => {
             setBlog,
             isLikedByUser,
             setLikedByUser,
+            isBookmarkedByUser,
+            setBookmarkedByUser,
             commentsWrapper,
             setCommentsWrapper,
             totalParentComentsLoaded,
