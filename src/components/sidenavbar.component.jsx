@@ -84,14 +84,14 @@ const SideNav = () => {
             </NavLink>
 
             {/* Bookmarks */}
-            {/* <NavLink
+            <NavLink
               to={"/dashboard/bookmarks"}
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
-              <i className="fi fi-rr-document"></i>
+              <i className="fi fi-rr-drawer-alt icon"></i>
               Bookmarks
-            </NavLink> */}
+            </NavLink>
 
             {/* Notifications */}
             <NavLink
@@ -105,17 +105,7 @@ const SideNav = () => {
                   <span className="bg-red h-2 w-2 rounded-full absolute z-10 top-0 right-0"></span>
                 )}
               </div>
-              Notification
-            </NavLink>
-
-            {/* Write */}
-            <NavLink
-              to={"/editor"}
-              onClick={(e) => setPageState(e.target.innerText)}
-              className="sidebar-link"
-            >
-              <i className="fi fi-rr-drawer-alt icon"></i>
-              Write
+              Notifications
             </NavLink>
 
             <h1 className="text-xl text-dark-grey mb-3 mt-20">Settings</h1>

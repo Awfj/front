@@ -55,6 +55,11 @@ const BlogPostCard = ({ content, author }) => {
           <i className="flex-center fi fi-rr-heart text-xl icon"></i>
           {total_likes}
         </span>
+
+        {/* Bookmarked Icon */}
+        <span className="flex items-center gap-2 text-dark-grey">
+          <i className={`flex-center fi fi-rs-bookmark text-xl icon`}></i>
+        </span>
       </div>
     </Link>
   );
