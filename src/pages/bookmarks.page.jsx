@@ -23,11 +23,11 @@ const ManageBookmarks = () => {
     userAuth: { access_token },
   } = useContext(UserContext);
 
-  const getBookmarks = ({ page = 1 }) => {
+  const getBookmarks = ({ page, deletedDocCount = 0 }) => {
     axios
       .post(
         import.meta.env.VITE_SERVER_DOMAIN + "/user-bookmarks",
-        { page },
+        { page, query, deletedDocCount },
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -42,6 +42,7 @@ const ManageBookmarks = () => {
           page,
           user: access_token,
           countRoute: "/user-bookmarks-count",
+          data_to_send: { query },
         });
         // console.log(formateData)
         setBlogs(formateData);
@@ -95,7 +96,6 @@ const ManageBookmarks = () => {
       ) : blogs.results.length ? (
         <>
           {blogs.results.map((blog, i) => {
-            // console.log("!", blog);
             return (
               <AnimationWrapper
                 key={i}
@@ -106,23 +106,15 @@ const ManageBookmarks = () => {
                   author={blog.author.personal_info}
                 />
               </AnimationWrapper>
-              // <AnimationWrapper key={i} transition={{ delay: i * 0.04 }}>
-              //   <ManagePublishedBlogCard
-              //     blog={{ ...blog, index: i, setStateFunc: setBlogs }}
-              //   />
-              // </AnimationWrapper>
             );
           })}
-          {/* <h2>safasf</h2> */}
-          {/* <LoadMoreDataBtn state={blogs} fetchDataFun={getBookmarks} /> */}
-          {/* <LoadMoreDataBtn
+          <LoadMoreDataBtn
             state={blogs}
             fetchDataFun={getBookmarks}
             additionalParam={{
-              draft: false,
               deletedDocCount: blogs.deletedDocCount,
             }}
-          /> */}
+          />
         </>
       ) : (
         <NoDataMessage message="No Bookmarks Available" />
