@@ -23,6 +23,8 @@ export const profileDataStructure = {
   account_info: {
     total_posts: 0,
     total_reads: 0,
+    total_followers: 0,
+    total_following: 0,
   },
   social_links: {},
   joinedAt: "",
@@ -37,31 +39,107 @@ const ProfilePage = () => {
 
   let {
     personal_info: { fullname, username: profile_username, profile_img, bio },
-    account_info: { total_posts, total_reads },
+    account_info: {
+      total_posts,
+      total_reads,
+      total_followers,
+      total_following,
+    },
     social_links,
     joinedAt,
   } = profile;
 
   let {
-    userAuth: { username },
+    userAuth: { username, access_token },
   } = useContext(UserContext);
+
   const fetchUserProfile = () => {
+    setLoading(true); // Set loading at the start
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-profile", {
         username: profileId,
       })
       .then(({ data: user }) => {
-        // console.log(user)
-        if (user !== null) setProfile(user);
+        if (!user) {
+          setProfile(null); // Set profile to null if user not found
+          setLoading(false);
+          return;
+        }
 
-        setProfileLoaded(profileId);
-        getBlogs({ user_id: user._id });
-        setLoading(false);
+        if (access_token) {
+          axios
+            .post(
+              import.meta.env.VITE_SERVER_DOMAIN + "/is-following-user",
+              { targetUserId: user._id },
+              {
+                headers: {
+                  Authorization: `Bearer ${access_token}`,
+                },
+              }
+            )
+            .then(({ data: { isFollowing } }) => {
+              setProfile({
+                ...user,
+                isFollowing,
+              });
+              setProfileLoaded(profileId);
+              getBlogs({ user_id: user._id });
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              setProfile(user);
+              setProfileLoaded(profileId);
+              getBlogs({ user_id: user._id });
+              setLoading(false);
+            });
+        } else {
+          setProfile({
+            ...user,
+            isFollowing: false,
+          });
+          setProfileLoaded(profileId);
+          getBlogs({ user_id: user._id });
+          setLoading(false);
+        }
       })
       .catch((err) => {
-        // toast.error(err)
         console.log(err);
+        setProfile(null);
         setLoading(false);
+      });
+  };
+
+  const handleFollow = () => {
+    if (!access_token) {
+      return toast.error("Please login to follow");
+    }
+
+    const endpoint = profile.isFollowing ? "unfollow" : "follow";
+
+    axios
+      .post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/${endpoint}-user`,
+        { targetUserId: profile._id },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then(() => {
+        // Update profile state with new following status
+        setProfile((prev) => ({
+          ...prev,
+          isFollowing: !prev.isFollowing,
+          followers: prev.followers.length + (prev.isFollowing ? -1 : 1),
+        }));
+
+        toast.success(`Successfully ${endpoint}ed user`);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response?.data?.error || `Error ${endpoint}ing user`);
       });
   };
 
@@ -120,10 +198,13 @@ const ProfilePage = () => {
             />
             <h1 className="text-2xl font-medium">@{profile_username}</h1>
             <p className="text-xl capitalize h-6">{fullname}</p>
-            <p>
-              {total_posts.toLocaleString()} Blogs -{" "}
-              {total_reads.toLocaleString()} Reads
-            </p>
+            <p>{total_posts.toLocaleString()} Blogs</p>
+            <p>{total_reads.toLocaleString()} Reads</p>
+            {/* TODO: FOLLOWER COUNT */}
+            <p>{total_followers.toLocaleString()} Followers</p>
+            <p>{total_following.toLocaleString()} Following</p>
+
+            {/* EDIT OR FOLLOW */}
             <div className="flex gap-4 mt-2">
               {profileId === username ? (
                 <Link
@@ -133,9 +214,17 @@ const ProfilePage = () => {
                   Edit Profile
                 </Link>
               ) : (
-                ""
+                <button
+                  onClick={handleFollow}
+                  className={`btn-light rounded-md ${
+                    profile.isFollowing ? "bg-red-500 text-white" : ""
+                  }`}
+                >
+                  {profile.isFollowing ? "Unfollow" : "Follow"}
+                </button>
               )}
             </div>
+
             <AboutUser
               className="max-md:hidden"
               bio={bio}
