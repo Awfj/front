@@ -36,6 +36,50 @@ const ProfilePage = () => {
   let [blogs, setBlogs] = useState(null);
   let [profileLoaded, setProfileLoaded] = useState();
   const { id: profileId } = useParams();
+  const [followers, setFollowers] = useState(null);
+  const [following, setFollowing] = useState(null);
+
+  const getFollowers = ({ page = 1, user_id }) => {
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-followers", {
+        user_id,
+        page,
+      })
+      .then(async ({ data }) => {
+        let formateData = await filterPaginationData({
+          state: followers,
+          data: data.followers,
+          page,
+          countRoute: "/followers-count",
+          data_to_send: { user_id },
+        });
+        setFollowers(formateData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getFollowing = ({ page = 1, user_id }) => {
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-following", {
+        user_id,
+        page,
+      })
+      .then(async ({ data }) => {
+        let formateData = await filterPaginationData({
+          state: following,
+          data: data.following,
+          page,
+          countRoute: "/following-count",
+          data_to_send: { user_id },
+        });
+        setFollowing(formateData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   let {
     personal_info: { fullname, username: profile_username, profile_img, bio },
@@ -127,15 +171,17 @@ const ProfilePage = () => {
           },
         }
       )
-      .then(() => {
-        // Update profile state with new following status
+      .then(({ data }) => {
         setProfile((prev) => ({
           ...prev,
           isFollowing: !prev.isFollowing,
-          followers: prev.followers.length + (prev.isFollowing ? -1 : 1),
+          account_info: {
+            ...prev.account_info,
+            total_followers: data.total_followers,
+          },
         }));
 
-        toast.success(`Successfully ${endpoint}ed user`);
+        toast.success(data.message);
       })
       .catch((err) => {
         console.log(err);
@@ -168,14 +214,25 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
+    // Reset states when profile ID changes
     if (profileId !== profileLoaded) {
-      setBlogs(null);
-    }
-    if (blogs === null) {
       resetState();
+      setBlogs(null);
+      setFollowers(null);
+      setFollowing(null);
       fetchUserProfile();
     }
-  }, [profileId, blogs]);
+  }, [profileId]); // Only depend on profileId changes
+
+  // Separate useEffect for loading data after profile is loaded
+  useEffect(() => {
+    if (profile?._id) {
+      const user_id = profile._id;
+      if (blogs === null) getBlogs({ user_id });
+      if (followers === null) getFollowers({ user_id });
+      if (following === null) getFollowing({ user_id });
+    }
+  }, [profile?._id]); // Only depend on profile._id changes
 
   const resetState = () => {
     setProfile(profileDataStructure);
@@ -235,8 +292,9 @@ const ProfilePage = () => {
 
           <div className="max-md:mt-12 w-full">
             <InPageNavigaion
-              routes={["Blogs Published", "About"]}
-              defaultHidden={["About"]}
+              routes={["Blogs Published", "Followers", "Following"]}
+              defaultActiveIndex={0}
+              // defaultHidden={["About"]}
             >
               <>
                 {blogs === null ? (
@@ -260,11 +318,50 @@ const ProfilePage = () => {
                 )}
                 <LoadMoreDataBtn state={blogs} fetchDataFun={getBlogs} />
               </>
-              <AboutUser
-                bio={bio}
-                joinedAt={joinedAt}
-                social_links={social_links}
-              />
+
+              {/* Followers tab */}
+              <>
+                {followers === null ? (
+                  <Loader />
+                ) : !followers.results.length ? (
+                  <NoDataMessage message={"No followers yet"} />
+                ) : (
+                  followers.results.map((user, i) => (
+                    <AnimationWrapper
+                      key={i}
+                      transition={{ duration: 1, delay: i * 0.1 }}
+                    >
+                      <UserCard user={user} />
+                    </AnimationWrapper>
+                  ))
+                )}
+                <LoadMoreDataBtn
+                  state={followers}
+                  fetchDataFun={getFollowers}
+                />
+              </>
+
+              {/* Following tab */}
+              <>
+                {following === null ? (
+                  <Loader />
+                ) : !following.results.length ? (
+                  <NoDataMessage message={"Not following anyone"} />
+                ) : (
+                  following.results.map((user, i) => (
+                    <AnimationWrapper
+                      key={i}
+                      transition={{ duration: 1, delay: i * 0.1 }}
+                    >
+                      <UserCard user={user} />
+                    </AnimationWrapper>
+                  ))
+                )}
+                <LoadMoreDataBtn
+                  state={following}
+                  fetchDataFun={getFollowing}
+                />
+              </>
             </InPageNavigaion>
           </div>
         </section>
@@ -272,6 +369,29 @@ const ProfilePage = () => {
         <PageNotFound />
       )}
     </AnimationWrapper>
+  );
+};
+
+const UserCard = ({ user }) => {
+  const { personal_info } = user;
+
+  return (
+    <Link
+      to={`/user/${personal_info.username}`}
+      className="flex items-center gap-5 mb-5 pb-5 border-b border-grey"
+    >
+      <img
+        src={personal_info.profile_img}
+        className="w-14 h-14 rounded-full"
+        alt={personal_info.fullname}
+      />
+      <div>
+        <h1 className="font-medium text-xl line-clamp-1">
+          {personal_info.fullname}
+        </h1>
+        <p className="text-dark-grey">@{personal_info.username}</p>
+      </div>
+    </Link>
   );
 };
 
