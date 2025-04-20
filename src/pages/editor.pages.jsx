@@ -16,6 +16,7 @@ const blogStructure = {
 };
 
 export const EditorContext = createContext({});
+
 const Editor = () => {
   let { blog_id } = useParams();
   const [blog, setBlog] = useState(blogStructure);
@@ -29,8 +30,11 @@ const Editor = () => {
 
   useEffect(() => {
     if (!blog_id) {
+      // If no blog_id, initialize with empty structure but set loading false
+      setBlog(blogStructure);
       return setLoading(false);
     }
+
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", {
         blog_id,
@@ -38,15 +42,38 @@ const Editor = () => {
         mode: "edit",
       })
       .then(({ data: { blog } }) => {
-        setBlog(blog);
+        setBlog(blog || blogStructure); // Use blogStructure as fallback
         setLoading(false);
       })
       .catch((err) => {
-        setBlog(null);
+        setBlog(blogStructure); // Use blogStructure on error
         setLoading(false);
-        console.log(false);
+        console.error(err);
       });
-  }, []);
+  }, [blog_id]); // Add blog_id as dependency
+
+  // useEffect(() => {
+  //   if (!blog_id) {
+  //     return setLoading(false);
+  //   }
+
+  //   axios
+  //     .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", {
+  //       blog_id,
+  //       draft: true,
+  //       mode: "edit",
+  //     })
+  //     .then(({ data: { blog } }) => {
+  //       setBlog(blog);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setBlog(null);
+  //       setLoading(false);
+  //       console.log(false);
+  //     });
+  // }, []);
+
   return (
     <EditorContext.Provider
       value={{
