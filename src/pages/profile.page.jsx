@@ -331,14 +331,57 @@ const ProfilePage = () => {
                       key={i}
                       transition={{ duration: 1, delay: i * 0.1 }}
                     >
-                      <UserCard user={user} />
+                      <UserCard
+                        user={user}
+                        removeFollower={(followerId) => {
+                          axios
+                            .post(
+                              `${
+                                import.meta.env.VITE_SERVER_DOMAIN
+                              }/unfollow-user`,
+                              {
+                                targetUserId: profile._id,
+                                currentUserId: followerId,
+                              },
+                              {
+                                headers: {
+                                  Authorization: `Bearer ${access_token}`,
+                                },
+                              }
+                            )
+                            .then(() => {
+                              // Update followers list
+                              setFollowers((prev) => ({
+                                ...prev,
+                                results: prev.results.filter(
+                                  (user) => user._id !== followerId
+                                ),
+                              }));
+
+                              // Update profile counters immediately
+                              setProfile((prev) => ({
+                                ...prev,
+                                account_info: {
+                                  ...prev.account_info,
+                                  total_followers:
+                                    prev.account_info.total_followers - 1,
+                                },
+                              }));
+
+                              toast.success("Follower removed successfully");
+                            })
+                            .catch((err) => {
+                              console.log(err);
+                              toast.error(
+                                err.response?.data?.error ||
+                                  "Error removing follower"
+                              );
+                            });
+                        }}
+                      />
                     </AnimationWrapper>
                   ))
                 )}
-                <LoadMoreDataBtn
-                  state={followers}
-                  fetchDataFun={getFollowers}
-                />
               </>
 
               {/* Following tab */}
@@ -353,14 +396,54 @@ const ProfilePage = () => {
                       key={i}
                       transition={{ duration: 1, delay: i * 0.1 }}
                     >
-                      <UserCard user={user} />
+                      <UserCard
+                        user={user}
+                        handleUnfollow={(userId) => {
+                          axios
+                            .post(
+                              `${
+                                import.meta.env.VITE_SERVER_DOMAIN
+                              }/unfollow-user`,
+                              { targetUserId: userId },
+                              {
+                                headers: {
+                                  Authorization: `Bearer ${access_token}`,
+                                },
+                              }
+                            )
+                            .then(() => {
+                              // Update following list
+                              setFollowing((prev) => ({
+                                ...prev,
+                                results: prev.results.filter(
+                                  (user) => user._id !== userId
+                                ),
+                              }));
+
+                              // Update profile counters immediately
+                              setProfile((prev) => ({
+                                ...prev,
+                                account_info: {
+                                  ...prev.account_info,
+                                  total_following:
+                                    prev.account_info.total_following - 1,
+                                },
+                              }));
+
+                              toast.success("Unfollowed successfully");
+                            })
+                            .catch((err) => {
+                              console.log(err);
+                              toast.error(
+                                err.response?.data?.error ||
+                                  "Error unfollowing user"
+                              );
+                            });
+                        }}
+                      />
                     </AnimationWrapper>
                   ))
                 )}
-                <LoadMoreDataBtn
-                  state={following}
-                  fetchDataFun={getFollowing}
-                />
               </>
             </InPageNavigaion>
           </div>
@@ -372,26 +455,42 @@ const ProfilePage = () => {
   );
 };
 
-const UserCard = ({ user }) => {
+const UserCard = ({ user, removeFollower, handleUnfollow }) => {
   const { personal_info } = user;
+  const {
+    userAuth: { access_token, username },
+  } = useContext(UserContext);
 
   return (
-    <Link
-      to={`/user/${personal_info.username}`}
-      className="flex items-center gap-5 mb-5 pb-5 border-b border-grey"
-    >
-      <img
-        src={personal_info.profile_img}
-        className="w-14 h-14 rounded-full"
-        alt={personal_info.fullname}
-      />
-      <div>
-        <h1 className="font-medium text-xl line-clamp-1">
-          {personal_info.fullname}
-        </h1>
-        <p className="text-dark-grey">@{personal_info.username}</p>
-      </div>
-    </Link>
+    <div className="flex items-center justify-between gap-5 mb-5 pb-5 border-b border-grey">
+      <Link
+        to={`/user/${personal_info.username}`}
+        className="flex items-center gap-5"
+      >
+        <img
+          src={personal_info.profile_img}
+          className="w-14 h-14 rounded-full"
+          alt={personal_info.fullname}
+        />
+        <div>
+          <h1 className="font-medium text-xl line-clamp-1">
+            {personal_info.fullname}
+          </h1>
+          <p className="text-dark-grey">@{personal_info.username}</p>
+        </div>
+      </Link>
+
+      {personal_info.username !== username && (
+        <button
+          onClick={() =>
+            removeFollower ? removeFollower(user._id) : handleUnfollow(user._id)
+          }
+          className="btn-light rounded-md bg-red-500 text-white px-4 py-2"
+        >
+          {removeFollower ? "Remove" : "Unfollow"}
+        </button>
+      )}
+    </div>
   );
 };
 
