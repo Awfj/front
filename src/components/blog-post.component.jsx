@@ -11,7 +11,7 @@ const BlogPostCard = ({ content, author }) => {
     title,
     des,
     banner,
-    activity: { total_likes },
+    activity: { total_likes, total_comments },
     blog_id: id,
   } = content;
   let { fullname, profile_img, username } = author;
@@ -48,12 +48,16 @@ const BlogPostCard = ({ content, author }) => {
         </div>
       </div>
 
-      {/* Third row: Tags and Likes */}
+      {/* Third row: Tags, Likes, and Comments */}
       <div className="flex items-center gap-4">
         <span className="btn-light py-1 px-4">{tags[0]}</span>
         <span className="flex items-center gap-2 text-dark-grey">
           <i className="flex-center fi fi-rr-heart text-xl icon"></i>
           {total_likes}
+        </span>
+        <span className="flex items-center gap-2 text-dark-grey">
+          <i className="flex-center fi fi-rr-comment-dots text-xl icon"></i>
+          {total_comments}
         </span>
 
         {/* Bookmarked Icon */}
