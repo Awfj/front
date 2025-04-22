@@ -33,42 +33,6 @@ const BlogInteraction = () => {
     userAuth: { username, access_token },
   } = useContext(UserContext);
 
-  // useEffect(() => {
-  //   if (access_token) {
-  //     // make request to server to get like requrest
-  //     axios
-  //       .post(
-  //         import.meta.env.VITE_SERVER_DOMAIN + "/isLiked-by-user",
-  //         { _id },
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${access_token}`,
-  //           },
-  //         }
-  //       )
-  //       .then(({ data: { result } }) => {
-  //         setLikedByUser(Boolean(result));
-  //         // console.log(result)
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-
-  //     axios
-  //       .post(
-  //         import.meta.env.VITE_SERVER_DOMAIN + "/isBookmarked-by-user",
-  //         { _id },
-  //         { headers: { Authorization: `Bearer ${access_token}` } }
-  //       )
-  //       .then(({ data: { result } }) => {
-  //         setBookmarkedByUser(Boolean(result));
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   }
-  // }, []);
-
   useEffect(() => {
     if (access_token) {
       axios
