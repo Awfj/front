@@ -24,7 +24,6 @@ const BlogInteraction = () => {
     setLikedByUser,
     isBookmarkedByUser,
     setBookmarkedByUser,
-    setCommentsWrapper,
   } = blogContexData;
 
   let icon = isBookmarkedByUser ? "fi fi-ss-bookmark" : "fi fi-rs-bookmark"; // bs
@@ -128,7 +127,6 @@ const BlogInteraction = () => {
           <p className="text-xl text-dark-grey">{total_likes}</p>
 
           <button
-            onClick={() => setCommentsWrapper((preVal) => !preVal)}
             className="flex-center w-10 h-10 rounded-full flex items-center justify-center bg-grey/80"
           >
             <i className="flex-center icon fi fi-rr-comment-dots"></i>

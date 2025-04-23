@@ -30,7 +30,6 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(true);
   const [isLikedByUser, setLikedByUser] = useState(false);
   const [isBookmarkedByUser, setBookmarkedByUser] = useState(false);
-  const [commentsWrapper, setCommentsWrapper] = useState(false);
   const [totalParentComentsLoaded, setTotalCommentsLoaded] = useState(0);
 
   let {
@@ -85,7 +84,6 @@ const BlogPage = () => {
     setLoading(true);
     setLikedByUser(false);
     setBookmarkedByUser(false);
-    // setCommentsWrapper(false)
     setTotalCommentsLoaded(0);
   };
 
@@ -102,13 +100,10 @@ const BlogPage = () => {
             setLikedByUser,
             isBookmarkedByUser,
             setBookmarkedByUser,
-            commentsWrapper,
-            setCommentsWrapper,
             totalParentComentsLoaded,
             setTotalCommentsLoaded,
           }}
         >
-          <CommentContainer />
           <div className="max-w-[900px] center py-10 max-lg:px-[5vw]">
             <img src={banner} alt="Banner" className="aspect-video" />
             <div className="mt-12">
@@ -134,8 +129,6 @@ const BlogPage = () => {
               </div>
             </div>
 
-            {/* <BlogInteraction /> */}
-
             <div className="my-12 font-gelasio blog-page-content">
               {content[0].blocks.map((block, i) => {
                 return (
@@ -147,6 +140,8 @@ const BlogPage = () => {
             </div>
 
             <BlogInteraction />
+
+            <CommentContainer />
 
             {similarBlog !== null && similarBlog.length ? (
               <>
