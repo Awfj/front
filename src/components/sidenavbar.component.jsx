@@ -4,7 +4,7 @@ import { UserContext } from "../App";
 
 const SideNav = () => {
   let {
-    userAuth: { access_token, new_notification_available },
+    userAuth: { access_token, role, new_notification_available },
   } = useContext(UserContext);
 
   let page = location.pathname.split("/")[2];
@@ -74,14 +74,16 @@ const SideNav = () => {
             <hr className="border-grey -ml-6 mb-8 mr-6" />
 
             {/* Users */}
-            <NavLink
-              to={"/dashboard/users"}
-              onClick={(e) => setPageState(e.target.innerText)}
-              className="sidebar-link"
-            >
-              <i className="fi fi-rr-users icon"></i>
-              Users
-            </NavLink>
+            {role === "admin" && (
+              <NavLink
+                to={"/dashboard/users"}
+                onClick={(e) => setPageState(e.target.innerText)}
+                className="sidebar-link"
+              >
+                <i className="fi fi-rr-users icon"></i>
+                Users
+              </NavLink>
+            )}
 
             {/* Blogs */}
             <NavLink
