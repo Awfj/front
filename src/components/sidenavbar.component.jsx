@@ -73,6 +73,16 @@ const SideNav = () => {
             <h1 className="text-xl text-dark-grey mb-3">Dashboard</h1>
             <hr className="border-grey -ml-6 mb-8 mr-6" />
 
+            {/* Users */}
+            <NavLink
+              to={"/dashboard/users"}
+              onClick={(e) => setPageState(e.target.innerText)}
+              className="sidebar-link"
+            >
+              <i className="fi fi-rr-users icon"></i>
+              Users
+            </NavLink>
+
             {/* Blogs */}
             <NavLink
               to={"/dashboard/blogs"}

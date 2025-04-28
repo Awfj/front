@@ -15,6 +15,7 @@ import EditProfile from "./pages/edit-profile.page";
 import Notification from "./pages/notifications.page";
 import ManageBlog from "./pages/manage-blogs.page";
 import ManageBookmarks from "./pages/bookmarks.page";
+import Users from "./pages/users.page";
 
 export const UserContext = createContext({});
 
@@ -60,8 +61,9 @@ const App = () => {
             <Route index element={<Home />} />
 
             <Route path="dashboard" element={<SideNav />}>
-              <Route path="notifications" element={<Notification />} />
+              <Route path="users" element={<Users />} />
               <Route path="blogs" element={<ManageBlog />} />
+              <Route path="notifications" element={<Notification />} />
               <Route path="bookmarks" element={<ManageBookmarks />} />
             </Route>
 
