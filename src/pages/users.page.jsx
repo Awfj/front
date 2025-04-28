@@ -8,6 +8,7 @@ import NoDataMessage from "../components/nodata.component";
 import AnimationWrapper from "../common/page-animation";
 import UserCard from "../components/user-card.component";
 import LoadMoreDataBtn from "../components/load-more.component";
+import toast from "react-hot-toast";
 
 const Users = () => {
   const [users, setUsers] = useState(null);
@@ -58,6 +59,34 @@ const Users = () => {
     }
   };
 
+  const handleDelete = (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      axios
+        .post(
+          `${import.meta.env.VITE_SERVER_DOMAIN}/delete-user`,
+          { userId },
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        )
+        .then(() => {
+          // Remove user from list
+          setUsers((prev) => ({
+            ...prev,
+            results: prev.results.filter((user) => user._id !== userId),
+            totalDocs: prev.totalDocs - 1, // Обновите общее количество
+          }));
+          toast.success("User deleted successfully");
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error(err.response?.data?.error || "Error deleting user");
+        });
+    }
+  };
+
   useEffect(() => {
     if (access_token) {
       getUsers({ page: 1 });
@@ -89,7 +118,11 @@ const Users = () => {
               key={i}
               transition={{ duration: 1, delay: i * 0.1 }}
             >
-              <UserCard user={user} />
+              <UserCard
+                user={user}
+                btnHandler={handleDelete}
+                btnMessage="Delete"
+              />
             </AnimationWrapper>
           ))}
           <LoadMoreDataBtn state={users} fetchDataFun={getUsers} />

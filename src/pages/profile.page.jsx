@@ -334,7 +334,8 @@ const ProfilePage = () => {
                     >
                       <UserCard
                         user={user}
-                        removeFollower={(followerId) => {
+                        btnMessage='Remove'
+                        btnHandler={(followerId) => {
                           axios
                             .post(
                               `${
@@ -399,7 +400,8 @@ const ProfilePage = () => {
                     >
                       <UserCard
                         user={user}
-                        handleUnfollow={(userId) => {
+                        btnMessage='Unfollow'
+                        btnHandler={(userId) => {
                           axios
                             .post(
                               `${
