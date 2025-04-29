@@ -9,11 +9,17 @@ import AnimationWrapper from "../common/page-animation";
 import UserCard from "../components/user-card.component";
 import LoadMoreDataBtn from "../components/load-more.component";
 import toast from "react-hot-toast";
+import ConfirmDialog from "../components/confirm-dialog.component";
 
 const Users = () => {
   const [users, setUsers] = useState(null);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    userId: null,
+  });
 
   let {
     userAuth: { access_token },
@@ -60,32 +66,69 @@ const Users = () => {
   };
 
   const handleDelete = (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      axios
-        .post(
-          `${import.meta.env.VITE_SERVER_DOMAIN}/delete-user`,
-          { userId },
-          {
-            headers: {
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        )
-        .then(() => {
-          // Remove user from list
-          setUsers((prev) => ({
-            ...prev,
-            results: prev.results.filter((user) => user._id !== userId),
-            totalDocs: prev.totalDocs - 1, // Обновите общее количество
-          }));
-          toast.success("User deleted successfully");
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error(err.response?.data?.error || "Error deleting user");
-        });
-    }
+    setConfirmDialog({
+      isOpen: true,
+      userId,
+    });
   };
+
+  const confirmDelete = () => {
+    const userId = confirmDialog.userId;
+
+    axios
+      .post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/delete-user`,
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then(() => {
+        setUsers((prev) => ({
+          ...prev,
+          results: prev.results.filter((user) => user._id !== userId),
+          totalDocs: prev.totalDocs - 1,
+        }));
+        toast.success("User deleted successfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response?.data?.error || "Error deleting user");
+      })
+      .finally(() => {
+        setConfirmDialog({ isOpen: false, userId: null });
+      });
+  };
+
+  // const handleDelete = (userId) => {
+  //   if (window.confirm("Are you sure you want to delete this user?")) {
+  //     axios
+  //       .post(
+  //         `${import.meta.env.VITE_SERVER_DOMAIN}/delete-user`,
+  //         { userId },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${access_token}`,
+  //           },
+  //         }
+  //       )
+  //       .then(() => {
+  //         // Remove user from list
+  //         setUsers((prev) => ({
+  //           ...prev,
+  //           results: prev.results.filter((user) => user._id !== userId),
+  //           totalDocs: prev.totalDocs - 1, // Обновите общее количество
+  //         }));
+  //         toast.success("User deleted successfully");
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //         toast.error(err.response?.data?.error || "Error deleting user");
+  //       });
+  //   }
+  // };
 
   useEffect(() => {
     if (access_token) {
@@ -130,6 +173,16 @@ const Users = () => {
       ) : (
         <NoDataMessage message="No users found" />
       )}
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ isOpen: false, userId: null })}
+        onConfirm={confirmDelete}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </>
   );
 };
