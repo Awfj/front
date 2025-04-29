@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../App";
+import DropdownMenu from "./dropdown-menu.component";
 
-const UserCard = ({ user, btnHandler, btnMessage }) => {
+const UserCard = ({ user, hasDropdownMenu = false, options }) => {
   const { personal_info } = user;
   const {
     userAuth: { access_token, username },
@@ -27,14 +28,18 @@ const UserCard = ({ user, btnHandler, btnMessage }) => {
         </div>
       </Link>
 
-      {personal_info.username !== username && (
-        <button
-          onClick={() => btnHandler(user._id)}
-          className="btn-light rounded-md bg-red-500 text-black px-4 py-2"
-        >
-          {btnMessage}
-        </button>
-      )}
+      {hasDropdownMenu
+        ? personal_info.username !== username && (
+            <DropdownMenu items={options} />
+          )
+        : personal_info.username !== username && (
+            <button
+              onClick={() => options.btnHandler(user._id)}
+              className="btn-light rounded-md bg-red-500 text-black px-4 py-2"
+            >
+              {options.btnMessage}
+            </button>
+          )}
     </div>
   );
 };

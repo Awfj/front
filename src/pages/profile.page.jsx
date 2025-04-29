@@ -334,51 +334,53 @@ const ProfilePage = () => {
                     >
                       <UserCard
                         user={user}
-                        btnMessage='Remove'
-                        btnHandler={(followerId) => {
-                          axios
-                            .post(
-                              `${
-                                import.meta.env.VITE_SERVER_DOMAIN
-                              }/unfollow-user`,
-                              {
-                                targetUserId: profile._id,
-                                currentUserId: followerId,
-                              },
-                              {
-                                headers: {
-                                  Authorization: `Bearer ${access_token}`,
+                        options={{
+                          btnMessage: "Remove",
+                          btnHandler: (followerId) => {
+                            axios
+                              .post(
+                                `${
+                                  import.meta.env.VITE_SERVER_DOMAIN
+                                }/unfollow-user`,
+                                {
+                                  targetUserId: profile._id,
+                                  currentUserId: followerId,
                                 },
-                              }
-                            )
-                            .then(() => {
-                              // Update followers list
-                              setFollowers((prev) => ({
-                                ...prev,
-                                results: prev.results.filter(
-                                  (user) => user._id !== followerId
-                                ),
-                              }));
+                                {
+                                  headers: {
+                                    Authorization: `Bearer ${access_token}`,
+                                  },
+                                }
+                              )
+                              .then(() => {
+                                // Update followers list
+                                setFollowers((prev) => ({
+                                  ...prev,
+                                  results: prev.results.filter(
+                                    (user) => user._id !== followerId
+                                  ),
+                                }));
 
-                              // Update profile counters immediately
-                              setProfile((prev) => ({
-                                ...prev,
-                                account_info: {
-                                  ...prev.account_info,
-                                  total_followers:
-                                    prev.account_info.total_followers - 1,
-                                },
-                              }));
+                                // Update profile counters immediately
+                                setProfile((prev) => ({
+                                  ...prev,
+                                  account_info: {
+                                    ...prev.account_info,
+                                    total_followers:
+                                      prev.account_info.total_followers - 1,
+                                  },
+                                }));
 
-                              toast.success("Follower removed successfully");
-                            })
-                            .catch((err) => {
-                              console.log(err);
-                              toast.error(
-                                err.response?.data?.error ||
-                                  "Error removing follower"
-                              );
-                            });
+                                toast.success("Follower removed successfully");
+                              })
+                              .catch((err) => {
+                                console.log(err);
+                                toast.error(
+                                  err.response?.data?.error ||
+                                    "Error removing follower"
+                                );
+                              });
+                          },
                         }}
                       />
                     </AnimationWrapper>
@@ -400,48 +402,50 @@ const ProfilePage = () => {
                     >
                       <UserCard
                         user={user}
-                        btnMessage='Unfollow'
-                        btnHandler={(userId) => {
-                          axios
-                            .post(
-                              `${
-                                import.meta.env.VITE_SERVER_DOMAIN
-                              }/unfollow-user`,
-                              { targetUserId: userId },
-                              {
-                                headers: {
-                                  Authorization: `Bearer ${access_token}`,
-                                },
-                              }
-                            )
-                            .then(() => {
-                              // Update following list
-                              setFollowing((prev) => ({
-                                ...prev,
-                                results: prev.results.filter(
-                                  (user) => user._id !== userId
-                                ),
-                              }));
+                        options={{
+                          btnMessage: "Unfollow",
+                          btnHandler: (userId) => {
+                            axios
+                              .post(
+                                `${
+                                  import.meta.env.VITE_SERVER_DOMAIN
+                                }/unfollow-user`,
+                                { targetUserId: userId },
+                                {
+                                  headers: {
+                                    Authorization: `Bearer ${access_token}`,
+                                  },
+                                }
+                              )
+                              .then(() => {
+                                // Update following list
+                                setFollowing((prev) => ({
+                                  ...prev,
+                                  results: prev.results.filter(
+                                    (user) => user._id !== userId
+                                  ),
+                                }));
 
-                              // Update profile counters immediately
-                              setProfile((prev) => ({
-                                ...prev,
-                                account_info: {
-                                  ...prev.account_info,
-                                  total_following:
-                                    prev.account_info.total_following - 1,
-                                },
-                              }));
+                                // Update profile counters immediately
+                                setProfile((prev) => ({
+                                  ...prev,
+                                  account_info: {
+                                    ...prev.account_info,
+                                    total_following:
+                                      prev.account_info.total_following - 1,
+                                  },
+                                }));
 
-                              toast.success("Unfollowed successfully");
-                            })
-                            .catch((err) => {
-                              console.log(err);
-                              toast.error(
-                                err.response?.data?.error ||
-                                  "Error unfollowing user"
-                              );
-                            });
+                                toast.success("Unfollowed successfully");
+                              })
+                              .catch((err) => {
+                                console.log(err);
+                                toast.error(
+                                  err.response?.data?.error ||
+                                    "Error unfollowing user"
+                                );
+                              });
+                          },
                         }}
                       />
                     </AnimationWrapper>

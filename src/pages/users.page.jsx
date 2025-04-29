@@ -102,34 +102,6 @@ const Users = () => {
       });
   };
 
-  // const handleDelete = (userId) => {
-  //   if (window.confirm("Are you sure you want to delete this user?")) {
-  //     axios
-  //       .post(
-  //         `${import.meta.env.VITE_SERVER_DOMAIN}/delete-user`,
-  //         { userId },
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${access_token}`,
-  //           },
-  //         }
-  //       )
-  //       .then(() => {
-  //         // Remove user from list
-  //         setUsers((prev) => ({
-  //           ...prev,
-  //           results: prev.results.filter((user) => user._id !== userId),
-  //           totalDocs: prev.totalDocs - 1, // Обновите общее количество
-  //         }));
-  //         toast.success("User deleted successfully");
-  //       })
-  //       .catch((err) => {
-  //         console.error(err);
-  //         toast.error(err.response?.data?.error || "Error deleting user");
-  //       });
-  //   }
-  // };
-
   useEffect(() => {
     if (access_token) {
       getUsers({ page: 1 });
@@ -163,8 +135,17 @@ const Users = () => {
             >
               <UserCard
                 user={user}
+                hasDropdownMenu={true}
                 btnHandler={handleDelete}
                 btnMessage="Delete"
+                options={[
+                  {
+                    label: "Delete",
+                    onClick: () => handleDelete(user._id),
+                    icon: "fi fi-rr-trash",
+                    danger: true,
+                  },
+                ]}
               />
             </AnimationWrapper>
           ))}
