@@ -45,6 +45,7 @@ const ConfirmDialog = ({
   message,
   confirmText = "Confirm",
   cancelText = "Cancel",
+  customContent = null,
 }) => {
   return (
     <div
@@ -64,6 +65,8 @@ const ConfirmDialog = ({
         >
           <h2 className="text-2xl font-medium mb-4">{title}</h2>
           <p className="text-dark-grey mb-6">{message}</p>
+
+          {customContent && <div className="mb-4">{customContent}</div>}
 
           <div className="flex justify-end gap-4">
             <button
