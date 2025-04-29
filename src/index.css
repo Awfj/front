@@ -71,6 +71,10 @@
     @apply text-magenta;
   }
 
+  .option-dark {
+    @apply interactivity-border whitespace-nowrap py-3 px-6 text-xl capitalize;
+  }
+
   .btn-dark {
     @apply interactivity-border whitespace-nowrap rounded-full py-3 px-6 text-xl capitalize;
   }

@@ -35,9 +35,7 @@ const DropdownMenu = ({ children, items }) => {
                   item.onClick();
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 ${
-                  item.danger ? "text-red-500" : "text-gray-700"
-                }`}
+                className={`option-dark w-full text-left px-4 py-2 text-sm flex items-center gap-2 border border-transparent transition-colors`}
               >
                 {item.icon && <i className={item.icon}></i>}
                 {item.label}
