@@ -11,61 +11,8 @@ import NoDataMessage from "../components/nodata.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
 
-import postImg from "../imgs/post.png";
-import avatarImg from "../imgs/avatar.jpg";
-
-// const blogs = {
-//   results: [
-//     {
-//       publishedAt: "2024-03-24",
-//       tags: ["programming", "tech", "web development"],
-//       title: "Getting Started with React Development",
-//       des: "A comprehensive guide to building modern web applications with React",
-//       banner: postImg,
-//       activity: { total_likes: 156 },
-//       blog_id: 1,
-//       author: {
-//         personal_info: {
-//           fullname: "John Smith",
-//           profile_img: avatarImg,
-//           username: "johnsmith",
-//         },
-//       },
-//     },
-//     {
-//       publishedAt: "2024-03-23",
-//       tags: ["tech", "artificial intelligence"],
-//       title: "The Future of AI in 2024",
-//       des: "Exploring the latest trends and developments in artificial intelligence",
-//       banner: postImg,
-//       activity: { total_likes: 243 },
-//       blog_id: 2,
-//       author: {
-//         personal_info: {
-//           fullname: "Sarah Johnson",
-//           profile_img: avatarImg,
-//           username: "sarahj",
-//         },
-//       },
-//     },
-//     {
-//       publishedAt: "2024-03-22",
-//       tags: ["travel", "photography"],
-//       title: "Hidden Gems of Southeast Asia",
-//       des: "Discovering unique places off the beaten path in Southeast Asia",
-//       banner: postImg,
-//       activity: { total_likes: 189 },
-//       blog_id: 3,
-//       author: {
-//         personal_info: {
-//           fullname: "Mike Chen",
-//           profile_img: avatarImg,
-//           username: "mikechen",
-//         },
-//       },
-//     },
-//   ],
-// };
+// import postImg from "../imgs/post.png";
+// import avatarImg from "../imgs/avatar.jpg";
 
 const Home = () => {
   let [blogs, setBlogs] = useState(null);
