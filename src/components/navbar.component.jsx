@@ -74,7 +74,7 @@ const Navbar = () => {
           <input
             type="text"
             placeholder="Search"
-            className="interactivity-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12"
+            className="interactivity-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
             onKeyDown={handleChange}
           />
 
@@ -99,7 +99,7 @@ const Navbar = () => {
 
           {/* THEME CHANGE */}
           <button
-            className="flex-center interactivity icon rounded-full"
+            className="flex-center interactivity icon"
             onClick={changeChage}
           >
             <i
@@ -115,13 +115,14 @@ const Navbar = () => {
           {access_token ? (
             <>
               {/* NOTIFICATIONS */}
-              <Link to="/dashboard/notifications">
-                <button className="flex-center rounded-full interactivity icon relative">
-                  <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
-                  {new_notification_available && (
-                    <span className="bg-red w-3 h-3 rounded-full  absolute z-10 top-2 right-2"></span>
-                  )}
-                </button>
+              <Link
+                to="/dashboard/notifications"
+                className="interactivity icon"
+              >
+                <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
+                {new_notification_available && (
+                  <span className="bg-red w-3 h-3 rounded-full  absolute z-10 top-2 right-2"></span>
+                )}
               </Link>
               <div
                 className="relative"
@@ -129,7 +130,7 @@ const Navbar = () => {
                 onBlur={handleBlur}
               >
                 {/* PROFILE */}
-                <button className="w-12 h-12 mt1">
+                <button className="w-12 h-12 mt1 border border-magenta rounded-full">
                   <img
                     src={profile_img}
                     alt="Profile"
