@@ -19,10 +19,6 @@
     @apply font-inter font-normal text-black bg-white;
   }
 
-  button {
-    @apply outline-none;
-  }
-
   i {
     /* @apply mt-0.5; */
   }
@@ -60,15 +56,15 @@
   }
 
   .interactivity {
-    @apply bg-white text-black focus:text-blue hover:text-purple focus:hover:text-purple active:text-blue hover:active:text-blue transition-all duration-200 ease-in-out;
+    @apply bg-white text-black hover:text-purple active:text-blue hover:active:text-blue transition-all duration-200 ease-in-out;
   }
 
   .interactivity-border {
-    @apply interactivity border-custom focus:border-blue hover:border-purple focus:hover:border-purple active:border-blue  hover:active:border-blue;
+    @apply interactivity border-custom hover:border-purple active:border-blue hover:active:border-blue;
   }
 
   .icon {
-    @apply text-magenta;
+    @apply text-magenta bg-transparent;
   }
 
   .option-dark {
@@ -79,12 +75,16 @@
     @apply interactivity-border whitespace-nowrap rounded-full py-3 px-6 text-xl capitalize;
   }
 
+  .btn-dark-no-cap {
+    @apply interactivity-border whitespace-nowrap rounded-full py-3 px-6 text-xl;
+  }
+
   .btn-light {
     @apply btn-dark;
   }
 
   .input-box {
-    @apply w-[100%] rounded-md p-4 bg-grey pl-12 border border-grey focus:bg-transparent placeholder:text-black;
+    @apply w-[100%] rounded-md p-4 bg-light-grey pl-12 border border-grey focus:bg-transparent placeholder:text-black;
   }
 
   input:disabled,
