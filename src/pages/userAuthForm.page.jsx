@@ -86,8 +86,8 @@ const UserAuthForm = ({ type }) => {
       <section className="h-cover flex items-center justify-center">
         <Toaster />
         <form id="formElement" className="w-[80%] max-w-[400px]">
-          <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
-            {type === "sign-in" ? "Welcome Back" : "Join us today"}
+          <h1 className="text-4xl font-gelasio capitalize text-center mb-12">
+            {type === "sign-in" ? "Welcome Back!" : "Start Your Journey"}
           </h1>
 
           {type !== "sign-in" ? (
@@ -114,39 +114,42 @@ const UserAuthForm = ({ type }) => {
           />
 
           <button
-            className="btn-dark center mt-14"
+            className="btn-dark center mt-12"
             type="submit"
             onClick={handleSubmit}
           >
             {type.replace("-", " ")}
           </button>
 
-          {/* <div className="relative w-full flex items-center gap-2 my-10 opacity-10 uppercase text-black font-bold">
-            <hr className="w-1/2 border-black" />
+          <div className="relative w-full flex items-center gap-2 my-10 uppercase text-black font-bold">
+            <hr className="w-1/2 border-grey" />
             <p>Or</p>
-            <hr className="w-1/2 border-black" />
-          </div> */}
+            <hr className="w-1/2 border-grey" />
+          </div>
 
-          {/* <button
+          <button
             onClick={handleGoogleAuth}
-            className="btn-dark flex items-center justify-center gap-4 w-[90%] center"
+            className="btn-dark-no-cap flex items-center justify-center gap-4 w-[90%] center"
           >
             <img src={googleIcon} alt="googleImg" className="w-4" />
-            Continue with google
-          </button> */}
+            Continue with Google
+          </button>
 
           {type === "sign-in" ? (
-            <p className="mt-6 text-dark-grey text-xl text-center">
-              Don't have and account ?
-              <Link to="/signup" className="underline text-black text-xl ml-1">
-                Join us Now
+            <p className="mt-6 text-black text-xl text-center">
+              Don't have an account?
+              <Link
+                to="/signup"
+                className="underline text-black ml-1 interactivity"
+              >
+                <em className="text-xl">Join us Now</em>
               </Link>
             </p>
           ) : (
             <p className="mt-6 text-dark-grey text-xl text-center">
-              Already a member ?
-              <Link to="/signin" className="underline text-black text-xl ml-1">
-                Sign in here
+              Already have an account?
+              <Link to="/signin" className="underline text-black ml-1 interactivity">
+                <em className="text-xl">Sign In here</em>
               </Link>
             </p>
           )}
