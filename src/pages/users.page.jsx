@@ -21,6 +21,12 @@ const Users = () => {
     userId: null,
   });
 
+  const [roleDialog, setRoleDialog] = useState({
+    isOpen: false,
+    userId: null,
+    currentRole: null,
+  });
+
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
@@ -65,6 +71,50 @@ const Users = () => {
     }
   };
 
+  // HANDLE ROLE CHANGE
+  const handleRoleChange = (userId, currentRole) => {
+    setRoleDialog({
+      isOpen: true,
+      userId,
+      currentRole,
+    });
+  };
+
+  const confirmRoleChange = (newRole) => {
+    const userId = roleDialog.userId;
+
+    axios
+      .post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/change-user-role`,
+        {
+          userId,
+          newRole,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then(({ data }) => {
+        setUsers((prev) => ({
+          ...prev,
+          results: prev.results.map((user) =>
+            user._id === userId ? { ...user, role: data.newRole } : user
+          ),
+        }));
+        toast.success("User role updated successfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response?.data?.error || "Error updating role");
+      })
+      .finally(() => {
+        setRoleDialog({ isOpen: false, userId: null, currentRole: null });
+      });
+  };
+
+  // HANDLE DELETE
   const handleDelete = (userId) => {
     setConfirmDialog({
       isOpen: true,
@@ -136,9 +186,12 @@ const Users = () => {
               <UserCard
                 user={user}
                 hasDropdownMenu={true}
-                btnHandler={handleDelete}
-                btnMessage="Delete"
                 options={[
+                  {
+                    label: "Change Role",
+                    onClick: () => handleRoleChange(user._id, user.role),
+                    icon: "fi fi-rr-user-gear",
+                  },
                   {
                     label: "Delete",
                     onClick: () => handleDelete(user._id),
@@ -155,6 +208,33 @@ const Users = () => {
         <NoDataMessage message="No users found" />
       )}
 
+      {/* Role change dialog */}
+      <ConfirmDialog
+        isOpen={roleDialog.isOpen}
+        onClose={() =>
+          setRoleDialog({ isOpen: false, userId: null, currentRole: null })
+        }
+        title="Change User Role"
+        message="Select new role for this user:"
+        customContent={
+          <div className="flex flex-col gap-2 mb-4">
+            {["author", "moderator"].map((role) => (
+              <button
+                key={role}
+                onClick={() => confirmRoleChange(role)}
+                className={`btn-light rounded-md capitalize py-2 ${
+                  roleDialog.currentRole === role ? "bg-purple/10" : ""
+                }`}
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+        }
+        confirmText="Cancel"
+      />
+
+      {/* Existing delete dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog({ isOpen: false, userId: null })}
