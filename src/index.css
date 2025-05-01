@@ -35,6 +35,10 @@
     @apply w-full h-full object-cover;
   }
 
+  select {
+    @apply cursor-pointer;
+  }
+
   .navbar {
     @apply z-10 sticky top-0 flex items-center gap-12 w-full px-[5vw] py-5 h-[80px] border-b border-grey bg-white;
   }
@@ -56,11 +60,11 @@
   }
 
   .interactivity {
-    @apply bg-white text-black hover:text-purple active:text-blue hover:active:text-blue transition-all duration-200 ease-in-out;
+    @apply bg-white text-black hover:text-purple active:text-black hover:active:text-black transition-all duration-200 ease-in-out;
   }
 
   .interactivity-border {
-    @apply interactivity border-custom hover:border-purple active:border-blue hover:active:border-blue;
+    @apply interactivity border-custom hover:border-purple active:border-black hover:active:border-black;
   }
 
   .icon {
@@ -118,12 +122,12 @@
 
   #textEditor h2,
   h2 {
-    @apply font-inter text-4xl leading-normal font-bold max-md:text-3xl max-md:leading-snug !important;
+    @apply font-inter text-4xl leading-normal font-bold max-md:text-3xl max-md:leading-snug ;
   }
 
   #textEditor h3,
   h3 {
-    @apply font-inter text-3xl leading-loose max-md:text-2xl max-md:leading-normal !important;
+    @apply font-inter text-3xl leading-loose max-md:text-2xl max-md:leading-normal;
   }
 
   #textEditor *,

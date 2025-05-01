@@ -17,15 +17,20 @@ import LoadMoreDataBtn from "../components/load-more.component";
 const Home = () => {
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
-  let [pageState, setPageState] = useState("home");
+  let [showFilters, setShowFilters] = useState(false);
+  let [pageState, setPageState] = useState("popular");
+
   let categories = [
-    "programming",
-    "hollywood",
-    "food",
-    "future",
-    "cooking",
-    "tech",
-    "travel",
+    "Programming", // (merges programming, web/mobile dev)
+    "Technology", // (general tech focus)
+    "Health", // (merges health/fitness)
+    "Food", // (merges food/cooking)
+    "Travel", // (merges travel, lifestyle)
+    "Business",
+    "Gaming", // (huge standalone niche)
+    "Science", // (merges science/space/environment)
+    "Entertainment", // (merges art, music, movies, books)
+    "Education",
   ];
 
   const fetchLatestBlogs = ({ page = 1 }) => {
@@ -84,15 +89,19 @@ const Home = () => {
     let category = e.target.innerText.toLowerCase();
     setBlogs(null);
     if (pageState === category) {
-      setPageState("home");
+      setPageState("popular");
       return;
     }
     setPageState(category);
   };
 
+  const toggleFilters = () => {
+    setShowFilters((prev) => !prev);
+  };
+
   useEffect(() => {
     activeTabRef.current.click();
-    if (pageState === "home") fetchLatestBlogs({ page: 1 });
+    if (pageState === "popular") fetchLatestBlogs({ page: 1 });
     else {
       fetchBlogByCategory({ page: 1 });
     }
@@ -105,12 +114,11 @@ const Home = () => {
         {/* latest blog */}
         <div className="w-full">
           <InPageNavigaion
-            routes={[pageState, "Popular"]}
+            routes={[pageState, "Following", "New"]}
             // defaultHidden={["trending blog"]}
           >
-            
             {/*  */}
-            <>  
+            <>
               {blogs === null ? (
                 <Loader />
               ) : !blogs.results.length ? (
@@ -133,7 +141,9 @@ const Home = () => {
               <LoadMoreDataBtn
                 state={blogs}
                 fetchDataFun={
-                  pageState === "home" ? fetchLatestBlogs : fetchBlogByCategory
+                  pageState === "popular"
+                    ? fetchLatestBlogs
+                    : fetchBlogByCategory
                 }
               />
             </>
@@ -159,10 +169,9 @@ const Home = () => {
         {/* filter and trending */}
         <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
           <div className="flex flex-col gap-10">
+            {/* POPULAR TOPICS */}
             <div>
-              <h1 className="font-medium text-xl mb-8">
-                Categories
-              </h1>
+              <h1 className="font-medium text-xl mb-8">Popular Topics</h1>
               <div className="flex gap-3 flex-wrap">
                 {categories.map((category, i) => {
                   return (
@@ -181,9 +190,94 @@ const Home = () => {
               </div>
             </div>
 
-            {/* <div>
+            {/* FILTER BLOGS */}
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between">
+                <h1 className="font-medium text-xl">Filter Blogs</h1>
+                <button
+                  onClick={toggleFilters}
+                  className="flex items-center gap-2 text-dark-grey hover:text-black transition-colors"
+                >
+                  <i
+                    className={`fi fi-rr-angle-${showFilters ? "up" : "down"}`}
+                  ></i>
+                  {showFilters ? "Hide Filters" : "Show Filters"}
+                </button>
+              </div>
+
+              <div
+                className={`flex flex-col gap-6 transition-all duration-300 ${
+                  showFilters
+                    ? "opacity-100 h-auto"
+                    : "opacity-0 h-0 overflow-hidden"
+                }`}
+              >
+                {/* Date Filter */}
+                <div className="flex flex-col gap-3 mt-4">
+                  <h2 className="text-base font-medium text-dark-grey">Date</h2>
+                  <select
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
+            appearance-none bg-no-repeat
+            bg-[right_0.75rem_center] 
+            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="last-week">Last Week</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="last-year">Last Year</option>
+                  </select>
+                </div>
+
+                {/* Reading Time Filter */}
+                <div className="flex flex-col gap-3">
+                  <h2 className="text-base font-medium text-dark-grey">
+                    Reading Time
+                  </h2>
+                  <select
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
+            appearance-none bg-no-repeat
+            bg-[right_0.75rem_center] 
+            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                  >
+                    <option value="any">Any Length</option>
+                    <option value="short">Short (0-5 min)</option>
+                    <option value="medium">Medium (5-15 min)</option>
+                    <option value="long">Long (15+ min)</option>
+                  </select>
+                </div>
+
+                {/* Topics Filter */}
+                <div className="flex flex-col gap-3">
+                  <h2 className="text-base font-medium text-dark-grey">
+                    Topics
+                  </h2>
+                  <select
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
+            appearance-none bg-no-repeat
+            bg-[right_0.75rem_center] 
+            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                  >
+                    <option value="all">All Topics</option>
+                    {categories.map((category, i) => (
+                      <option key={i} value={category.toLowerCase()}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Apply Filters Button */}
+                <button className="btn-dark w-full py-3 mt-4">
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+
+            {/* TRENDING AUTHORS */}
+            <div>
               <h1 className="text-xl font-medium mb-8">
-                Trending <i className="fi fi-rr-arrow-trend-up"></i>
+                Trending Authors <i className="fi fi-rr-arrow-trend-up"></i>
               </h1>
               {trendingBlogs === null ? (
                 <Loader />
@@ -201,7 +295,7 @@ const Home = () => {
               ) : (
                 <NoDataMessage message={"No blog Trending"} />
               )}
-            </div> */}
+            </div>
           </div>
         </div>
       </section>
