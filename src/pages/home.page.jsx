@@ -11,12 +11,15 @@ import NoDataMessage from "../components/nodata.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
 
+import { Link } from "react-router-dom";
+
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
 
 const Home = () => {
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
+  let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
 
@@ -46,6 +49,17 @@ const Home = () => {
         });
         // console.log(formateData)
         setBlogs(formateData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const fetchTrendingAuthors = () => {
+    axios
+      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors")
+      .then(({ data }) => {
+        setTrendingAuthors(data.authors);
       })
       .catch((err) => {
         console.log(err);
@@ -99,13 +113,24 @@ const Home = () => {
     setShowFilters((prev) => !prev);
   };
 
+  // useEffect(() => {
+  //   activeTabRef.current.click();
+  //   if (pageState === "popular") fetchLatestBlogs({ page: 1 });
+  //   else {
+  //     fetchBlogByCategory({ page: 1 });
+  //   }
+  //   if (!trendingAuthors) fetchTrendingAuthors();
+  // }, [pageState]);
+
   useEffect(() => {
     activeTabRef.current.click();
     if (pageState === "popular") fetchLatestBlogs({ page: 1 });
     else {
       fetchBlogByCategory({ page: 1 });
     }
+
     if (!trendingBlogs) fetchTrendingBlogs();
+    if (!trendingAuthors) fetchTrendingAuthors();
   }, [pageState]);
 
   return (
@@ -171,7 +196,7 @@ const Home = () => {
           <div className="flex flex-col gap-10">
             {/* POPULAR TOPICS */}
             <div>
-              <h1 className="font-medium text-xl mb-8">Popular Topics</h1>
+              <h1 className="font-medium text-xl mb-8">Popular Topics <i className="fi fi-rr-fire-flame-curved"></i></h1>
               <div className="flex gap-3 flex-wrap">
                 {categories.map((category, i) => {
                   return (
@@ -193,7 +218,9 @@ const Home = () => {
             {/* FILTER BLOGS */}
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
-                <h1 className="font-medium text-xl">Filter Blogs</h1>
+                <h1 className="font-medium text-xl">
+                  Filter Blogs <i className="fi fi-rr-filter"></i>
+                </h1>
                 <button
                   onClick={toggleFilters}
                   className="flex items-center gap-2 text-dark-grey hover:text-black transition-colors"
@@ -279,21 +306,67 @@ const Home = () => {
               <h1 className="text-xl font-medium mb-8">
                 Trending Authors <i className="fi fi-rr-arrow-trend-up"></i>
               </h1>
-              {trendingBlogs === null ? (
+              {trendingAuthors === null ? (
                 <Loader />
-              ) : trendingBlogs.length ? (
-                trendingBlogs.map((blog, i) => {
-                  return (
-                    <AnimationWrapper
-                      key={i}
-                      transition={{ duration: 1, delay: i * 0.1 }}
-                    >
-                      <MinimulBlogPost blog={blog} index={i} />
-                    </AnimationWrapper>
-                  );
-                })
+              ) : trendingAuthors.length ? (
+                trendingAuthors.map((author, i) => (
+                  <AnimationWrapper
+                    key={i}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                  >
+                    <div className="flex flex-col gap-3 mb-5 pb-5 border-b border-grey">
+                      <div className="flex items-center gap-5 justify-between">
+                        <Link
+                          to={`/user/${author.personal_info.username}`}
+                          className="flex items-center gap-5"
+                        >
+                          <img
+                            src={author.personal_info.profile_img}
+                            alt={author.personal_info.fullname}
+                            className="w-14 h-14 rounded-full"
+                          />
+                          <div>
+                            <h3 className="font-medium text-xl line-clamp-1">
+                              {author.personal_info.fullname}
+                            </h3>
+                            <p className="text-dark-grey">
+                              @{author.personal_info.username}
+                            </p>
+                          </div>
+                        </Link>
+
+                        <button className="btn-light py-2 px-4">Follow</button>
+                      </div>
+
+                      <div className="ml-[66px]">
+                        <div className="flex gap-4 text-dark-grey text-sm">
+                          <div className="flex items-center gap-2">
+                            <i className="fi fi-rr-book-open-reader"></i>
+                            <span>
+                              {author.account_info.total_reads.toLocaleString()}{" "}
+                              reads
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <i className="fi fi-rr-document"></i>
+                            <span>{author.account_info.total_posts} blogs</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <i className="fi fi-rr-user"></i>
+                            <span>
+                              {author.account_info.total_followers} followers
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-dark-grey line-clamp-2">
+                          {author.personal_info.bio || "No bio available"}
+                        </p>
+                      </div>
+                    </div>
+                  </AnimationWrapper>
+                ))
               ) : (
-                <NoDataMessage message={"No blog Trending"} />
+                <NoDataMessage message={"No trending authors"} />
               )}
             </div>
           </div>
