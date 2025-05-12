@@ -16,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 // provider.setCustomParameters({ prompt: "select_account" });
 
-const auth = getAuth(app);
+const auth = getAuth();
 
 export const authWithGoogle = async () => {
   let user = null;
