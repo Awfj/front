@@ -149,7 +149,7 @@ const BlogEditor = () => {
         </p>
         <div className="flex gap-4 ml-auto">
           <button className="btn-dark py-2 " onClick={handlePublishEvent}>
-            Publish
+            Continue
           </button>
           <button className="btn-light py-2" onClick={handleSaveDraft}>
             Save Draft
@@ -180,7 +180,7 @@ const BlogEditor = () => {
 
             <textarea
               defaultValue={title}
-              placeholder="Blog Title"
+              placeholder="Post Title"
               className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40 bg-white"
               onKeyDown={handleTitleKeyDown}
               onChange={handleTitleChange}
