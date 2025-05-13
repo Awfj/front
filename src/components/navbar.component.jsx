@@ -11,6 +11,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
   const [userNavPanel, setUserNavPanel] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   let { theme, setTheme } = useContext(ThemeContext);
   const {
@@ -26,11 +27,18 @@ const Navbar = () => {
       setUserNavPanel(false);
     }, 300);
   };
+
   const handleChange = (e) => {
-    let query = e.target.value.trim();
-    if (e.keyCode === 13 && query.length) {
+    const query = e.target.value;
+    setSearchValue(query);
+
+    if (e.keyCode === 13 && query.trim().length) {
       navigate(`/search/${query}`);
     }
+  };
+
+  const clearSearch = () => {
+    setSearchValue("");
   };
   // console.log(userAuth)
 
@@ -71,14 +79,27 @@ const Navbar = () => {
             (searchBoxVisibility ? "show" : "hide")
           }
         >
-          <input
-            type="text"
-            placeholder="Search"
-            className="search-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
-            onKeyDown={handleChange}
-          />
-
-          <i className="fi fi-rr-search flex-center absolute right-[8%] md:pointer-events-none top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleChange}
+              className="search-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
+            />
+            
+            {searchValue ? (
+              <button
+                onClick={clearSearch}
+                className="absolute right-[8%] top-1/2 -translate-y-1/2 text-dark-grey hover:text-black"
+              >
+                <i className="fi fi-br-cross text-sm"></i>
+              </button>
+            ) : (
+              <i className="fi fi-rr-search flex-center absolute right-[8%] md:pointer-events-none top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3 md:gap-6 ml-auto ">
