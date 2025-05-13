@@ -25,7 +25,6 @@ const BlogPostCard = ({ content, author }) => {
     if (userAuth.access_token) {
       // Use single endpoint to check both liked and bookmarked status
 
-      console.log(id, content);
       axios
         .post(
           import.meta.env.VITE_SERVER_DOMAIN + "/user-interactions",
@@ -37,10 +36,6 @@ const BlogPostCard = ({ content, author }) => {
           }
         )
         .then(({ data: { isLiked, isBookmarked } }) => {
-          console.log(
-            "Fetching user interactions",
-            import.meta.env.VITE_SERVER_DOMAIN
-          );
           setIsLiked(Boolean(isLiked));
           setIsBookmarked(Boolean(isBookmarked));
         })
