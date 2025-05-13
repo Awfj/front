@@ -74,7 +74,7 @@ const Navbar = () => {
           <input
             type="text"
             placeholder="Search"
-            className="interactivity-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
+            className="search-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
             onKeyDown={handleChange}
           />
 

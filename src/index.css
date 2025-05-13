@@ -59,6 +59,10 @@
     @apply border border-magenta;
   }
 
+  .search-border {
+    @apply border-custom hover:border-purple active:border-black hover:active:border-black;
+  }
+
   .interactivity {
     @apply bg-white text-black hover:text-purple active:text-black hover:active:text-black transition-all duration-200 ease-in-out;
   }
