@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getDay } from "../common/date";
 import { Link } from "react-router-dom";
+import { UserContext } from "../App";
+import axios from "axios";
 
 const BlogPostCard = ({ content, author }) => {
   // const [isGrid, setIsGrid] = React.useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { userAuth } = useContext(UserContext);
 
   let {
     publishedAt,
@@ -15,6 +20,34 @@ const BlogPostCard = ({ content, author }) => {
     blog_id: id,
   } = content;
   let { fullname, profile_img, username } = author;
+
+  useEffect(() => {
+    if (userAuth.access_token) {
+      // Use single endpoint to check both liked and bookmarked status
+
+      console.log(id, content);
+      axios
+        .post(
+          import.meta.env.VITE_SERVER_DOMAIN + "/user-interactions",
+          { _id: content._id },
+          {
+            headers: {
+              Authorization: `Bearer ${userAuth.access_token}`,
+            },
+          }
+        )
+        .then(({ data: { isLiked, isBookmarked } }) => {
+          console.log(
+            "Fetching user interactions",
+            import.meta.env.VITE_SERVER_DOMAIN
+          );
+          setIsLiked(Boolean(isLiked));
+          setIsBookmarked(Boolean(isBookmarked));
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [userAuth.access_token, id]);
+
   return (
     <Link
       to={`/blog/${id}`}
@@ -52,7 +85,11 @@ const BlogPostCard = ({ content, author }) => {
       <div className="flex items-center gap-4">
         <span className="btn-light py-1 px-4">{tags[0]}</span>
         <span className="flex items-center gap-2 text-dark-grey">
-          <i className="flex-center fi fi-rr-heart text-xl icon"></i>
+          <i
+            className={`fi fi-${isLiked ? "sr" : "rr"}-heart text-xl icon ${
+              isLiked ? "text-red" : ""
+            }`}
+          ></i>
           {total_likes}
         </span>
         <span className="flex items-center gap-2 text-dark-grey">
@@ -62,7 +99,11 @@ const BlogPostCard = ({ content, author }) => {
 
         {/* Bookmarked Icon */}
         <span className="flex items-center gap-2 text-dark-grey">
-          <i className={`flex-center fi fi-rs-bookmark text-xl icon`}></i>
+          <i
+            className={`fi fi-${
+              isBookmarked ? "sr" : "rr"
+            }-bookmark text-xl icon ${isBookmarked ? "text-purple" : ""}`}
+          ></i>
         </span>
       </div>
     </Link>
