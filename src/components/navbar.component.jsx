@@ -115,14 +115,13 @@ const Navbar = () => {
           {access_token ? (
             <>
               {/* NOTIFICATIONS */}
-              <Link
-                to="/dashboard/notifications"
-                className="interactivity icon"
-              >
-                <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
-                {new_notification_available && (
-                  <span className="bg-red w-3 h-3 rounded-full  absolute z-10 top-2 right-2"></span>
-                )}
+              <Link to="/dashboard/notifications" className="relative">
+                <div className="interactivity icon">
+                  <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
+                  {new_notification_available && (
+                    <span className="notification-indicator absolute -top-1 -right-1 w-3 h-3 bg-red rounded-full"></span>
+                  )}
+                </div>
               </Link>
               <div
                 className="relative"
