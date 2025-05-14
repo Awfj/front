@@ -12,7 +12,10 @@ import { tools } from "./tools.component";
 import { uploadImage } from "../common/cloudinary";
 import axios from "axios";
 import { ThemeContext, UserContext } from "../App";
+
 const BlogEditor = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
   const navigate = useNavigate();
   let { blog_id } = useParams();
   let {
@@ -47,7 +50,7 @@ const BlogEditor = () => {
       uploadImage(e.target.files[0])
         .then((url) => {
           toast.dismiss(ladingTast);
-          toast.success("Uploaded Successfully");
+          toast.success("Uploaded successfully");
           setBlog({ ...blog, banner: url });
         })
         .catch((err) => {
@@ -72,9 +75,9 @@ const BlogEditor = () => {
   };
   const handlePublishEvent = () => {
     if (!banner.length) {
-      return toast.error("Upload a blog banner to publish it");
+      return toast.error("Upload a post banner to publish it");
     }
-    if (!title.length) return toast.error("Write blog title to publis it");
+    if (!title.length) return toast.error("Write the post title to publish it");
     if (textEditor.isReady) {
       textEditor
         .save()
@@ -83,7 +86,7 @@ const BlogEditor = () => {
             setBlog({ ...blog, content: data });
             setEditorState("publish");
           } else {
-            return toast.error("Write Something in your blog to publish it");
+            return toast.error("Write something in your blog to publish it");
           }
         })
         .catch((err) => {
@@ -91,16 +94,19 @@ const BlogEditor = () => {
         });
     }
   };
+
   const handleSaveDraft = (e) => {
-    if (e.target.className.includes("disable")) {
+    if (isSaving) {
       return;
     }
+
     if (!title.length) {
-      return toast.error("Write Blog Title before saving it as draft");
+      return toast.error("Write the post title before saving it as draft");
     }
 
-    let loadingToast = toast.loading("Saving Draft...");
-    e.target.classList.add("disable");
+    setIsSaving(true);
+    let loadingToast = toast.loading("Saving as a draft...");
+
     if (textEditor.isReady) {
       textEditor.save().then((content) => {
         let blogObj = {
@@ -122,7 +128,6 @@ const BlogEditor = () => {
             }
           )
           .then(() => {
-            e.target.classList.remove("disable");
             toast.dismiss(loadingToast);
             toast.success("Saved successfully");
             setTimeout(() => {
@@ -130,9 +135,11 @@ const BlogEditor = () => {
             }, 5000);
           })
           .catch(({ response }) => {
-            e.target.classList.remove("disable");
             toast.dismiss(loadingToast);
             return toast.error(response.data.error);
+          })
+          .finally(() => {
+            setIsSaving(false);
           });
       });
     }
@@ -144,19 +151,30 @@ const BlogEditor = () => {
         <Link to={"/"} className="flex-none w-10">
           <img src={logo} alt="Logo" />
         </Link>
-        <p className="max-md:hidden text-black line-clamp-1 w-full">
-          {title.length ? title : "New Blog"}
-        </p>
+
+        <p className="max-md:hidden text-black line-clamp-1 w-full">New Post</p>
+
         <div className="flex gap-4 ml-auto">
-          <button className="btn-dark py-2 " onClick={handlePublishEvent}>
+          <button 
+            className={`btn-dark py-2 ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={handlePublishEvent}
+            disabled={isSaving}
+          >
             Continue
           </button>
-          <button className="btn-light py-2" onClick={handleSaveDraft}>
-            Save Draft
+
+          <button 
+            className={`btn-light py-2 ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={handleSaveDraft}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Save Draft"}
           </button>
         </div>
       </nav>
+
       <Toaster />
+
       <AnimationWrapper>
         <section>
           <div className="mx-auto max-w-[900px] w-full">
