@@ -15,6 +15,7 @@ import { ThemeContext, UserContext } from "../App";
 
 const BlogEditor = () => {
   const [isSaving, setIsSaving] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const navigate = useNavigate();
   let { blog_id } = useParams();
@@ -96,7 +97,7 @@ const BlogEditor = () => {
   };
 
   const handleSaveDraft = (e) => {
-    if (isSaving) {
+    if (isSaving || isRedirecting) {
       return;
     }
 
@@ -130,6 +131,7 @@ const BlogEditor = () => {
           .then(() => {
             toast.dismiss(loadingToast);
             toast.success("Saved successfully");
+            setIsRedirecting(true); // Set redirecting state before navigation
             setTimeout(() => {
               navigate("/dashboard/blogs?tab=draft");
             }, 5000);
@@ -155,20 +157,28 @@ const BlogEditor = () => {
         <p className="max-md:hidden text-black line-clamp-1 w-full">New Post</p>
 
         <div className="flex gap-4 ml-auto">
-          <button 
-            className={`btn-dark py-2 ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+          <button
+            className={`btn-dark py-2 ${
+              isSaving || isRedirecting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={handlePublishEvent}
-            disabled={isSaving}
+            disabled={isSaving || isRedirecting}
           >
             Continue
           </button>
 
-          <button 
-            className={`btn-light py-2 ${isSaving ? "opacity-50 cursor-not-allowed" : ""}`}
+          <button
+            className={`btn-light py-2 ${
+              isSaving || isRedirecting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={handleSaveDraft}
-            disabled={isSaving}
+            disabled={isSaving || isRedirecting}
           >
-            {isSaving ? "Saving..." : "Save Draft"}
+            {isSaving
+              ? "Saving..."
+              : isRedirecting
+              ? "Redirecting..."
+              : "Save Draft"}
           </button>
         </div>
       </nav>
