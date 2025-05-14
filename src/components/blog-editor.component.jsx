@@ -101,11 +101,11 @@ const BlogEditor = () => {
     }
 
     if (!title.length) {
-      return toast.error("Write the post title before saving it as draft");
+      return toast.error("Write the post title before saving the draft");
     }
 
     setIsSaving(true);
-    let loadingToast = toast.loading("Saving as a draft...");
+    let loadingToast = toast.loading("Saving the draft...");
 
     if (textEditor.isReady) {
       textEditor.save().then((content) => {
