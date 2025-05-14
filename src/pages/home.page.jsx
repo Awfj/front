@@ -126,7 +126,7 @@ const Home = () => {
   }
 
   if (!trendingBlogs) fetchTrendingBlogs();
-  if (!trendingAuthors && userAuth?.username) fetchTrendingAuthors();
+  if (!trendingAuthors) fetchTrendingAuthors();
 }, [pageState, userAuth]);
 
   return (
