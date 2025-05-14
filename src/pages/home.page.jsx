@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import AnimationWrapper from "../common/page-animation";
 import InPageNavigaion, {
   activeTabRef,
@@ -10,7 +10,7 @@ import MinimulBlogPost from "../components/nobanner-blog-post.component";
 import NoDataMessage from "../components/nodata.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
-
+import { UserContext } from "../App";
 import { Link } from "react-router-dom";
 
 // import postImg from "../imgs/post.png";
@@ -22,7 +22,8 @@ const Home = () => {
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
-
+  const { userAuth } = useContext(UserContext);
+  console.log(userAuth)
   let categories = [
     "Programming", // (merges programming, web/mobile dev)
     "Technology", // (general tech focus)
@@ -56,15 +57,19 @@ const Home = () => {
   };
 
   const fetchTrendingAuthors = () => {
-    axios
-      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors")
-      .then(({ data }) => {
-        setTrendingAuthors(data.authors);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  axios
+    .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
+      params: {
+        username: userAuth?.username || null
+      }
+    })
+    .then(({ data }) => {
+      setTrendingAuthors(data.authors);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
   const fetchTrendingBlogs = () => {
     axios
@@ -113,25 +118,16 @@ const Home = () => {
     setShowFilters((prev) => !prev);
   };
 
-  // useEffect(() => {
-  //   activeTabRef.current.click();
-  //   if (pageState === "popular") fetchLatestBlogs({ page: 1 });
-  //   else {
-  //     fetchBlogByCategory({ page: 1 });
-  //   }
-  //   if (!trendingAuthors) fetchTrendingAuthors();
-  // }, [pageState]);
-
   useEffect(() => {
-    activeTabRef.current.click();
-    if (pageState === "popular") fetchLatestBlogs({ page: 1 });
-    else {
-      fetchBlogByCategory({ page: 1 });
-    }
+  activeTabRef.current.click();
+  if (pageState === "popular") fetchLatestBlogs({ page: 1 });
+  else {
+    fetchBlogByCategory({ page: 1 });
+  }
 
-    if (!trendingBlogs) fetchTrendingBlogs();
-    if (!trendingAuthors) fetchTrendingAuthors();
-  }, [pageState]);
+  if (!trendingBlogs) fetchTrendingBlogs();
+  if (!trendingAuthors && userAuth?.username) fetchTrendingAuthors();
+}, [pageState, userAuth]);
 
   return (
     <AnimationWrapper>
