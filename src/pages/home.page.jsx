@@ -17,13 +17,14 @@ import { Link } from "react-router-dom";
 // import avatarImg from "../imgs/avatar.jpg";
 
 const Home = () => {
+  const [followingAuthors, setFollowingAuthors] = useState(new Set());
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
   const { userAuth } = useContext(UserContext);
-  console.log(userAuth)
+
   let categories = [
     "Programming", // (merges programming, web/mobile dev)
     "Technology", // (general tech focus)
@@ -36,6 +37,51 @@ const Home = () => {
     "Entertainment", // (merges art, music, movies, books)
     "Education",
   ];
+
+  const handleFollow = async (e, authorId) => {
+    e.preventDefault(); // Prevent navigation
+
+    if (!userAuth.access_token) {
+      return toast.error("Please login to follow authors");
+    }
+
+    const isFollowing = followingAuthors.has(authorId);
+    const endpoint = isFollowing ? "/unfollow-user" : "/follow-user";
+
+    try {
+      setFollowingAuthors((prev) => {
+        const newSet = new Set(prev);
+        if (isFollowing) {
+          newSet.delete(authorId);
+        } else {
+          newSet.add(authorId);
+        }
+        return newSet;
+      });
+
+      await axios.post(
+        import.meta.env.VITE_SERVER_DOMAIN + endpoint,
+        { targetUserId: authorId },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+    } catch (err) {
+      // Revert on error
+      setFollowingAuthors((prev) => {
+        const newSet = new Set(prev);
+        if (isFollowing) {
+          newSet.add(authorId);
+        } else {
+          newSet.delete(authorId);
+        }
+        return newSet;
+      });
+      toast.error("Error updating follow status");
+    }
+  };
 
   const fetchLatestBlogs = ({ page = 1 }) => {
     axios
@@ -57,19 +103,19 @@ const Home = () => {
   };
 
   const fetchTrendingAuthors = () => {
-  axios
-    .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
-      params: {
-        username: userAuth?.username || null
-      }
-    })
-    .then(({ data }) => {
-      setTrendingAuthors(data.authors);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+    axios
+      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
+        params: {
+          username: userAuth?.username || null,
+        },
+      })
+      .then(({ data }) => {
+        setTrendingAuthors(data.authors);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const fetchTrendingBlogs = () => {
     axios
@@ -119,15 +165,38 @@ const Home = () => {
   };
 
   useEffect(() => {
-  activeTabRef.current.click();
-  if (pageState === "popular") fetchLatestBlogs({ page: 1 });
-  else {
-    fetchBlogByCategory({ page: 1 });
-  }
+    activeTabRef.current.click();
+    if (pageState === "popular") fetchLatestBlogs({ page: 1 });
+    else {
+      fetchBlogByCategory({ page: 1 });
+    }
 
-  if (!trendingBlogs) fetchTrendingBlogs();
-  if (!trendingAuthors) fetchTrendingAuthors();
-}, [pageState, userAuth]);
+    if (!trendingBlogs) fetchTrendingBlogs();
+    if (!trendingAuthors) fetchTrendingAuthors();
+  }, [pageState, userAuth]);
+
+  useEffect(() => {
+    if (userAuth.access_token && trendingAuthors?.length) {
+      // Check following status for each author
+      trendingAuthors.forEach((author) => {
+        axios
+          .post(
+            import.meta.env.VITE_SERVER_DOMAIN + "/is-following-user",
+            { targetUserId: author._id },
+            {
+              headers: {
+                Authorization: `Bearer ${userAuth.access_token}`,
+              },
+            }
+          )
+          .then(({ data: { isFollowing } }) => {
+            if (isFollowing) {
+              setFollowingAuthors((prev) => new Set(prev).add(author._id));
+            }
+          });
+      });
+    }
+  }, [userAuth.access_token, trendingAuthors]);
 
   return (
     <AnimationWrapper>
@@ -192,7 +261,9 @@ const Home = () => {
           <div className="flex flex-col gap-10">
             {/* POPULAR TOPICS */}
             <div>
-              <h1 className="font-medium text-xl mb-8">Popular Topics <i className="fi fi-rr-fire-flame-curved"></i></h1>
+              <h1 className="font-medium text-xl mb-8">
+                Popular Topics <i className="fi fi-rr-fire-flame-curved"></i>
+              </h1>
               <div className="flex gap-3 flex-wrap">
                 {categories.map((category, i) => {
                   return (
@@ -331,7 +402,18 @@ const Home = () => {
                           </div>
                         </Link>
 
-                        <button className="btn-light py-2 px-4">Follow</button>
+                        <button
+                          onClick={(e) => handleFollow(e, author._id)}
+                          className={`btn-light py-2 px-4 ${
+                            followingAuthors.has(author._id)
+                              ? "text-purple border-purple"
+                              : ""
+                          }`}
+                        >
+                          {followingAuthors.has(author._id)
+                            ? "Following"
+                            : "Follow"}
+                        </button>
                       </div>
 
                       <div className="ml-[66px]">
