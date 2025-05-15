@@ -16,7 +16,14 @@ const blogStructure = {
   author: { personal_info: {} },
 };
 
-export const EditorContext = createContext({});
+export const EditorContext = createContext({
+  blog: blogStructure, // Add default value
+  setBlog: () => {},
+  editorState: "editor",
+  setEditorState: () => {},
+  textEditor: { isReady: false },
+  setTextEditor: () => {},
+});
 
 const Editor = () => {
   let { blog_id } = useParams();
