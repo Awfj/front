@@ -119,17 +119,17 @@ const PublishForm = () => {
           </p>
         </div>
         <div className="border-grey lg:border-1 lg:pl-4">
-          <p className="text-dark-grey mb-2 mt-9">Blog Title</p>
+          <p className="text-dark-grey mb-2 mt-9">Post Title</p>
           <input
             type="text"
-            placeholder="Blog Title"
+            placeholder="Post Title"
             defaultValue={title}
             className="input-box pl-4"
             onChange={handleBlogTitleChange}
           />
 
           <p className="text-dark-grey mb-2 mt-9">
-            Short description about your blog
+            Short description about your post
           </p>
           <textarea
             maxLength={charLength}
@@ -145,7 +145,7 @@ const PublishForm = () => {
           </p>
 
           <p className="text-dark-grey mb-2 mt-9">
-            Topics - ( Helps in searching and ranking your blog post )
+            Tags
           </p>
           <div className="relative input-box pl-2 py-2 pb-4">
             <input
@@ -160,7 +160,7 @@ const PublishForm = () => {
               })}
           </div>
           <p className="mt-1 pt-1 mb-4 text-dark-grey text-right ">
-            {tagLimit - tags.length} Tags left
+            {tagLimit - tags.length} tags left
           </p>
           <button onClick={handlePublish} className="btn-dark px-8 ">
             Publish
