@@ -16,6 +16,22 @@ import { Link } from "react-router-dom";
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
 
+const organizeCategories = (categories) => {
+  const organized = {};
+  let currentMainCategory = "";
+
+  categories.forEach((category) => {
+    if (category === category.toUpperCase()) {
+      currentMainCategory = category;
+      organized[currentMainCategory] = [];
+    } else if (currentMainCategory) {
+      organized[currentMainCategory].push(category);
+    }
+  });
+
+  return organized;
+};
+
 const Home = () => {
   const [followingAuthors, setFollowingAuthors] = useState(new Set());
   let [blogs, setBlogs] = useState(null);
@@ -26,17 +42,78 @@ const Home = () => {
   const { userAuth } = useContext(UserContext);
 
   let categories = [
-    "Programming", // (merges programming, web/mobile dev)
-    "Technology", // (general tech focus)
-    "Health", // (merges health/fitness)
-    "Food", // (merges food/cooking)
-    "Travel", // (merges travel, lifestyle)
+    "LIFE",
+    "Family",
+    "Health",
+    "Relationships",
+    "Sexuality",
+    "Home",
+    "Food",
+    "Pets",
+    "SELF IMPROVEMENT",
+    "Mental Health",
+    "Productivity",
+    "Mindfulness",
+    "WORK",
     "Business",
-    "Gaming", // (huge standalone niche)
-    "Science", // (merges science/space/environment)
-    "Entertainment", // (merges art, music, movies, books)
+    "Marketing",
+    "Leadership",
+    "Remote Work",
+    "TECHNOLOGY",
+    "Artificial Intelligence",
+    "Blockchain",
+    "Data Science",
+    "Gadgets",
+    "Makers",
+    "Security",
+    "Tech Companies",
+    "Design",
+    "Product Management",
+    "SOFTWARE DEVELOPMENT",
+    "Programming",
+    "Programming Languages",
+    "Dev Ops",
+    "Operating Systems",
+    "MEDIA",
+    "Writing",
+    "Art",
+    "Gaming",
+    "Humor",
+    "Movies",
+    "Music",
+    "News",
+    "Photography",
+    "Podcasts",
+    "Television",
+    "SOCIETY",
+    "Economics",
     "Education",
+    "Equality",
+    "Finance",
+    "Law",
+    "Transportation",
+    "Politics",
+    "Race",
+    "Science",
+    "Mathematics",
+    "Drugs",
+    "CULTURE",
+    "Philosophy",
+    "Religion",
+    "Spirituality",
+    "Cultural Studies",
+    "Fashion",
+    "Beauty",
+    "Language",
+    "Sports",
+    "WORLD",
+    "Cities",
+    "Nature",
+    "Travel",
   ];
+
+  const organizedCategories = organizeCategories(categories);
+  console.log(organizedCategories);
 
   const handleFollow = async (e, authorId) => {
     e.preventDefault(); // Prevent navigation
@@ -348,16 +425,22 @@ const Home = () => {
                   </h2>
                   <select
                     className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
-            appearance-none bg-no-repeat
-            bg-[right_0.75rem_center] 
-            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+        appearance-none bg-no-repeat
+        bg-[right_0.75rem_center] 
+        bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="all">All Topics</option>
-                    {categories.map((category, i) => (
-                      <option key={i} value={category.toLowerCase()}>
-                        {category}
-                      </option>
-                    ))}
+                    {Object.entries(organizedCategories).map(
+                      ([mainCategory, subCategories]) => (
+                        <optgroup key={mainCategory} label={mainCategory}>
+                          {subCategories.map((subCategory, i) => (
+                            <option key={i} value={subCategory.toLowerCase()}>
+                              {subCategory}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )
+                    )}
                   </select>
                 </div>
 
