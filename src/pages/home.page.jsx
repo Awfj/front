@@ -39,6 +39,7 @@ const Home = () => {
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
+  const [popularCategories, setPopularCategories] = useState([]);
   const { userAuth } = useContext(UserContext);
 
   let categories = [
@@ -113,7 +114,21 @@ const Home = () => {
   ];
 
   const organizedCategories = organizeCategories(categories);
-  console.log(organizedCategories);
+
+  const fetchPopularCategories = () => {
+    axios
+      .get(import.meta.env.VITE_SERVER_DOMAIN + "/popular-categories")
+      .then(({ data }) => {
+        // Map the categories to match existing format
+        const categories = data.categories.map((cat) => ({
+          name: cat._id,
+          count: cat.count,
+          total_reads: cat.total_reads,
+        }));
+        setPopularCategories(categories);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const handleFollow = async (e, authorId) => {
     e.preventDefault(); // Prevent navigation
@@ -242,6 +257,10 @@ const Home = () => {
   };
 
   useEffect(() => {
+    fetchPopularCategories();
+  }, []);
+
+  useEffect(() => {
     activeTabRef.current.click();
     if (pageState === "popular") fetchLatestBlogs({ page: 1 });
     else {
@@ -342,20 +361,20 @@ const Home = () => {
                 Popular Topics <i className="fi fi-rr-fire-flame-curved"></i>
               </h1>
               <div className="flex gap-3 flex-wrap">
-                {categories.map((category, i) => {
-                  return (
-                    <button
-                      onClick={loadBlogbyCategory}
-                      key={i}
-                      className={
-                        "tag " +
-                        (pageState === category ? "bg-black text-white" : "")
-                      }
-                    >
-                      {category}
-                    </button>
-                  );
-                })}
+                {popularCategories.map((category, i) => (
+                  <button
+                    onClick={loadBlogbyCategory}
+                    key={i}
+                    className={
+                      "tag flex flex-col items-center " +
+                      (pageState === category.name.toLowerCase()
+                        ? "bg-black text-white"
+                        : "")
+                    }
+                  >
+                    <span>{category.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
