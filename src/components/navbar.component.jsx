@@ -125,7 +125,7 @@ const Navbar = () => {
           >
             <i
               className={
-                "flex-center p-1 fi fi-tr-" +
+                "interactivity icon flex-center p-1 fi fi-tr-" +
                 (theme == "light" ? "moon-stars" : "brightness") +
                 " text-3xl"
               }

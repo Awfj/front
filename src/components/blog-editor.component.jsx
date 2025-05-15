@@ -76,7 +76,7 @@ const BlogEditor = () => {
   };
   const handlePublishEvent = () => {
     if (!banner.length) {
-      return toast.error("Upload a post banner to publish it");
+      return toast.error("Upload the post banner to publish it");
     }
     if (!title.length) return toast.error("Write the post title to publish it");
     if (textEditor.isReady) {

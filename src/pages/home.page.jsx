@@ -336,7 +336,8 @@ const Home = () => {
             {/* POPULAR CATEGORIES */}
             <div>
               <h1 className="font-medium text-xl mb-8">
-                Popular Categories <i className="fi fi-rr-fire-flame-curved"></i>
+                Popular Categories{" "}
+                <i className="fi fi-rr-fire-flame-curved"></i>
               </h1>
               <div className="flex gap-3 flex-wrap">
                 {popularCategories.map((category, i) => (
@@ -344,13 +345,13 @@ const Home = () => {
                     onClick={loadBlogbyCategory}
                     key={i}
                     className={
-                      "tag flex flex-col items-center " +
+                      "btn-light flex flex-col items-center " +
                       (pageState === category.name.toLowerCase()
-                        ? "bg-black text-white"
+                        ? "text-purple border-purple"
                         : "")
                     }
                   >
-                    <span>{category.name}</span>
+                    {category.name}
                   </button>
                 ))}
               </div>

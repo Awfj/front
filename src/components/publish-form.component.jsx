@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import AnimationWrapper from "../common/page-animation";
 import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "../pages/editor.pages";
@@ -14,6 +14,8 @@ const PublishForm = () => {
   const tagLimit = 10;
   const navigate = useNavigate();
   const { blog_id } = useParams();
+  const maxTagLength = 20; // Maximum length for a single tag
+  const [tagInput, setTagInput] = useState(""); // Add state for tag input
   let {
     blog: { banner, title, tags, des, content },
     setEditorState,
@@ -47,6 +49,36 @@ const PublishForm = () => {
         toast.error(`You can add max ${tagLimit} tags`);
       }
       e.target.value = "";
+    }
+  };
+
+  const handleTagInput = (e) => {
+    const value = e.target.value;
+    if (value.length <= maxTagLength) {
+      setTagInput(value);
+    }
+  };
+
+  const addTag = () => {
+    const tag = tagInput.trim();
+    if (tag.length) {
+      if (tags.length < tagLimit) {
+        if (!tags.includes(tag)) {
+          setBlog({ ...blog, tags: [...tags, tag] });
+          setTagInput(""); // Clear input after adding
+        } else {
+          toast.error("This tag already exists");
+        }
+      } else {
+        toast.error(`You can add max ${tagLimit} tags`);
+      }
+    }
+  };
+
+  const handleTagKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
     }
   };
 
@@ -112,10 +144,10 @@ const PublishForm = () => {
       <section className="w-screen min-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-4">
         <Toaster />
         <button
-          className="w-12 h-12 absolute right-[5vw] z-10 top-[5%] lg:top-[10%]"
+          className="absolute right-[5vw] z-10 top-[5%] lg:top-[10%] interactivity icon text-black"
           onClick={handleClose}
         >
-          <i className="fi fi-br-cross"></i>
+          <i className="fi fi-br-cross interactivity icon text-black"></i>
         </button>
         <div className="max-w-[500px] center ">
           <p className="text-dark-grey mb-1">Preview</p>
@@ -130,7 +162,7 @@ const PublishForm = () => {
           </p>
         </div>
 
-        <div className="border-grey lg:border-1 lg:pl-4">
+        <div className="border-grey lg:border-1 lg:pl-4 flex flex-col">
           {/* TITLE */}
           <p className="text-dark-grey mb-2 mt-9">Post Title</p>
           <input
@@ -154,13 +186,13 @@ const PublishForm = () => {
               if (e.keyCode === 13) e.preventDefault();
             }}
           ></textarea>
-          <p className="mt-1 text-dark-grey text-sm text-right">
+          <p className="mt-1 text-dark-grey text-right">
             {charLength - des.length} characters left
           </p>
 
           {/* CATEGORY */}
-          <p className="text-dark-grey mb-2 mt-9">Category</p>
-          <select 
+          <p className="text-dark-grey mb-2 mt-6">Category</p>
+          <select
             className="w-full p-3 pr-8 rounded-md bg-light-grey border border-grey 
               appearance-none bg-no-repeat bg-[right_0.75rem_center] 
               bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
@@ -180,26 +212,47 @@ const PublishForm = () => {
           </select>
 
           {/* TAGS */}
-          <p className="text-dark-grey mb-2 mt-9">
-            Tags
-          </p>
-          <div className="relative input-box pl-2 py-2 pb-4">
-            <input
-              type="text"
-              placeholder="Topics"
-              onKeyDown={handleKeyDown}
-              className="sticky input-box bg-white top-0 lef0 pl-4 mb-3 focus:bg-white"
-            />
-            {tags &&
-              tags.map((tag, i) => {
-                return <Tag key={i} tagIndex={i} tag={tag} />;
-              })}
-          </div>
-          <p className="mt-1 pt-1 mb-4 text-dark-grey text-right ">
-            {tagLimit - tags.length} tags left
-          </p>
+          <p className="text-dark-grey mb-2 mt-9">Tags</p>
 
-          <button onClick={handlePublish} className="btn-dark px-8 ">
+          <div className="relative input-box pl-2 py-2 pb-4">
+            <div className="mb-3">
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  placeholder="Add a tag"
+                  value={tagInput}
+                  onChange={handleTagInput}
+                  onKeyDown={handleTagKeyDown}
+                  className="input-box bg-white pl-4 focus:bg-white flex-1"
+                  maxLength={maxTagLength}
+                />
+
+                <button
+                  className="flex flex-center interactivity icon text-black"
+                  onClick={addTag}
+                  type="button"
+                >
+                  <i className={"flex-center p-1 fi fi-br-plus text-3xl interactivity icon text-black"}></i>
+                </button>
+              </div>
+              <span className="ml-1">
+                {maxTagLength - tagInput.length} characters left
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {tags &&
+                tags.map((tag, i) => <Tag key={i} tagIndex={i} tag={tag} />)}
+            </div>
+          </div>
+          <div className="flex justify-end mt-1 text-dark-grey text-sm">
+            <span>{tagLimit - tags.length} tags left</span>
+          </div>
+
+          <button
+            onClick={handlePublish}
+            className="btn-dark px-8 mt-9 self-end"
+          >
             Publish
           </button>
         </div>
