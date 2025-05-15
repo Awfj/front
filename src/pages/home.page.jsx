@@ -333,10 +333,10 @@ const Home = () => {
         {/* filter and trending */}
         <div className="min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden">
           <div className="flex flex-col gap-10">
-            {/* POPULAR TOPICS */}
+            {/* POPULAR CATEGORIES */}
             <div>
               <h1 className="font-medium text-xl mb-8">
-                Popular Topics <i className="fi fi-rr-fire-flame-curved"></i>
+                Popular Categories <i className="fi fi-rr-fire-flame-curved"></i>
               </h1>
               <div className="flex gap-3 flex-wrap">
                 {popularCategories.map((category, i) => (
@@ -356,11 +356,11 @@ const Home = () => {
               </div>
             </div>
 
-            {/* FILTER BLOGS */}
+            {/* FILTER POSTS */}
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
                 <h1 className="font-medium text-xl">
-                  Filter Blogs <i className="fi fi-rr-filter"></i>
+                  Filter Posts<i className="fi fi-rr-filter"></i>
                 </h1>
                 <button
                   onClick={toggleFilters}
@@ -415,10 +415,10 @@ const Home = () => {
                   </select>
                 </div>
 
-                {/* Topics Filter */}
+                {/* Categories Filter */}
                 <div className="flex flex-col gap-3">
                   <h2 className="text-base font-medium text-dark-grey">
-                    Topics
+                    Categories
                   </h2>
                   <select
                     className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
@@ -426,7 +426,7 @@ const Home = () => {
         bg-[right_0.75rem_center] 
         bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
-                    <option value="all">All Topics</option>
+                    <option value="all">All Categories</option>
                     {Object.entries(CATEGORIES).map(
                       ([mainCategory, subCategories]) => (
                         <optgroup key={mainCategory} label={mainCategory}>
