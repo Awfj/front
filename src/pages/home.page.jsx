@@ -16,22 +16,6 @@ import { Link } from "react-router-dom";
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
 
-const organizeCategories = (categories) => {
-  const organized = {};
-  let currentMainCategory = "";
-
-  categories.forEach((category) => {
-    if (category === category.toUpperCase()) {
-      currentMainCategory = category;
-      organized[currentMainCategory] = [];
-    } else if (currentMainCategory) {
-      organized[currentMainCategory].push(category);
-    }
-  });
-
-  return organized;
-};
-
 const Home = () => {
   const [followingAuthors, setFollowingAuthors] = useState(new Set());
   let [blogs, setBlogs] = useState(null);
@@ -42,78 +26,72 @@ const Home = () => {
   const [popularCategories, setPopularCategories] = useState([]);
   const { userAuth } = useContext(UserContext);
 
-  let categories = [
-    "LIFE",
-    "Family",
-    "Health",
-    "Relationships",
-    "Sexuality",
-    "Home",
-    "Food",
-    "Pets",
-    "SELF IMPROVEMENT",
-    "Mental Health",
-    "Productivity",
-    "Mindfulness",
-    "WORK",
-    "Business",
-    "Marketing",
-    "Leadership",
-    "Remote Work",
-    "TECHNOLOGY",
-    "Artificial Intelligence",
-    "Blockchain",
-    "Data Science",
-    "Gadgets",
-    "Makers",
-    "Security",
-    "Tech Companies",
-    "Design",
-    "Product Management",
-    "SOFTWARE DEVELOPMENT",
-    "Programming",
-    "Programming Languages",
-    "Dev Ops",
-    "Operating Systems",
-    "MEDIA",
-    "Writing",
-    "Art",
-    "Gaming",
-    "Humor",
-    "Movies",
-    "Music",
-    "News",
-    "Photography",
-    "Podcasts",
-    "Television",
-    "SOCIETY",
-    "Economics",
-    "Education",
-    "Equality",
-    "Finance",
-    "Law",
-    "Transportation",
-    "Politics",
-    "Race",
-    "Science",
-    "Mathematics",
-    "Drugs",
-    "CULTURE",
-    "Philosophy",
-    "Religion",
-    "Spirituality",
-    "Cultural Studies",
-    "Fashion",
-    "Beauty",
-    "Language",
-    "Sports",
-    "WORLD",
-    "Cities",
-    "Nature",
-    "Travel",
-  ];
-
-  const organizedCategories = organizeCategories(categories);
+  let categories = {
+    LIFE: [
+      "Family",
+      "Health",
+      "Relationships",
+      "Sexuality",
+      "Home",
+      "Food",
+      "Pets",
+    ],
+    SELF_IMPROVEMENT: ["Mental Health", "Productivity", "Mindfulness"],
+    WORK: ["Business", "Marketing", "Leadership", "Remote Work"],
+    TECHNOLOGY: [
+      "Artificial Intelligence",
+      "Blockchain",
+      "Data Science",
+      "Gadgets",
+      "Makers",
+      "Security",
+      "Tech Companies",
+      "Design",
+      "Product Management",
+    ],
+    SOFTWARE_DEVELOPMENT: [
+      "Programming",
+      "Programming Languages",
+      "Dev Ops",
+      "Operating Systems",
+    ],
+    MEDIA: [
+      "Writing",
+      "Art",
+      "Gaming",
+      "Humor",
+      "Movies",
+      "Music",
+      "News",
+      "Photography",
+      "Podcasts",
+      "Television",
+    ],
+    SOCIETY: [
+      "Economics",
+      "Education",
+      "Equality",
+      "Finance",
+      "Law",
+      "Transportation",
+      "Politics",
+      "Race",
+      "Science",
+      "Mathematics",
+      "Drugs",
+    ],
+    CULTURE: [
+      "Philosophy",
+      "Religion",
+      "Spirituality",
+      "Cultural Studies",
+      "Fashion",
+      "Beauty",
+      "Language",
+      "Sports",
+    ],
+    WORLD: ["Cities", "Nature", "Travel"],
+  };
 
   const fetchPopularCategories = () => {
     axios
@@ -449,7 +427,7 @@ const Home = () => {
         bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="all">All Topics</option>
-                    {Object.entries(organizedCategories).map(
+                    {Object.entries(categories).map(
                       ([mainCategory, subCategories]) => (
                         <optgroup key={mainCategory} label={mainCategory}>
                           {subCategories.map((subCategory, i) => (
