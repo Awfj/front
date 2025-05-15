@@ -7,6 +7,8 @@ import axios from "axios";
 import { UserContext } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { CATEGORIES } from "../pages/home.page";
+
 const PublishForm = () => {
   const charLength = 200;
   const tagLimit = 10;
@@ -19,16 +21,20 @@ const PublishForm = () => {
     blog,
   } = useContext(EditorContext);
   // let {userAuth: {access_token}} = useContext(UserContext)
+
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
+
   const handleClose = () => {
     setEditorState("editor");
   };
+
   const handleBlogTitleChange = (e) => {
     let input = e.target;
     setBlog({ ...blog, title: input.value });
   };
+
   const handleKeyDown = (e) => {
     if (e.keyCode === 13 || e.keyCode === 188) {
       e.preventDefault();
@@ -49,16 +55,19 @@ const PublishForm = () => {
       return;
     }
     if (!title.length) {
-      return toast.error("Write Blog Title befor publising");
+      return toast.error("Write the post title before publishing");
     }
     if (!des.length || des.length > charLength)
       return toast.error(
-        `Write a description about your blog within ${charLength} characters to publish`
+        `Write a description about your post within ${charLength} characters to publish`
       );
     if (!tags.length || tags.length > 10) {
       return toast.error(
-        `Write some tags about blog within ${tagLimit} taglimit to publish`
+        `Write some tags about your post within ${tagLimit} limit to publish`
       );
+    }
+    if (!blog.category) {
+      return toast.error("Please select a category for your post");
     }
 
     let loadingToast = toast.loading("Publishing...");
@@ -69,6 +78,7 @@ const PublishForm = () => {
       des,
       content,
       tags,
+      category: blog.category,
       draft: false,
     };
     e.target.classList.add("disable");
@@ -96,6 +106,7 @@ const PublishForm = () => {
         return toast.error(response.data.error);
       });
   };
+
   return (
     <AnimationWrapper>
       <section className="w-screen min-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-4">
@@ -118,7 +129,9 @@ const PublishForm = () => {
             {des}
           </p>
         </div>
+
         <div className="border-grey lg:border-1 lg:pl-4">
+          {/* TITLE */}
           <p className="text-dark-grey mb-2 mt-9">Post Title</p>
           <input
             type="text"
@@ -128,6 +141,7 @@ const PublishForm = () => {
             onChange={handleBlogTitleChange}
           />
 
+          {/* SHORT DESCRIPTION */}
           <p className="text-dark-grey mb-2 mt-9">
             Short description about your post
           </p>
@@ -144,6 +158,28 @@ const PublishForm = () => {
             {charLength - des.length} characters left
           </p>
 
+          {/* CATEGORY */}
+          <p className="text-dark-grey mb-2 mt-9">Category</p>
+          <select 
+            className="w-full p-3 pr-8 rounded-md bg-light-grey border border-grey 
+              appearance-none bg-no-repeat bg-[right_0.75rem_center] 
+              bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+            value={blog.category}
+            onChange={(e) => setBlog({ ...blog, category: e.target.value })}
+          >
+            <option value="">Select a category</option>
+            {Object.entries(CATEGORIES).map(([mainCategory, subCategories]) => (
+              <optgroup key={mainCategory} label={mainCategory}>
+                {subCategories.map((subCategory, i) => (
+                  <option key={i} value={subCategory.toLowerCase()}>
+                    {subCategory}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+
+          {/* TAGS */}
           <p className="text-dark-grey mb-2 mt-9">
             Tags
           </p>
@@ -162,6 +198,7 @@ const PublishForm = () => {
           <p className="mt-1 pt-1 mb-4 text-dark-grey text-right ">
             {tagLimit - tags.length} tags left
           </p>
+
           <button onClick={handlePublish} className="btn-dark px-8 ">
             Publish
           </button>

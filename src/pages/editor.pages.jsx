@@ -12,6 +12,7 @@ const blogStructure = {
   content: [],
   tags: [],
   des: "",
+  category: "", // Add category field
   author: { personal_info: {} },
 };
 
@@ -51,28 +52,6 @@ const Editor = () => {
         console.error(err);
       });
   }, [blog_id]); // Add blog_id as dependency
-
-  // useEffect(() => {
-  //   if (!blog_id) {
-  //     return setLoading(false);
-  //   }
-
-  //   axios
-  //     .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", {
-  //       blog_id,
-  //       draft: true,
-  //       mode: "edit",
-  //     })
-  //     .then(({ data: { blog } }) => {
-  //       setBlog(blog);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setBlog(null);
-  //       setLoading(false);
-  //       console.log(false);
-  //     });
-  // }, []);
 
   return (
     <EditorContext.Provider
