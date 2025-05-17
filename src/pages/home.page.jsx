@@ -87,12 +87,14 @@ const Home = () => {
   const [followingAuthors, setFollowingAuthors] = useState(new Set());
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
+  let [followingBlogs, setFollowingBlogs] = useState(null);
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
   const [popularCategories, setPopularCategories] = useState([]);
   const { userAuth } = useContext(UserContext);
 
+  // CATEGORIES
   const fetchPopularCategories = () => {
     axios
       .get(import.meta.env.VITE_SERVER_DOMAIN + "/popular-categories")
@@ -108,6 +110,7 @@ const Home = () => {
       .catch((err) => console.log(err));
   };
 
+  // FOLLOWING AUTHORS
   const handleFollow = async (e, authorId) => {
     e.preventDefault(); // Prevent navigation
 
@@ -153,6 +156,7 @@ const Home = () => {
     }
   };
 
+  // NEW BLOGS
   const fetchLatestBlogs = ({ page = 1 }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", { page })
@@ -172,6 +176,7 @@ const Home = () => {
       });
   };
 
+  // TRENDING AUTHORS
   const fetchTrendingAuthors = () => {
     axios
       .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
@@ -198,6 +203,7 @@ const Home = () => {
       });
   };
 
+  // BLOGS BY CATEGORY
   const fetchBlogByCategory = ({ page = 1 }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
@@ -234,18 +240,55 @@ const Home = () => {
     setShowFilters((prev) => !prev);
   };
 
+  // FOLLOWING BLOGS
+  const fetchFollowingBlogs = ({ page = 1 }) => {
+    if (!userAuth.access_token) {
+      return; // Exit early if no auth token
+    }
+
+    axios
+      .post(
+        import.meta.env.VITE_SERVER_DOMAIN + "/following-blogs",
+        { page },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      )
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData({
+          state: followingBlogs, // Use followingBlogs state
+          data: data.blogs,
+          page,
+          user: userAuth.access_token,
+          countRoute: "/following-blogs-count",
+          data_to_send: {},
+        });
+        setFollowingBlogs(formattedData); // Update followingBlogs state
+      })
+      .catch((err) => {
+        console.log(err);
+        setFollowingBlogs([]);
+      });
+  };
+
   useEffect(() => {
     fetchPopularCategories();
   }, []);
 
   useEffect(() => {
     activeTabRef.current.click();
-    if (pageState === "popular") fetchLatestBlogs({ page: 1 });
-    else {
+    if (pageState === "popular") {
+      fetchLatestBlogs({ page: 1 });
+    } else {
       fetchBlogByCategory({ page: 1 });
     }
 
     if (!trendingBlogs) fetchTrendingBlogs();
+    if (userAuth.access_token && !followingBlogs) {
+      fetchFollowingBlogs({ page: 1 });
+    }
     if (!trendingAuthors) fetchTrendingAuthors();
   }, [pageState, userAuth]);
 
@@ -285,10 +328,7 @@ const Home = () => {
       <section className="h-cover flex justify-center gap-10">
         {/* latest blog */}
         <div className="w-full">
-          <InPageNavigaion
-            routes={getRoutes()}
-            defaultHidden={userAuth.access_token ? [] : ["Following"]}
-          >
+          <InPageNavigaion routes={getRoutes()} defaultHidden={[]}>
             {/*  */}
             <>
               {blogs === null ? (
@@ -320,6 +360,7 @@ const Home = () => {
               />
             </>
 
+            {/* TRENDING BLOGS */}
             {trendingBlogs === null ? (
               <Loader />
             ) : trendingBlogs.length ? (
@@ -337,11 +378,28 @@ const Home = () => {
               <NoDataMessage message={"No blog Trending"} />
             )}
 
-            {/* Following Content - Only rendered if user is authenticated */}
-            {userAuth.access_token && (
+            {/* FOLLOWING BLOGS */}
+            {followingBlogs === null ? (
+              <Loader />
+            ) : !followingBlogs?.results?.length ? (
+              <NoDataMessage message={"No posts from followed authors"} />
+            ) : (
               <>
-                {/* Add content for Following tab */}
-                <NoDataMessage message="Coming soon: Posts from authors you follow" />
+                {followingBlogs.results.map((blog, i) => (
+                  <AnimationWrapper
+                    key={i}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                  >
+                    <BlogPostCard
+                      content={blog}
+                      author={blog.author.personal_info}
+                    />
+                  </AnimationWrapper>
+                ))}
+                <LoadMoreDataBtn
+                  state={followingBlogs}
+                  fetchDataFun={fetchFollowingBlogs}
+                />
               </>
             )}
           </InPageNavigaion>
