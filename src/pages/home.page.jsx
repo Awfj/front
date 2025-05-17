@@ -272,21 +272,29 @@ const Home = () => {
     }
   }, [userAuth.access_token, trendingAuthors]);
 
+  const getRoutes = () => {
+    const baseRoutes = [pageState, "New"];
+    if (userAuth.access_token) {
+      return [...baseRoutes, "Following"];
+    }
+    return baseRoutes;
+  };
+
   return (
     <AnimationWrapper>
       <section className="h-cover flex justify-center gap-10">
         {/* latest blog */}
         <div className="w-full">
           <InPageNavigaion
-            routes={[pageState, "Following", "New"]}
-            // defaultHidden={["trending blog"]}
+            routes={getRoutes()}
+            defaultHidden={userAuth.access_token ? [] : ["Following"]}
           >
             {/*  */}
             <>
               {blogs === null ? (
                 <Loader />
               ) : !blogs.results.length ? (
-                <NoDataMessage message={"No blog published"} />
+                <NoDataMessage message={"No published blogs"} />
               ) : (
                 blogs.results.map((blog, i) => {
                   return (
@@ -311,6 +319,7 @@ const Home = () => {
                 }
               />
             </>
+
             {trendingBlogs === null ? (
               <Loader />
             ) : trendingBlogs.length ? (
@@ -326,6 +335,14 @@ const Home = () => {
               })
             ) : (
               <NoDataMessage message={"No blog Trending"} />
+            )}
+
+            {/* Following Content - Only rendered if user is authenticated */}
+            {userAuth.access_token && (
+              <>
+                {/* Add content for Following tab */}
+                <NoDataMessage message="Coming soon: Posts from authors you follow" />
+              </>
             )}
           </InPageNavigaion>
         </div>

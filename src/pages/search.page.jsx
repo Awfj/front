@@ -86,7 +86,7 @@ const SearchPage = () => {
     <section className="h-cover flex justify-center gap-10">
       <div className="w-full">
         <InPageNavigaion
-          routes={[`Search Results from "${query}`, "Account Matched"]}
+          routes={[`Search results from "${query}"`, "Account Matched"]}
           defaultHidden={["Account Matched"]}
         >
           <>
