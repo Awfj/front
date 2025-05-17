@@ -87,8 +87,9 @@ const Home = () => {
   const [followingAuthors, setFollowingAuthors] = useState(new Set());
 
   let [blogs, setBlogs] = useState(null);
-  let [trendingBlogs, setTrendingBlogs] = useState(null);
+  let [popularBlogs, setPopularBlogs] = useState(null);
   let [followingBlogs, setFollowingBlogs] = useState(null);
+  let [trendingBlogs, setTrendingBlogs] = useState(null);
 
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
@@ -174,6 +175,25 @@ const Home = () => {
           create_new_arr,
         });
         setBlogs(formateData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // POPULAR BLOGS
+  const fetchPopularBlogs = ({ page = 1, create_new_arr = false }) => {
+    axios
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/popular-blogs", { page })
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData({
+          state: popularBlogs, // Use popularBlogs state
+          data: data.blogs,
+          page,
+          countRoute: "/popular-blogs-count",
+          create_new_arr,
+        });
+        setPopularBlogs(formattedData); // Set popularBlogs state
       })
       .catch((err) => {
         console.log(err);
@@ -323,28 +343,32 @@ const Home = () => {
   }, [pageState]);
 
   useEffect(() => {
-  // Reset states before loading new data
-  setBlogs(null);
-  setFollowingBlogs(null);
+    // Reset states before loading new data
+    setBlogs(null);
+    setPopularBlogs(null);
+    setFollowingBlogs(null);
 
-  if (pageState === "latest") {
-    fetchLatestBlogs({ page: 1, create_new_arr: true });
-  } else if (pageState === "following" && userAuth.access_token) {
-    fetchFollowingBlogs({ page: 1, create_new_arr: true });
-  } else if (pageState === "popular") {
-    fetchLatestBlogs({ page: 1, create_new_arr: true });
-  } else {
-    // Category filter
-    if (pageState === "following") {
-      fetchFollowingBlogs({ page: 1, category: pageState, create_new_arr: true });
+    if (pageState === "latest") {
+      fetchLatestBlogs({ page: 1, create_new_arr: true });
+    } else if (pageState === "following" && userAuth.access_token) {
+      fetchFollowingBlogs({ page: 1, create_new_arr: true });
+    } else if (pageState === "popular") {
+      fetchPopularBlogs({ page: 1, create_new_arr: true });
     } else {
-      fetchBlogByCategory({ page: 1, create_new_arr: true });
+      // Category filter
+      if (pageState === "following") {
+        fetchFollowingBlogs({
+          page: 1,
+          category: pageState,
+          create_new_arr: true,
+        });
+      } else {
+        fetchBlogByCategory({ page: 1, create_new_arr: true });
+      }
     }
-  }
 
-  if (!trendingBlogs) fetchTrendingBlogs();
-  if (!trendingAuthors) fetchTrendingAuthors();
-}, [pageState, userAuth]);
+    if (!trendingAuthors) fetchTrendingAuthors();
+  }, [pageState, userAuth]);
 
   useEffect(() => {
     if (userAuth.access_token && trendingAuthors?.length) {
@@ -390,36 +414,63 @@ const Home = () => {
           >
             {/* POPULAR BLOGS */}
             <>
-              {blogs === null ? (
+              {popularBlogs === null ? (
                 <Loader />
-              ) : !blogs.results.length ? (
-                <NoDataMessage message={"No published blogs"} />
+              ) : !popularBlogs?.results?.length ? (
+                <NoDataMessage message={"No popular blogs"} />
               ) : (
-                blogs.results.map((blog, i) => {
-                  return (
-                    <AnimationWrapper
-                      key={i}
-                      transition={{ duration: 1, delay: i * 0.1 }}
-                    >
-                      <BlogPostCard
-                        content={blog}
-                        author={blog.author.personal_info}
-                      />
-                    </AnimationWrapper>
-                  );
-                })
+                popularBlogs.results.map((blog, i) => (
+                  <AnimationWrapper
+                    key={i}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                  >
+                    <BlogPostCard
+                      content={blog}
+                      author={blog.author.personal_info}
+                    />
+                  </AnimationWrapper>
+                ))
+              )}
+              {popularBlogs?.results?.length > 0 && (
+                <LoadMoreDataBtn
+                  state={popularBlogs}
+                  fetchDataFun={fetchPopularBlogs}
+                />
+              )}
+              {/* {popularBlogs === null ? (
+                <Loader />
+              ) : !popularBlogs.results?.length ? (
+                <NoDataMessage message={"No popular blogs"} />
+              ) : (
+                popularBlogs.results.map((blog, i) => (
+                  <AnimationWrapper
+                    key={i}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                  >
+                    <BlogPostCard
+                      content={blog}
+                      author={blog.author.personal_info}
+                    />
+                  </AnimationWrapper>
+                ))
               )}
 
               <LoadMoreDataBtn
+                state={popularBlogs}
+                fetchDataFun={fetchPopularBlogs}
+              /> */}
+              {/* <LoadMoreDataBtn
                 state={blogs}
                 fetchDataFun={
-                  pageState === "latest" || pageState === "popular"
+                  pageState === "latest"
                     ? fetchLatestBlogs
+                    : pageState === "popular"
+                    ? fetchPopularBlogs
                     : pageState === "following"
                     ? fetchFollowingBlogs
                     : fetchBlogByCategory
                 }
-              />
+              /> */}
             </>
 
             {/* LATEST BLOGS */}
@@ -444,16 +495,32 @@ const Home = () => {
                 })
               )}
 
-              <LoadMoreDataBtn
+              {blogs?.results?.length > 0 && (
+                <LoadMoreDataBtn
+                  state={blogs}
+                  fetchDataFun={
+                    pageState === "latest"
+                      ? fetchLatestBlogs
+                      : pageState === "popular"
+                      ? fetchPopularBlogs
+                      : pageState === "following"
+                      ? fetchFollowingBlogs
+                      : fetchBlogByCategory
+                  }
+                />
+              )}
+              {/* <LoadMoreDataBtn
                 state={blogs}
                 fetchDataFun={
-                  pageState === "latest" || pageState === "popular"
+                  pageState === "latest"
                     ? fetchLatestBlogs
+                    : pageState === "popular"
+                    ? fetchPopularBlogs
                     : pageState === "following"
                     ? fetchFollowingBlogs
                     : fetchBlogByCategory
                 }
-              />
+              /> */}
             </>
 
             {/* FOLLOWING BLOGS */}
@@ -474,10 +541,16 @@ const Home = () => {
                     />
                   </AnimationWrapper>
                 ))}
-                <LoadMoreDataBtn
+                {/* <LoadMoreDataBtn
                   state={followingBlogs}
                   fetchDataFun={fetchFollowingBlogs}
-                />
+                /> */}
+                {followingBlogs?.results?.length > 0 && (
+                  <LoadMoreDataBtn
+                    state={followingBlogs}
+                    fetchDataFun={fetchFollowingBlogs}
+                  />
+                )}
               </>
             )}
           </InPageNavigaion>
