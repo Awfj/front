@@ -85,9 +85,11 @@ export const CATEGORIES = {
 
 const Home = () => {
   const [followingAuthors, setFollowingAuthors] = useState(new Set());
+
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [followingBlogs, setFollowingBlogs] = useState(null);
+
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
   let [pageState, setPageState] = useState("popular");
@@ -278,17 +280,17 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    activeTabRef.current.click();
-    if (pageState === "popular") {
+    if (pageState === "latest") {
+      fetchLatestBlogs({ page: 1 });
+    } else if (pageState === "following" && userAuth.access_token) {
+      fetchFollowingBlogs({ page: 1 });
+    } else if (pageState === "popular") {
       fetchLatestBlogs({ page: 1 });
     } else {
       fetchBlogByCategory({ page: 1 });
     }
 
     if (!trendingBlogs) fetchTrendingBlogs();
-    if (userAuth.access_token && !followingBlogs) {
-      fetchFollowingBlogs({ page: 1 });
-    }
     if (!trendingAuthors) fetchTrendingAuthors();
   }, [pageState, userAuth]);
 
@@ -316,7 +318,7 @@ const Home = () => {
   }, [userAuth.access_token, trendingAuthors]);
 
   const getRoutes = () => {
-    const baseRoutes = [pageState, "New"];
+    const baseRoutes = ["Popular", "Latest"];
     if (userAuth.access_token) {
       return [...baseRoutes, "Following"];
     }
@@ -328,7 +330,12 @@ const Home = () => {
       <section className="h-cover flex justify-center gap-10">
         {/* latest blog */}
         <div className="w-full">
-          <InPageNavigaion routes={getRoutes()} defaultHidden={[]}>
+          <InPageNavigaion
+            routes={getRoutes()}
+            defaultHidden={[]}
+            currentRoute={pageState}
+            setCurrentRoute={setPageState}
+          >
             {/*  */}
             <>
               {blogs === null ? (
@@ -350,17 +357,20 @@ const Home = () => {
                   );
                 })
               )}
+
               <LoadMoreDataBtn
                 state={blogs}
                 fetchDataFun={
-                  pageState === "popular"
+                  pageState === "latest" || pageState === "popular"
                     ? fetchLatestBlogs
+                    : pageState === "following"
+                    ? fetchFollowingBlogs
                     : fetchBlogByCategory
                 }
               />
             </>
 
-            {/* TRENDING BLOGS */}
+            {/* LATEST BLOGS */}
             {trendingBlogs === null ? (
               <Loader />
             ) : trendingBlogs.length ? (
