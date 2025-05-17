@@ -92,7 +92,10 @@ const Home = () => {
 
   let [trendingAuthors, setTrendingAuthors] = useState(null);
   let [showFilters, setShowFilters] = useState(false);
+
   let [pageState, setPageState] = useState("popular");
+  let [previousState, setPreviousState] = useState("popular");
+
   const [popularCategories, setPopularCategories] = useState([]);
   const { userAuth } = useContext(UserContext);
 
@@ -158,7 +161,7 @@ const Home = () => {
     }
   };
 
-  // NEW BLOGS
+  // LATEST BLOGS
   const fetchLatestBlogs = ({ page = 1 }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", { page })
@@ -231,10 +234,13 @@ const Home = () => {
   const loadBlogbyCategory = (e) => {
     let category = e.target.innerText.toLowerCase();
     setBlogs(null);
+    
     if (pageState === category) {
-      setPageState("popular");
+      setPageState(previousState); // Return to previous state instead of "popular"
       return;
     }
+    
+    setPreviousState(pageState); // Save current state before changing to category
     setPageState(category);
   };
 
@@ -278,6 +284,14 @@ const Home = () => {
   useEffect(() => {
     fetchPopularCategories();
   }, []);
+
+  useEffect(() => {
+    if (!["popular", "latest", "following"].includes(pageState)) {
+      // If current state is a category, don't update previousState
+      return;
+    }
+    setPreviousState(pageState);
+  }, [pageState]);
 
   useEffect(() => {
     if (pageState === "latest") {
