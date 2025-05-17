@@ -162,18 +162,17 @@ const Home = () => {
   };
 
   // LATEST BLOGS
-  const fetchLatestBlogs = ({ page = 1 }) => {
+  const fetchLatestBlogs = ({ page = 1, create_new_arr = false }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", { page })
       .then(async ({ data }) => {
-        // console.log(data.blogs)
         let formateData = await filterPaginationData({
           state: blogs,
           data: data.blogs,
           page,
           countRoute: "/all-latest-blogs-count",
+          create_new_arr,
         });
-        // console.log(formateData)
         setBlogs(formateData);
       })
       .catch((err) => {
@@ -209,10 +208,14 @@ const Home = () => {
   };
 
   // BLOGS BY CATEGORY
-  const fetchBlogByCategory = ({ page = 1 }) => {
+  const fetchBlogByCategory = ({
+    page = 1,
+    category,
+    create_new_arr = false,
+  }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
-        tag: pageState,
+        tag: category || pageState,
         page,
       })
       .then(async ({ data }) => {
@@ -221,9 +224,9 @@ const Home = () => {
           data: data.blogs,
           page,
           countRoute: "/all-search-blogs-count",
-          data_to_send: { tag: pageState },
+          data_to_send: { tag: category || pageState },
+          create_new_arr,
         });
-        // console.log(formateData)
         setBlogs(formateData);
       })
       .catch((err) => {
@@ -233,14 +236,35 @@ const Home = () => {
 
   const loadBlogbyCategory = (e) => {
     let category = e.target.innerText.toLowerCase();
-    setBlogs(null);
-    
+
     if (pageState === category) {
-      setPageState(previousState); // Return to previous state instead of "popular"
+      // Reset category filter
+      if (previousState === "following") {
+        setFollowingBlogs(null);
+        fetchFollowingBlogs({ page: 1, create_new_arr: true });
+      } else {
+        setBlogs(null);
+        fetchLatestBlogs({ page: 1, create_new_arr: true });
+      }
+      setPageState(previousState);
       return;
     }
-    
-    setPreviousState(pageState); // Save current state before changing to category
+
+    // Save current main state before applying filter
+    if (["popular", "latest", "following"].includes(pageState)) {
+      setPreviousState(pageState);
+    }
+
+    // Apply category filter
+    if (previousState === "following" || pageState === "following") {
+      // Filter following blogs
+      setFollowingBlogs(null);
+      fetchFollowingBlogs({ page: 1, category, create_new_arr: true });
+    } else {
+      // Filter regular blogs
+      setBlogs(null);
+      fetchBlogByCategory({ page: 1, category, create_new_arr: true });
+    }
     setPageState(category);
   };
 
@@ -249,15 +273,19 @@ const Home = () => {
   };
 
   // FOLLOWING BLOGS
-  const fetchFollowingBlogs = ({ page = 1 }) => {
+  const fetchFollowingBlogs = ({
+    page = 1,
+    category = null,
+    create_new_arr = false,
+  }) => {
     if (!userAuth.access_token) {
-      return; // Exit early if no auth token
+      return;
     }
 
     axios
       .post(
         import.meta.env.VITE_SERVER_DOMAIN + "/following-blogs",
-        { page },
+        { page, category },
         {
           headers: {
             Authorization: `Bearer ${userAuth.access_token}`,
@@ -266,14 +294,15 @@ const Home = () => {
       )
       .then(async ({ data }) => {
         let formattedData = await filterPaginationData({
-          state: followingBlogs, // Use followingBlogs state
+          state: followingBlogs,
           data: data.blogs,
           page,
           user: userAuth.access_token,
           countRoute: "/following-blogs-count",
-          data_to_send: {},
+          data_to_send: { category },
+          create_new_arr,
         });
-        setFollowingBlogs(formattedData); // Update followingBlogs state
+        setFollowingBlogs(formattedData);
       })
       .catch((err) => {
         console.log(err);
@@ -294,19 +323,28 @@ const Home = () => {
   }, [pageState]);
 
   useEffect(() => {
-    if (pageState === "latest") {
-      fetchLatestBlogs({ page: 1 });
-    } else if (pageState === "following" && userAuth.access_token) {
-      fetchFollowingBlogs({ page: 1 });
-    } else if (pageState === "popular") {
-      fetchLatestBlogs({ page: 1 });
-    } else {
-      fetchBlogByCategory({ page: 1 });
-    }
+  // Reset states before loading new data
+  setBlogs(null);
+  setFollowingBlogs(null);
 
-    if (!trendingBlogs) fetchTrendingBlogs();
-    if (!trendingAuthors) fetchTrendingAuthors();
-  }, [pageState, userAuth]);
+  if (pageState === "latest") {
+    fetchLatestBlogs({ page: 1, create_new_arr: true });
+  } else if (pageState === "following" && userAuth.access_token) {
+    fetchFollowingBlogs({ page: 1, create_new_arr: true });
+  } else if (pageState === "popular") {
+    fetchLatestBlogs({ page: 1, create_new_arr: true });
+  } else {
+    // Category filter
+    if (pageState === "following") {
+      fetchFollowingBlogs({ page: 1, category: pageState, create_new_arr: true });
+    } else {
+      fetchBlogByCategory({ page: 1, create_new_arr: true });
+    }
+  }
+
+  if (!trendingBlogs) fetchTrendingBlogs();
+  if (!trendingAuthors) fetchTrendingAuthors();
+}, [pageState, userAuth]);
 
   useEffect(() => {
     if (userAuth.access_token && trendingAuthors?.length) {
