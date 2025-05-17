@@ -182,18 +182,26 @@ const Home = () => {
   };
 
   // POPULAR BLOGS
-  const fetchPopularBlogs = ({ page = 1, create_new_arr = false }) => {
+  const fetchPopularBlogs = ({
+    page = 1,
+    category = null,
+    create_new_arr = false,
+  }) => {
     axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/popular-blogs", { page })
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/popular-blogs", {
+        page,
+        category,
+      })
       .then(async ({ data }) => {
         let formattedData = await filterPaginationData({
-          state: popularBlogs, // Use popularBlogs state
+          state: popularBlogs,
           data: data.blogs,
           page,
           countRoute: "/popular-blogs-count",
+          data_to_send: { category },
           create_new_arr,
         });
-        setPopularBlogs(formattedData); // Set popularBlogs state
+        setPopularBlogs(formattedData);
       })
       .catch((err) => {
         console.log(err);
@@ -262,6 +270,9 @@ const Home = () => {
       if (previousState === "following") {
         setFollowingBlogs(null);
         fetchFollowingBlogs({ page: 1, create_new_arr: true });
+      } else if (previousState === "popular") {
+        setPopularBlogs(null);
+        fetchPopularBlogs({ page: 1, create_new_arr: true });
       } else {
         setBlogs(null);
         fetchLatestBlogs({ page: 1, create_new_arr: true });
@@ -275,13 +286,14 @@ const Home = () => {
       setPreviousState(pageState);
     }
 
-    // Apply category filter
+    // Apply category filter based on current page state
     if (previousState === "following" || pageState === "following") {
-      // Filter following blogs
       setFollowingBlogs(null);
       fetchFollowingBlogs({ page: 1, category, create_new_arr: true });
+    } else if (previousState === "popular" || pageState === "popular") {
+      setPopularBlogs(null);
+      fetchPopularBlogs({ page: 1, category, create_new_arr: true });
     } else {
-      // Filter regular blogs
       setBlogs(null);
       fetchBlogByCategory({ page: 1, category, create_new_arr: true });
     }
