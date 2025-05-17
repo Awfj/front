@@ -388,7 +388,7 @@ const Home = () => {
             currentRoute={pageState}
             setCurrentRoute={setPageState}
           >
-            {/*  */}
+            {/* POPULAR BLOGS */}
             <>
               {blogs === null ? (
                 <Loader />
@@ -423,22 +423,38 @@ const Home = () => {
             </>
 
             {/* LATEST BLOGS */}
-            {trendingBlogs === null ? (
-              <Loader />
-            ) : trendingBlogs.length ? (
-              trendingBlogs.map((blog, i) => {
-                return (
-                  <AnimationWrapper
-                    key={i}
-                    transition={{ duration: 1, delay: i * 0.1 }}
-                  >
-                    <MinimulBlogPost blog={blog} index={i} />
-                  </AnimationWrapper>
-                );
-              })
-            ) : (
-              <NoDataMessage message={"No blog Trending"} />
-            )}
+            <>
+              {blogs === null ? (
+                <Loader />
+              ) : !blogs.results.length ? (
+                <NoDataMessage message={"No published blogs"} />
+              ) : (
+                blogs.results.map((blog, i) => {
+                  return (
+                    <AnimationWrapper
+                      key={i}
+                      transition={{ duration: 1, delay: i * 0.1 }}
+                    >
+                      <BlogPostCard
+                        content={blog}
+                        author={blog.author.personal_info}
+                      />
+                    </AnimationWrapper>
+                  );
+                })
+              )}
+
+              <LoadMoreDataBtn
+                state={blogs}
+                fetchDataFun={
+                  pageState === "latest" || pageState === "popular"
+                    ? fetchLatestBlogs
+                    : pageState === "following"
+                    ? fetchFollowingBlogs
+                    : fetchBlogByCategory
+                }
+              />
+            </>
 
             {/* FOLLOWING BLOGS */}
             {followingBlogs === null ? (
