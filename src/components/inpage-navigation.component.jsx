@@ -5,7 +5,7 @@ export let activeTabRef;
 const InPageNavigaion = ({
   routes,
   defaultHidden = [],
-  currentRoute,
+  currentRoute = "",
   setCurrentRoute,
   defaultActiveIndex = 0,
   children,
@@ -13,9 +13,13 @@ const InPageNavigaion = ({
   activeTabLineRef = useRef();
   activeTabRef = useRef();
 
-  const initialIndex = routes.findIndex(
-    (route) => route.toLowerCase() === currentRoute.toLowerCase()
-  );
+  // Add safety check for currentRoute
+  const initialIndex = currentRoute
+    ? routes.findIndex(
+        (route) => route.toLowerCase() === currentRoute.toLowerCase()
+      )
+    : defaultActiveIndex;
+
   let [inPageNavIndex, setInPageNavIndex] = useState(
     initialIndex !== -1 ? initialIndex : defaultActiveIndex
   );
@@ -36,13 +40,17 @@ const InPageNavigaion = ({
   };
 
   useEffect(() => {
-    const routeIndex = routes.findIndex(
-      (route) => route.toLowerCase() === currentRoute.toLowerCase()
-    );
-    if (routeIndex !== -1 && routeIndex !== inPageNavIndex) {
-      const btn = document.querySelector(`button:nth-child(${routeIndex + 1})`);
-      if (btn) {
-        changePageState(btn, routeIndex);
+    if (currentRoute) {
+      const routeIndex = routes.findIndex(
+        (route) => route.toLowerCase() === currentRoute.toLowerCase()
+      );
+      if (routeIndex !== -1 && routeIndex !== inPageNavIndex) {
+        const btn = document.querySelector(
+          `button:nth-child(${routeIndex + 1})`
+        );
+        if (btn) {
+          changePageState(btn, routeIndex);
+        }
       }
     }
   }, [currentRoute, routes]);
