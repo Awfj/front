@@ -162,6 +162,33 @@ const Home = () => {
     }
   };
 
+  // TRENDING AUTHORS
+  const fetchTrendingAuthors = () => {
+    axios
+      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
+        params: {
+          username: userAuth?.username || null,
+        },
+      })
+      .then(({ data }) => {
+        setTrendingAuthors(data.authors);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const fetchTrendingBlogs = () => {
+    axios
+      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blog")
+      .then(({ data }) => {
+        setTrendingBlogs(data.blogs);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   // LATEST BLOGS
   const fetchLatestBlogs = ({ page = 1, create_new_arr = false }) => {
     axios
@@ -208,30 +235,41 @@ const Home = () => {
       });
   };
 
-  // TRENDING AUTHORS
-  const fetchTrendingAuthors = () => {
-    axios
-      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-authors", {
-        params: {
-          username: userAuth?.username || null,
-        },
-      })
-      .then(({ data }) => {
-        setTrendingAuthors(data.authors);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // FOLLOWING BLOGS
+  const fetchFollowingBlogs = ({
+    page = 1,
+    category = null,
+    create_new_arr = false,
+  }) => {
+    if (!userAuth.access_token) {
+      return;
+    }
 
-  const fetchTrendingBlogs = () => {
     axios
-      .get(import.meta.env.VITE_SERVER_DOMAIN + "/trending-blog")
-      .then(({ data }) => {
-        setTrendingBlogs(data.blogs);
+      .post(
+        import.meta.env.VITE_SERVER_DOMAIN + "/following-blogs",
+        { page, category },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      )
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData({
+          state: followingBlogs,
+          data: data.blogs,
+          page,
+          user: userAuth.access_token,
+          countRoute: "/following-blogs-count",
+          data_to_send: { category },
+          create_new_arr,
+        });
+        setFollowingBlogs(formattedData);
       })
       .catch((err) => {
         console.log(err);
+        setFollowingBlogs([]);
       });
   };
 
@@ -243,7 +281,7 @@ const Home = () => {
   }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
-        tag: category || pageState,
+        category: category || pageState,
         page,
       })
       .then(async ({ data }) => {
@@ -252,7 +290,7 @@ const Home = () => {
           data: data.blogs,
           page,
           countRoute: "/all-search-blogs-count",
-          data_to_send: { tag: category || pageState },
+          data_to_send: { category: category || pageState },
           create_new_arr,
         });
         setBlogs(formateData);
@@ -302,44 +340,6 @@ const Home = () => {
 
   const toggleFilters = () => {
     setShowFilters((prev) => !prev);
-  };
-
-  // FOLLOWING BLOGS
-  const fetchFollowingBlogs = ({
-    page = 1,
-    category = null,
-    create_new_arr = false,
-  }) => {
-    if (!userAuth.access_token) {
-      return;
-    }
-
-    axios
-      .post(
-        import.meta.env.VITE_SERVER_DOMAIN + "/following-blogs",
-        { page, category },
-        {
-          headers: {
-            Authorization: `Bearer ${userAuth.access_token}`,
-          },
-        }
-      )
-      .then(async ({ data }) => {
-        let formattedData = await filterPaginationData({
-          state: followingBlogs,
-          data: data.blogs,
-          page,
-          user: userAuth.access_token,
-          countRoute: "/following-blogs-count",
-          data_to_send: { category },
-          create_new_arr,
-        });
-        setFollowingBlogs(formattedData);
-      })
-      .catch((err) => {
-        console.log(err);
-        setFollowingBlogs([]);
-      });
   };
 
   useEffect(() => {

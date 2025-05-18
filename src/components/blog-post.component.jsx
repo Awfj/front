@@ -14,6 +14,7 @@ const BlogPostCard = ({ content, author }) => {
   let {
     publishedAt,
     tags,
+    category,
     title,
     des,
     banner,
@@ -131,9 +132,9 @@ const BlogPostCard = ({ content, author }) => {
           </div>
         </div>
 
-        {/* Third row: Tags, Likes, Comments and Bookmarks */}
+        {/* Third row: Category, Likes, Comments and Bookmarks */}
         <div className="flex items-center gap-4">
-          <span className="btn-light py-1 px-4">{tags[0]}</span>
+          <span className="btn-light py-1 px-4">{category}</span>
 
           <button
             onClick={handleLike}
