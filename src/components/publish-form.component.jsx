@@ -17,7 +17,7 @@ const PublishForm = () => {
   const maxTagLength = 20; // Maximum length for a single tag
   const [tagInput, setTagInput] = useState(""); // Add state for tag input
   let {
-    blog: { banner, title, tags, des, content },
+    blog: { banner, title, tags, category, des, content },
     setEditorState,
     setBlog,
     blog,
@@ -86,19 +86,18 @@ const PublishForm = () => {
     if (e.target.className.includes("disable")) {
       return;
     }
+
     if (!title.length) {
       return toast.error("Write the post title before publishing");
     }
-    if (!des.length || des.length > charLength)
+
+    if (!des.length || des.length > charLength) {
       return toast.error(
         `Write a description about your post within ${charLength} characters to publish`
       );
-    if (!tags.length || tags.length > 10) {
-      return toast.error(
-        `Write some tags about your post within ${tagLimit} limit to publish`
-      );
     }
-    if (!blog.category) {
+
+    if (!blog.category || blog.category === "uncategorized") {
       return toast.error("Please select a category for your post");
     }
 
@@ -110,9 +109,10 @@ const PublishForm = () => {
       des,
       content,
       tags,
-      category: blog.category,
+      category,
       draft: false,
     };
+
     e.target.classList.add("disable");
     axios
       .post(
@@ -212,7 +212,7 @@ const PublishForm = () => {
           </select>
 
           {/* TAGS */}
-          <p className="text-dark-grey mb-2 mt-9">Tags</p>
+          <p className="text-dark-grey mb-2 mt-9">Tags (optional)</p>
 
           <div className="relative input-box pl-2 py-2 pb-4">
             <div className="mb-3">
@@ -232,7 +232,11 @@ const PublishForm = () => {
                   onClick={addTag}
                   type="button"
                 >
-                  <i className={"flex-center p-1 fi fi-br-plus text-3xl interactivity icon text-black"}></i>
+                  <i
+                    className={
+                      "flex-center p-1 fi fi-br-plus text-3xl interactivity icon text-black"
+                    }
+                  ></i>
                 </button>
               </div>
               <span className="ml-1">

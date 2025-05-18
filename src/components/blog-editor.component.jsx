@@ -26,7 +26,7 @@ const BlogEditor = () => {
   let { theme } = useContext(ThemeContext);
   let {
     blog,
-    blog: { title, banner, content, tags, des },
+    blog: { title, banner, content, category, tags, des },
     setBlog,
     textEditor,
     setTextEditor,
@@ -74,11 +74,15 @@ const BlogEditor = () => {
     let img = e.target;
     img.src = theme == "light" ? lightBanner : darkBanner;
   };
+
   const handlePublishEvent = () => {
     if (!banner.length) {
       return toast.error("Upload the post banner to publish it");
     }
-    if (!title.length) return toast.error("Write the post title to publish it");
+    if (!title.length) {
+      return toast.error("Write the post title to publish it");
+    }
+
     if (textEditor.isReady) {
       textEditor
         .save()
@@ -115,9 +119,11 @@ const BlogEditor = () => {
           banner,
           des,
           content,
+          category,
           tags,
           draft: true,
         };
+
         axios
           .post(
             import.meta.env.VITE_SERVER_DOMAIN + "/create-blog",
@@ -131,7 +137,7 @@ const BlogEditor = () => {
           .then(() => {
             toast.dismiss(loadingToast);
             toast.success("Saved successfully");
-            setIsRedirecting(true); // Set redirecting state before navigation
+            setIsRedirecting(true);
             setTimeout(() => {
               navigate("/dashboard/blogs?tab=draft");
             }, 5000);
