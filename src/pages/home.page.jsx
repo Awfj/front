@@ -108,10 +108,25 @@ const Home = () => {
 
   // Добавим функцию для применения фильтров
   const applyFilters = () => {
+    // Если мы в режиме просмотра категории и нет измененных фильтров
+    if (
+      !["popular", "latest", "following"].includes(pageState) &&
+      filters.date === "newest" &&
+      filters.readingTime === "any" &&
+      filters.category === "all"
+    ) {
+      return; // Ничего не делаем, так как применять нечего
+    }
+
     // Reset current data
     setBlogs(null);
     setPopularBlogs(null);
     setFollowingBlogs(null);
+
+    // Reset to main state if we're currently showing category filtered posts
+    if (!["popular", "latest", "following"].includes(pageState)) {
+      setPageState(previousState);
+    }
 
     const filterParams = {
       page: 1,
@@ -121,37 +136,54 @@ const Home = () => {
       category: filters.category === "all" ? null : filters.category,
     };
 
-    // Apply filters based on current page state
-    if (pageState === "latest") {
+    // Apply filters based on current page state or previous state if we were in category view
+    const currentState = ["popular", "latest", "following"].includes(pageState)
+      ? pageState
+      : previousState;
+
+    if (currentState === "latest") {
       fetchLatestBlogs(filterParams);
-    } else if (pageState === "following") {
+    } else if (currentState === "following") {
       fetchFollowingBlogs(filterParams);
-    } else if (pageState === "popular") {
+    } else if (currentState === "popular") {
       fetchPopularBlogs(filterParams);
     }
   };
 
   // Функция для сброса фильтров
   const resetFilters = () => {
+    // Если текущее состояние не является одним из основных и фильтры по умолчанию
+    if (
+      !["popular", "latest", "following"].includes(pageState) &&
+      filters.date === "newest" &&
+      filters.readingTime === "any" &&
+      filters.category === "all"
+    ) {
+      return; // Ничего не делаем, так как сбрасывать нечего
+    }
+
     setFilters({
       date: "newest",
       readingTime: "any",
       category: "all",
     });
 
-    // Reset current data and fetch without filters
-    setBlogs(null);
-    setPopularBlogs(null);
-    setFollowingBlogs(null);
+    // Сбрасываем данные и загружаем заново только если
+    // мы находимся в одном из основных состояний
+    if (["popular", "latest", "following"].includes(pageState)) {
+      setBlogs(null);
+      setPopularBlogs(null);
+      setFollowingBlogs(null);
 
-    const params = { page: 1, create_new_arr: true };
+      const params = { page: 1, create_new_arr: true };
 
-    if (pageState === "latest") {
-      fetchLatestBlogs(params);
-    } else if (pageState === "following") {
-      fetchFollowingBlogs(params);
-    } else if (pageState === "popular") {
-      fetchPopularBlogs(params);
+      if (pageState === "latest") {
+        fetchLatestBlogs(params);
+      } else if (pageState === "following") {
+        fetchFollowingBlogs(params);
+      } else if (pageState === "popular") {
+        fetchPopularBlogs(params);
+      }
     }
   };
 
@@ -357,6 +389,13 @@ const Home = () => {
 
   const loadBlogbyCategory = (e) => {
     let category = e.target.innerText.toLowerCase();
+
+    // Reset filters when selecting popular category
+    setFilters({
+      date: "newest",
+      readingTime: "any",
+      category: "all",
+    });
 
     if (pageState === category) {
       // Reset category filter
