@@ -152,6 +152,10 @@
     @apply p-3 interactivity-border rounded-full px-6 capitalize;
   }
 
+  .tag-2 {
+    @apply p-1 interactivity-border rounded-md px-2;
+  }
+
   .blog-title {
     @apply text-2xl font-medium leading-7 line-clamp-3 sm:line-clamp-2 text-xl;
   }

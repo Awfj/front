@@ -23,6 +23,25 @@ export const blogStructure = {
 };
 
 export const BlogContext = createContext({});
+
+const calculateReadingTime = (content) => {
+  const wordsPerMinute = 200; // Среднее количество слов в минуту
+  let totalWords = 0;
+
+  content[0].blocks.forEach((block) => {
+    if (block.type === "paragraph") {
+      totalWords += block.data.text.split(/\s+/).length;
+    } else if (block.type === "header") {
+      totalWords += block.data.text.split(/\s+/).length;
+    }
+  });
+
+  const minutes = Math.ceil(totalWords / wordsPerMinute);
+
+  if (minutes < 1) return "< 1 min read";
+  return `${minutes} min read`;
+};
+
 const BlogPage = () => {
   let { blog_id } = useParams();
   const [blog, setBlog] = useState(blogStructure);
@@ -40,6 +59,8 @@ const BlogPage = () => {
       personal_info: { username: author_username, fullname, profile_img },
     },
     publishedAt,
+    tags,
+    category,
   } = blog;
 
   const fetchBlog = () => {
@@ -123,9 +144,19 @@ const BlogPage = () => {
                     </Link>
                   </p>
                 </div>
-                <p className="text-dark-grey opacity-75 max-sm:mt-6 mx-sm:ml-12 max-sm:pl-5">
-                  Published on {getDay(publishedAt)}
-                </p>
+                {/* Добавляем информацию о категории и времени чтения */}
+                <div className="flex flex-col items-end gap-2 max-sm:items-start max-sm:ml-12 max-sm:mt-4">
+                  <div className="flex items-center gap-2 text-dark-grey">
+                    <span className="btn-light py-1 px-4 capitalize">
+                      {category}
+                    </span>
+                    <span>•</span>
+                    <span>{calculateReadingTime(content)}</span>
+                  </div>
+                  <p className="text-dark-grey opacity-75">
+                    Published on {getDay(publishedAt)}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -139,6 +170,22 @@ const BlogPage = () => {
               })}
             </div>
 
+            {/* Tags Section */}
+            {tags?.length > 0 && (
+              <div className="flex items-center gap-3 flex-wrap my-8">
+                <span className="text-dark-grey font-medium">Tags:</span>
+                {tags.map((tag, i) => (
+                  <Link
+                    key={i}
+                    to={`/search/${tag}`}
+                    className="tag-2 hover:bg-purple/10"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+
             <BlogInteraction />
 
             <CommentContainer />
@@ -150,7 +197,6 @@ const BlogPage = () => {
                 </h1>
                 {similarBlog &&
                   similarBlog.map((blog, i) => {
-                    console.log(blog);
                     let {
                       author: { personal_info },
                     } = blog;
