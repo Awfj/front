@@ -277,15 +277,29 @@ const Home = () => {
   };
 
   // LATEST BLOGS
-  const fetchLatestBlogs = ({ page = 1, create_new_arr = false }) => {
+  const fetchLatestBlogs = ({
+    page = 1,
+    create_new_arr = false,
+    sortBy,
+    readingTime,
+    category,
+  }) => {
     axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", { page })
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blog", {
+        page,
+        sortBy,
+        readingTime,
+        category: category === "all" ? null : category,
+      })
       .then(async ({ data }) => {
         let formateData = await filterPaginationData({
           state: blogs,
           data: data.blogs,
           page,
           countRoute: "/all-latest-blogs-count",
+          data_to_send: {
+            category: category === "all" ? null : category,
+          },
           create_new_arr,
         });
         setBlogs(formateData);
