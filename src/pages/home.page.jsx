@@ -100,6 +100,61 @@ const Home = () => {
   const [popularCategories, setPopularCategories] = useState([]);
   const { userAuth } = useContext(UserContext);
 
+  const [filters, setFilters] = useState({
+    date: "newest",
+    readingTime: "any",
+    category: "all",
+  });
+
+  // Добавим функцию для применения фильтров
+  const applyFilters = () => {
+    // Reset current data
+    setBlogs(null);
+    setPopularBlogs(null);
+    setFollowingBlogs(null);
+
+    const filterParams = {
+      page: 1,
+      create_new_arr: true,
+      sortBy: filters.date,
+      readingTime: filters.readingTime,
+      category: filters.category === "all" ? null : filters.category,
+    };
+
+    // Apply filters based on current page state
+    if (pageState === "latest") {
+      fetchLatestBlogs(filterParams);
+    } else if (pageState === "following") {
+      fetchFollowingBlogs(filterParams);
+    } else if (pageState === "popular") {
+      fetchPopularBlogs(filterParams);
+    }
+  };
+
+  // Функция для сброса фильтров
+  const resetFilters = () => {
+    setFilters({
+      date: "newest",
+      readingTime: "any",
+      category: "all",
+    });
+
+    // Reset current data and fetch without filters
+    setBlogs(null);
+    setPopularBlogs(null);
+    setFollowingBlogs(null);
+
+    const params = { page: 1, create_new_arr: true };
+
+    if (pageState === "latest") {
+      fetchLatestBlogs(params);
+    } else if (pageState === "following") {
+      fetchFollowingBlogs(params);
+    } else if (pageState === "popular") {
+      fetchPopularBlogs(params);
+    }
+  };
+
   // CATEGORIES
   const fetchPopularCategories = () => {
     axios
@@ -449,40 +504,6 @@ const Home = () => {
                   fetchDataFun={fetchPopularBlogs}
                 />
               )}
-              {/* {popularBlogs === null ? (
-                <Loader />
-              ) : !popularBlogs.results?.length ? (
-                <NoDataMessage message={"No popular blogs"} />
-              ) : (
-                popularBlogs.results.map((blog, i) => (
-                  <AnimationWrapper
-                    key={i}
-                    transition={{ duration: 1, delay: i * 0.1 }}
-                  >
-                    <BlogPostCard
-                      content={blog}
-                      author={blog.author.personal_info}
-                    />
-                  </AnimationWrapper>
-                ))
-              )}
-
-              <LoadMoreDataBtn
-                state={popularBlogs}
-                fetchDataFun={fetchPopularBlogs}
-              /> */}
-              {/* <LoadMoreDataBtn
-                state={blogs}
-                fetchDataFun={
-                  pageState === "latest"
-                    ? fetchLatestBlogs
-                    : pageState === "popular"
-                    ? fetchPopularBlogs
-                    : pageState === "following"
-                    ? fetchFollowingBlogs
-                    : fetchBlogByCategory
-                }
-              /> */}
             </>
 
             {/* LATEST BLOGS */}
@@ -521,18 +542,6 @@ const Home = () => {
                   }
                 />
               )}
-              {/* <LoadMoreDataBtn
-                state={blogs}
-                fetchDataFun={
-                  pageState === "latest"
-                    ? fetchLatestBlogs
-                    : pageState === "popular"
-                    ? fetchPopularBlogs
-                    : pageState === "following"
-                    ? fetchFollowingBlogs
-                    : fetchBlogByCategory
-                }
-              /> */}
             </>
 
             {/* FOLLOWING BLOGS */}
@@ -553,10 +562,6 @@ const Home = () => {
                     />
                   </AnimationWrapper>
                 ))}
-                {/* <LoadMoreDataBtn
-                  state={followingBlogs}
-                  fetchDataFun={fetchFollowingBlogs}
-                /> */}
                 {followingBlogs?.results?.length > 0 && (
                   <LoadMoreDataBtn
                     state={followingBlogs}
@@ -623,10 +628,11 @@ const Home = () => {
                 <div className="flex flex-col gap-3 mt-4">
                   <h2 className="text-base font-medium text-dark-grey">Date</h2>
                   <select
-                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
-            appearance-none bg-no-repeat
-            bg-[right_0.75rem_center] 
-            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                    value={filters.date}
+                    onChange={(e) =>
+                      setFilters((prev) => ({ ...prev, date: e.target.value }))
+                    }
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -642,10 +648,14 @@ const Home = () => {
                     Reading Time
                   </h2>
                   <select
-                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
-            appearance-none bg-no-repeat
-            bg-[right_0.75rem_center] 
-            bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                    value={filters.readingTime}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        readingTime: e.target.value,
+                      }))
+                    }
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="any">Any Length</option>
                     <option value="short">Short (0-5 min)</option>
@@ -660,10 +670,14 @@ const Home = () => {
                     Categories
                   </h2>
                   <select
-                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta 
-        appearance-none bg-no-repeat
-        bg-[right_0.75rem_center] 
-        bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
+                    value={filters.category}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        category: e.target.value,
+                      }))
+                    }
+                    className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="all">All Categories</option>
                     {Object.entries(CATEGORIES).map(
@@ -680,10 +694,21 @@ const Home = () => {
                   </select>
                 </div>
 
-                {/* Apply Filters Button */}
-                <button className="btn-dark w-full py-3 mt-4">
-                  Apply Filters
-                </button>
+                {/* Action Buttons */}
+                <div className="flex gap-4 mt-4">
+                  <button
+                    onClick={applyFilters}
+                    className="btn-dark flex-1 py-3"
+                  >
+                    Apply Filters
+                  </button>
+                  <button
+                    onClick={resetFilters}
+                    className="btn-light flex-1 py-3"
+                  >
+                    Reset
+                  </button>
+                </div>
               </div>
             </div>
 
