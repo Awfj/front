@@ -129,7 +129,7 @@ const ManageBlog = () => {
             />
           </>
         ) : (
-          <NoDataMessage message="No Published Blogs Available" />
+          <NoDataMessage message="No published posts available" />
         )}
         {drafts == null ? (
           <Loader />
@@ -154,7 +154,7 @@ const ManageBlog = () => {
             />
           </>
         ) : (
-          <NoDataMessage message="No Draft Blogs Available" />
+          <NoDataMessage message="No draft posts available" />
         )}
       </InPageNavigaion>
     </>
