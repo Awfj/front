@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getDay } from "../common/date";
 import { UserContext } from "../App";
 import axios from "axios";
+import ConfirmDialog from "./confirm-dialog.component";
 
 const BlogStats = ({ stats }) => {
   return (
@@ -37,8 +38,18 @@ export const ManagePublishedBlogCard = ({ blog }) => {
   } = useContext(UserContext);
 
   let { banner, blog_id, title, publishedAt, activity } = blog;
-
   let [showStat, setShowStat] = useState(false);
+  let [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteBlog(blog, access_token);
+    setShowDeleteDialog(false);
+  };
+
   return (
     <>
       <div className="flex gap-10 border-b mb-6 max-md:px-4 border-grey pb-6 items-center ">
@@ -74,7 +85,7 @@ export const ManagePublishedBlogCard = ({ blog }) => {
 
             <button
               className="pr-4 py-2 underline text-red"
-              onClick={(e) => deleteBlog(blog, access_token, e.target)}
+              onClick={handleDeleteClick}
             >
               Delete
             </button>
@@ -90,6 +101,16 @@ export const ManagePublishedBlogCard = ({ blog }) => {
           <BlogStats stats={activity} />
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Post"
+        message="Are you sure you want to delete this post? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </>
   );
 };
@@ -101,39 +122,61 @@ export const ManageDraftBlogPost = ({ blog }) => {
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
+
+  let [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteBlog(blog, access_token);
+    setShowDeleteDialog(false);
+  };
+
   return (
-    <div className="flex gap-5 lg:gap-10 pb-6 border-b mb-6 border-grey">
-      <h1 className="blog-index text-center pl-4 md:pl-6 flex-none">
-        {index < 10 ? "0" + index : index}
-      </h1>
+    <>
+      <div className="flex gap-5 lg:gap-10 pb-6 border-b mb-6 border-grey">
+        <h1 className="blog-index text-center pl-4 md:pl-6 flex-none">
+          {index < 10 ? "0" + index : index}
+        </h1>
 
-      <div>
-        <h1 className="blog-title mb-3">{title}</h1>
-        <p className="line-clamp-2 font-gelasio">
-          {des.length ? des : "No Description"}
-        </p>
+        <div>
+          <h1 className="blog-title mb-3">{title}</h1>
+          <p className="line-clamp-2 font-gelasio">
+            {des.length ? des : "No Description"}
+          </p>
 
-        <div className="flex gap-6 mt-3">
-          <Link className="pr-4 py-2 underline" to={`/editor/${blog_id}`}>
-            Edit
-          </Link>
+          <div className="flex gap-6 mt-3">
+            <Link className="pr-4 py-2 underline" to={`/editor/${blog_id}`}>
+              Edit
+            </Link>
 
-          <button
-            className="pr-4 py-2 underline text-red"
-            onClick={(e) => deleteBlog(blog, access_token, e.target)}
-          >
-            Delete
-          </button>
+            <button
+              className="pr-4 py-2 underline text-red"
+              onClick={handleDeleteClick}
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Draft"
+        message="Are you sure you want to delete this draft? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+    </>
   );
 };
 
-const deleteBlog = (blog, access_token, target) => {
-  let { index, blog_id, setStateFunc } = blog;
-
-  target.setAttribute("disable", true);
+const deleteBlog = (blog, access_token) => {
+  let { blog_id, setStateFunc } = blog;
 
   axios
     .post(
@@ -146,11 +189,10 @@ const deleteBlog = (blog, access_token, target) => {
       }
     )
     .then(({ data }) => {
-      target.removeAttribute("disabled");
       setStateFunc((preVal) => {
         let { deleteDocCount, totalDocs, results } = preVal;
 
-        results.splice(index, 1);
+        results = results.filter((blog) => blog.blog_id !== blog_id);
 
         if (!deleteDocCount) {
           deleteDocCount = 0;
@@ -163,6 +205,7 @@ const deleteBlog = (blog, access_token, target) => {
           ...preVal,
           totalDocs: totalDocs - 1,
           deleteDocCount: deleteDocCount + 1,
+          results,
         };
       });
     })
@@ -170,4 +213,3 @@ const deleteBlog = (blog, access_token, target) => {
       console.log(err);
     });
 };
-// export default ManagePublishedBlogCard
