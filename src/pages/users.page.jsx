@@ -66,15 +66,19 @@ const Users = () => {
     if (e.type === "change") {
       setQuery(e.target.value);
     }
-    
+
     // Выполняем поиск только при нажатии Enter
     if (e.type === "keydown" && e.key === "Enter") {
       setUsers(null); // Сбрасываем текущие результаты
-      getUsers({ 
+      getUsers({
         page: 1,
-        create_new_arr: true // Указываем создание нового массива
+        create_new_arr: true, // Указываем создание нового массива
       });
     }
+  };
+
+  const clearSearch = () => {
+    setQuery("");
   };
 
   // HANDLE ROLE CHANGE
@@ -171,14 +175,24 @@ const Users = () => {
 
       <div className="relative max-md:mt-5 md:mt-8 mb-10">
         <input
-          type="search"
-          className="w-full bg-grey p-4 pl-12 pr-6 rounded-full placeholder:text-dark-grey"
+          type="text"
           placeholder="Search users"
           onChange={handleSearch}
           onKeyDown={handleSearch}
           value={query}
+          className="w-full bg-grey p-4 pl-6 pr-6 rounded-full placeholder:text-dark-grey"
         />
-        <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
+
+        {query ? (
+          <button
+            onClick={clearSearch}
+            className="absolute right-[21px] top-1/2 -translate-y-1/2 text-dark-grey hover:text-black"
+          >
+            <i className="fi fi-br-cross text-sm"></i>
+          </button>
+        ) : (
+          <i className="fi fi-rr-search flex-center absolute right-[21px] md:pointer-events-none top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
+        )}
       </div>
 
       {loading ? (
