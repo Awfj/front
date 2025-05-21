@@ -31,7 +31,7 @@ const Users = () => {
     userAuth: { access_token },
   } = useContext(UserContext);
 
-  const getUsers = ({ page = 1 }) => {
+  const getUsers = ({ page = 1, create_new_arr = false }) => {
     setLoading(true);
     axios
       .post(
@@ -45,7 +45,7 @@ const Users = () => {
       )
       .then(async ({ data }) => {
         let formateData = await filterPaginationData({
-          state: users,
+          state: create_new_arr ? null : users, // Сбрасываем state если create_new_arr true
           data: data.users,
           page,
           user: access_token,
@@ -62,12 +62,18 @@ const Users = () => {
   };
 
   const handleSearch = (e) => {
-    let searchQuery = e.target.value;
-    setQuery(searchQuery);
-
-    if (e.keyCode === 13) {
-      setUsers(null);
-      getUsers({ page: 1 });
+    // Обновляем значение поиска без отправки запроса
+    if (e.type === "change") {
+      setQuery(e.target.value);
+    }
+    
+    // Выполняем поиск только при нажатии Enter
+    if (e.type === "keydown" && e.key === "Enter") {
+      setUsers(null); // Сбрасываем текущие результаты
+      getUsers({ 
+        page: 1,
+        create_new_arr: true // Указываем создание нового массива
+      });
     }
   };
 
@@ -170,6 +176,7 @@ const Users = () => {
           placeholder="Search users"
           onChange={handleSearch}
           onKeyDown={handleSearch}
+          value={query}
         />
         <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
       </div>
