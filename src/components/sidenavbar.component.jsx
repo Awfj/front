@@ -92,7 +92,7 @@ const SideNav = () => {
               className="sidebar-link"
             >
               <i className="fi fi-rr-document icon"></i>
-              Blogs
+              Blog
             </NavLink>
 
             {/* Bookmarks */}

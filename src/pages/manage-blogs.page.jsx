@@ -95,7 +95,7 @@ const ManageBlog = () => {
         <input
           type="search"
           className="w-full bg-grey p-4 pl-12 pr-6 rounded-full placeholder:text-dark-grey"
-          placeholder="Search Blogs"
+          placeholder="Search Posts"
           onChange={handleChange}
           onKeyDown={handleSearch}
         />
