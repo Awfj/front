@@ -16,7 +16,7 @@ const Navbar = () => {
   let { theme, setTheme } = useContext(ThemeContext);
   const {
     userAuth,
-    userAuth: { access_token, profile_img, new_notification_available },
+    userAuth: { access_token, profile_img, new_notification_available, role },
     setUserAuth,
   } = useContext(UserContext);
   const handleUserNavPanel = () => {
@@ -65,6 +65,16 @@ const Navbar = () => {
     document.body.setAttribute("data-theme", newTheme);
     storeInSession("theme", newTheme);
   };
+
+  const getBorderStyle = (role) => {
+    if (role === "admin") {
+      return "border-2 border-red";
+    } else if (role === "moderator") {
+      return "border-2 border-green-500";
+    }
+    return "border-2 border-magenta";
+  };
+
   return (
     <>
       <nav className="navbar z-50">
@@ -88,7 +98,7 @@ const Navbar = () => {
               onKeyDown={handleChange}
               className="search-border w-full md:w-auto p-4 pl-6 pr-[12%] rounded-full placeholder:text-dark-grey md:pr-12 bg-transparent"
             />
-            
+
             {searchValue ? (
               <button
                 onClick={clearSearch}
@@ -150,7 +160,11 @@ const Navbar = () => {
                 onBlur={handleBlur}
               >
                 {/* PROFILE */}
-                <button className="w-12 h-12 mt1 border border-magenta rounded-full">
+                <button
+                  className={`w-12 h-12 mt1 rounded-full ${getBorderStyle(
+                    role
+                  )}`}
+                >
                   <img
                     src={profile_img}
                     alt="Profile"

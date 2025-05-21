@@ -6,7 +6,7 @@ import { removeFromSession } from "../common/session";
 
 const UserNavigationPanel = () => {
   const {
-    userAuth: { username },
+    userAuth: { username, role },
     setUserAuth,
   } = useContext(UserContext);
   const handleSignOut = () => {
@@ -26,7 +26,10 @@ const UserNavigationPanel = () => {
         <Link to={`/user/${username}`} className="link pl-8 py-4 ">
           Profile
         </Link>
-        <Link to={`/dashboard/blogs`} className="link pl-8 py-4 ">
+        <Link
+          to={role === "admin" ? "/dashboard/users" : "/dashboard/blogs"}
+          className="link pl-8 py-4"
+        >
           Dashboard
         </Link>
         <Link to={`/settings/edit-profile`} className="link pl-8 py-4 ">

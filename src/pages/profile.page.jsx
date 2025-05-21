@@ -241,6 +241,15 @@ const ProfilePage = () => {
     setProfileLoaded("");
   };
 
+  const getBorderStyle = (role) => {
+    if (role === "admin") {
+      return "border-red";
+    } else if (role === "moderator") {
+      return "border-green-500";
+    }
+    return "border-magenta";
+  };
+
   return (
     <AnimationWrapper>
       {/* <Toaster/> */}
@@ -252,7 +261,7 @@ const ProfilePage = () => {
             <img
               src={profile_img}
               alt="Profile img"
-              className="w-48 h-48 bg-grey rounded-full md:w-32 md:h-32"
+              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border-2 ${getBorderStyle(profile.role)}`}
             />
             <h1 className="text-2xl font-medium">@{profile_username}</h1>
             <p className="text-xl capitalize h-6">{fullname}</p>

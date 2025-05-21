@@ -4,10 +4,19 @@ import { UserContext } from "../App";
 import DropdownMenu from "./dropdown-menu.component";
 
 const UserCard = ({ user, hasDropdownMenu = false, options }) => {
-  const { personal_info } = user;
+  const { personal_info, role } = user;
   const {
     userAuth: { access_token, username },
   } = useContext(UserContext);
+
+  const getBorderStyle = (role) => {
+    if (role === "admin") {
+      return "border-red";
+    } else if (role === "moderator") {
+      return "border-green-500";
+    }
+    return "border-magenta";
+  };
 
   return (
     <div className="flex items-center justify-between gap-5 mb-5 pb-5 border-b border-grey">
@@ -17,7 +26,7 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
       >
         <img
           src={personal_info.profile_img}
-          className="w-14 h-14 rounded-full"
+          className={`w-14 h-14 rounded-full border-4 ${getBorderStyle(role)}`}
           alt={personal_info.fullname}
         />
         <div>
