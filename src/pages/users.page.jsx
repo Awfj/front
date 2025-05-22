@@ -239,15 +239,21 @@ const Users = () => {
         message="Select new role for this user:"
         customContent={
           <div className="flex flex-col gap-2 mb-4">
-            {["author", "moderator"].map((role) => (
+            {["author", "moderator", "admin"].map((role) => (
               <button
                 key={role}
                 onClick={() => confirmRoleChange(role)}
                 className={`btn-light rounded-md capitalize py-2 ${
                   roleDialog.currentRole === role ? "bg-purple/10" : ""
+                } ${
+                  role === "admin"
+                    ? "border-red text-red hover:bg-red/10"
+                    : role === "moderator"
+                    ? "border-green-500 text-green-500 hover:bg-green-500/10"
+                    : ""
                 }`}
               >
-                {role}
+                {role === "admin" ? "administrator" : role}
               </button>
             ))}
           </div>
