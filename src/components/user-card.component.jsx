@@ -37,18 +37,18 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
         </div>
       </Link>
 
-      {hasDropdownMenu
-        ? personal_info.username !== username && (
-            <DropdownMenu items={options} />
-          )
-        : personal_info.username !== username && (
-            <button
-              onClick={() => options.btnHandler(user._id)}
-              className="btn-light rounded-md bg-red-500 text-black px-4 py-2"
-            >
-              {options.btnMessage}
-            </button>
-          )}
+      {hasDropdownMenu ? (
+        <DropdownMenu items={options} />
+      ) : (
+        personal_info.username !== username && (
+          <button
+            onClick={() => options.btnHandler(user._id)}
+            className="btn-light rounded-md bg-red-500 text-black px-4 py-2"
+          >
+            {options.btnMessage}
+          </button>
+        )
+      )}
     </div>
   );
 };

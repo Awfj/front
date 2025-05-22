@@ -10,8 +10,10 @@ import UserCard from "../components/user-card.component";
 import LoadMoreDataBtn from "../components/load-more.component";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../components/confirm-dialog.component";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState(null);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,9 @@ const Users = () => {
   });
 
   let {
+    userAuth,
     userAuth: { access_token },
+    setUserAuth,
   } = useContext(UserContext);
 
   const getUsers = ({ page = 1, create_new_arr = false }) => {
@@ -105,7 +109,7 @@ const Users = () => {
 
   const handleConfirm = () => {
     if (confirmDialog.action === "delete") {
-      handleDeleteConfirm();
+      confirmDelete();
     } else if (confirmDialog.action === "changeRole") {
       handleRoleChangeConfirm();
     }
@@ -155,11 +159,13 @@ const Users = () => {
     setConfirmDialog({
       isOpen: true,
       userId,
+      action: "delete", // Добавляем action при открытии диалога удаления
     });
   };
 
   const confirmDelete = () => {
-    const userId = confirmDialog.userId;
+    const { userId } = confirmDialog;
+    const isCurrentUser = userId === userAuth._id;
 
     axios
       .post(
@@ -172,11 +178,23 @@ const Users = () => {
         }
       )
       .then(() => {
-        setUsers((prev) => ({
-          ...prev,
-          results: prev.results.filter((user) => user._id !== userId),
-          totalDocs: prev.totalDocs - 1,
-        }));
+        if (isCurrentUser) {
+          // Если админ удалил себя
+          logOutUser();
+          setUserAuth({ access_token: null });
+          navigate("/");
+        } else {
+          // Обновляем список пользователей
+          setUsers((prev) => {
+            if (!prev || !prev.results) return prev;
+
+            return {
+              ...prev,
+              results: prev.results.filter((user) => user._id !== userId),
+              totalDocs: prev.totalDocs - 1,
+            };
+          });
+        }
         toast.success("User deleted successfully");
       })
       .catch((err) => {
@@ -184,7 +202,7 @@ const Users = () => {
         toast.error(err.response?.data?.error || "Error deleting user");
       })
       .finally(() => {
-        setConfirmDialog({ isOpen: false, userId: null });
+        setConfirmDialog({ isOpen: false, userId: null, action: null });
       });
   };
 
