@@ -91,7 +91,28 @@ const Users = () => {
   };
 
   const confirmRoleChange = (newRole) => {
-    const userId = roleDialog.userId;
+    // Закрываем диалог выбора роли
+    setRoleDialog({ isOpen: false, userId: null, currentRole: null });
+
+    // Показываем диалог подтверждения
+    setConfirmDialog({
+      isOpen: true,
+      userId: roleDialog.userId,
+      action: "changeRole",
+      newRole: newRole,
+    });
+  };
+
+  const handleConfirm = () => {
+    if (confirmDialog.action === "delete") {
+      handleDeleteConfirm();
+    } else if (confirmDialog.action === "changeRole") {
+      handleRoleChangeConfirm();
+    }
+  };
+
+  const handleRoleChangeConfirm = () => {
+    const { userId, newRole } = confirmDialog;
 
     axios
       .post(
@@ -120,7 +141,12 @@ const Users = () => {
         toast.error(err.response?.data?.error || "Error updating role");
       })
       .finally(() => {
-        setRoleDialog({ isOpen: false, userId: null, currentRole: null });
+        setConfirmDialog({
+          isOpen: false,
+          userId: null,
+          action: null,
+          newRole: null,
+        });
       });
   };
 
@@ -264,11 +290,21 @@ const Users = () => {
       {/* Existing delete dialog */}
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
-        onClose={() => setConfirmDialog({ isOpen: false, userId: null })}
-        onConfirm={confirmDelete}
-        title="Delete User"
-        message="Are you sure you want to delete this user? This action cannot be undone."
-        confirmText="Delete"
+        onClose={() =>
+          setConfirmDialog({ isOpen: false, userId: null, action: null })
+        }
+        onConfirm={handleConfirm}
+        title={
+          confirmDialog.action === "delete"
+            ? "Delete User"
+            : "Confirm Role Change"
+        }
+        message={
+          confirmDialog.action === "delete"
+            ? "Are you sure you want to delete this user? This action cannot be undone."
+            : `Are you sure you want to change this user's role to ${confirmDialog.newRole}?`
+        }
+        confirmText={confirmDialog.action === "delete" ? "Delete" : "Confirm"}
         cancelText="Cancel"
       />
     </>

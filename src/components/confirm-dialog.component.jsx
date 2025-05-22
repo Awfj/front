@@ -32,12 +32,14 @@ const ConfirmDialog = ({
           {customContent && <div className="mb-4">{customContent}</div>}
 
           <div className="flex justify-end gap-4">
-            <button
-              onClick={onConfirm}
-              className="btn-light rounded-md bg-red-500 transition-colors text-black"
-            >
-              {confirmText}
-            </button>
+            {confirmText !== "Cancel" && (
+              <button
+                onClick={onConfirm}
+                className="btn-light rounded-md bg-red-500 transition-colors text-black"
+              >
+                {confirmText}
+              </button>
+            )}
             <button
               onClick={onClose}
               className="btn-light rounded-md transition-colors"
