@@ -11,6 +11,7 @@ import LoadMoreDataBtn from "../components/load-more.component";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../components/confirm-dialog.component";
 import { useNavigate } from "react-router-dom";
+import { storeInSession, logOutUser } from "../common/session";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -117,6 +118,7 @@ const Users = () => {
 
   const handleRoleChangeConfirm = () => {
     const { userId, newRole } = confirmDialog;
+    const isCurrentUser = userId === userAuth._id;
 
     axios
       .post(
@@ -132,13 +134,26 @@ const Users = () => {
         }
       )
       .then(({ data }) => {
+        // Обновляем список пользователей
         setUsers((prev) => ({
           ...prev,
           results: prev.results.map((user) =>
             user._id === userId ? { ...user, role: data.newRole } : user
           ),
         }));
-        toast.success("User role updated successfully");
+
+        // Если администратор изменил свою роль
+        if (isCurrentUser) {
+          const updatedUserAuth = {
+            ...userAuth,
+            role: data.newRole,
+          };
+          setUserAuth(updatedUserAuth);
+          storeInSession("user", JSON.stringify(updatedUserAuth));
+          navigate("/");
+        } else {
+          toast.success("User role updated successfully");
+        }
       })
       .catch((err) => {
         console.error(err);
