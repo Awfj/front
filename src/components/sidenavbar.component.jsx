@@ -85,6 +85,17 @@ const SideNav = () => {
               </NavLink>
             )}
 
+            {(role === "admin" || role === "moderator") && (
+              <NavLink
+                to={"/dashboard/moderate"}
+                onClick={(e) => setPageState(e.target.innerText)}
+                className="sidebar-link"
+              >
+                <i className="fi fi-rr-shield-check icon"></i>
+                Moderate
+              </NavLink>
+            )}
+
             {/* Blogs */}
             <NavLink
               to={"/dashboard/blogs"}

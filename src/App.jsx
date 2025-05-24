@@ -16,6 +16,7 @@ import Notification from "./pages/notifications.page";
 import ManageBlog from "./pages/manage-blogs.page";
 import ManageBookmarks from "./pages/bookmarks.page";
 import Users from "./pages/users.page";
+import ModerateBlogsPage from "./pages/moderate-blogs.page";
 
 export const UserContext = createContext({});
 
@@ -63,6 +64,7 @@ const App = () => {
             <Route path="dashboard" element={<SideNav />}>
               <Route path="users" element={<Users />} />
               <Route path="blogs" element={<ManageBlog />} />
+              <Route path="moderate" element={<ModerateBlogsPage />} />
               <Route path="notifications" element={<Notification />} />
               <Route path="bookmarks" element={<ManageBookmarks />} />
             </Route>

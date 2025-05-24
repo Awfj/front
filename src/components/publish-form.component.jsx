@@ -101,7 +101,7 @@ const PublishForm = () => {
       return toast.error("Please select a category for your post");
     }
 
-    let loadingToast = toast.loading("Publishing...");
+    let loadingToast = toast.loading("Submitting for review...");
 
     let blogObj = {
       title,
@@ -110,6 +110,7 @@ const PublishForm = () => {
       content,
       tags,
       category,
+      status: "pending",
       draft: false,
     };
 
@@ -127,10 +128,10 @@ const PublishForm = () => {
       .then(() => {
         e.target.classList.remove("disable");
         toast.dismiss(loadingToast);
-        toast.success("Published successfully");
+        toast.success("Submitted for review");
         setTimeout(() => {
           navigate("/dashboard/blogs");
-        }, 5000);
+        }, 500);
       })
       .catch(({ response }) => {
         e.target.classList.remove("disable");
