@@ -8,6 +8,7 @@ import NoDataMessage from "../components/nodata.component";
 import AnimationWrapper from "../common/page-animation";
 import toast from "react-hot-toast";
 import BlogCard from "../components/blog-post.component";
+import { ModeratedBlogPost } from "../components/moderate.blog-post.component";
 import ConfirmDialog from "../components/confirm-dialog.component";
 
 const ModerateBlogsPage = () => {
@@ -111,24 +112,8 @@ const ModerateBlogsPage = () => {
         <>
           {blogs.results.map((blog, i) => (
             <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
-              <div className="flex flex-col gap-4 mb-6 border-b border-grey pb-6">
                 {/* Fix: Pass content and author separately */}
-                <BlogCard content={blog} author={blog.author} />
-                <div className="flex gap-4 justify-end">
-                  <button
-                    onClick={() => handleModeration(blog, "approve")}
-                    className="btn-dark bg-green-500"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleModeration(blog, "reject")}
-                    className="btn-dark bg-red"
-                  >
-                    Reject
-                  </button>
-                </div>
-              </div>
+                <ModeratedBlogPost blog={blog} author={blog.author} />
             </AnimationWrapper>
           ))}
         </>
