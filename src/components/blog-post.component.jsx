@@ -13,6 +13,7 @@ const BlogPostCard = ({ content, author }) => {
   const { userAuth } = useContext(UserContext);
 
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportReason, setReportReason] = useState("");
 
   let {
     publishedAt,
@@ -27,9 +28,12 @@ const BlogPostCard = ({ content, author }) => {
   } = content;
   let { fullname, profile_img, username } = author;
 
-  const handleReport = (reason) => {
+  const handleReport = () => {
     if (!userAuth.access_token) {
       return toast.error("Please login to report this blog");
+    }
+    if (!reportReason) {
+      return toast.error("Please select a reason");
     }
 
     axios
@@ -37,7 +41,7 @@ const BlogPostCard = ({ content, author }) => {
         `${import.meta.env.VITE_SERVER_DOMAIN}/report-blog`,
         {
           blog_id: _id,
-          reason,
+          reason: reportReason,
         },
         {
           headers: {
@@ -48,10 +52,15 @@ const BlogPostCard = ({ content, author }) => {
       .then(() => {
         toast.success("Blog reported successfully");
         setShowReportDialog(false);
+        setReportReason("");
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Error reporting blog");
+        toast.error(err.response?.data?.error || "Error reporting blog");
+        if (err.response?.status === 400) {
+          setShowReportDialog(false);
+          setReportReason("");
+        }
       });
   };
 
@@ -131,37 +140,41 @@ const BlogPostCard = ({ content, author }) => {
   return (
     <>
       <Toaster />
-      <Link
-        to={`/blog/${id}`}
-        className="flex flex-col border-b border-grey pb-5 mb-4"
-      >
+      <div className="flex flex-col border-b border-grey pb-5 mb-4">
         {/* First row: Avatar, Author, Date */}
         <div className="flex gap-2 items-center mb-4">
-          <img
-            src={profile_img}
-            alt={fullname}
-            className="w-6 h-6 rounded-full"
-          />
-          <p className="line-clamp-1">
-            {fullname} @{username}
-          </p>
+          <Link
+            to={`/user/${username}`}
+            className="flex items-center gap-2 hover:text-purple"
+          >
+            <img
+              src={profile_img}
+              alt={fullname}
+              className="w-6 h-6 rounded-full border border-magenta"
+            />
+            <p className="line-clamp-1">
+              {fullname} @{username}
+            </p>
+          </Link>
           <p className="min-w-fit">{getDay(publishedAt)}</p>
         </div>
 
         {/* Second row: Banner, Title, Description */}
-        <div className="flex gap-6 mb-4">
-          <div className="h-32 w-32 bg-grey flex-shrink-0">
-            <img
-              src={banner}
-              alt="Banner"
-              className="w-full h-full object-cover"
-            />
+        <Link to={`/blog/${id}`} className="block">
+          <div className="flex gap-6 mb-4">
+            <div className="h-32 w-32 bg-grey flex-shrink-0">
+              <img
+                src={banner}
+                alt="Banner"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="blog-title text-xl font-bold mb-2">{title}</h1>
+              <p className="text-dark-grey line-clamp-2">{des}</p>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="blog-title text-xl font-bold mb-2">{title}</h1>
-            <p className="text-dark-grey line-clamp-2">{des}</p>
-          </div>
-        </div>
+        </Link>
 
         {/* Third row: Category, Likes, Comments and Bookmarks */}
         <div className="flex items-center gap-4">
@@ -199,7 +212,6 @@ const BlogPostCard = ({ content, author }) => {
 
               <button
                 onClick={(e) => {
-                  e.preventDefault();
                   setShowReportDialog(true);
                 }}
                 className="flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
@@ -210,13 +222,16 @@ const BlogPostCard = ({ content, author }) => {
             </>
           )}
         </div>
-      </Link>
+      </div>
 
       {/* Report Dialog */}
       <ConfirmDialog
         isOpen={showReportDialog}
-        onClose={() => setShowReportDialog(false)}
-        onConfirm={(reason) => handleReport(reason)}
+        onClose={() => {
+          setShowReportDialog(false);
+          setReportReason("");
+        }}
+        onConfirm={handleReport}
         title="Report Blog"
         message="Please provide a reason for reporting this blog:"
         confirmText="Submit Report"
@@ -224,7 +239,8 @@ const BlogPostCard = ({ content, author }) => {
         customContent={
           <select
             className="w-full p-4 mb-4 border border-grey rounded-md"
-            onChange={(e) => handleReport(e.target.value)}
+            value={reportReason}
+            onChange={(e) => setReportReason(e.target.value)}
           >
             <option value="">Select a reason</option>
             <option value="spam">Spam</option>

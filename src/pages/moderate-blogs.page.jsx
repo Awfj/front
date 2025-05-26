@@ -7,23 +7,29 @@ import Loader from "../components/loader.component";
 import NoDataMessage from "../components/nodata.component";
 import AnimationWrapper from "../common/page-animation";
 import toast from "react-hot-toast";
-import BlogCard from "../components/blog-post.component";
-import { ModeratedBlogPost } from "../components/moderate.blog-post.component";
+import {
+  ModeratedBlogPost,
+  ReportedBlogPost,
+} from "../components/moderate.blog-post.component";
 import ConfirmDialog from "../components/confirm-dialog.component";
+import InPageNavigaion from "../components/inpage-navigation.component";
+import BlogPostCard from "../components/blog-post.component";
 
 const ModerateBlogsPage = () => {
-  const [blogs, setBlogs] = useState(null);
+  const [pendingBlogs, setPendingBlogs] = useState(null);
+  const [reportedBlogs, setReportedBlogs] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState({
     show: false,
     blog: null,
     action: null,
   });
-  console.log(blogs);
+
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
 
+  // Загрузка постов на модерацию
   const fetchPendingBlogs = ({ page = 1 }) => {
     setLoading(true);
     axios
@@ -39,7 +45,7 @@ const ModerateBlogsPage = () => {
       .then(async ({ data }) => {
         let formattedData = await filterPaginationData(
           {
-            state: blogs,
+            state: pendingBlogs,
             data: data.blogs,
             page,
             countRoute: "/pending-blogs-count",
@@ -50,7 +56,7 @@ const ModerateBlogsPage = () => {
             },
           }
         );
-        setBlogs(formattedData);
+        setPendingBlogs(formattedData);
         setLoading(false);
       })
       .catch((err) => {
@@ -60,8 +66,41 @@ const ModerateBlogsPage = () => {
       });
   };
 
-  const handleModeration = (blog, action) => {
-    setShowDialog({ show: true, blog, action });
+  // Загрузка жалоб пользователей
+  const fetchReportedBlogs = ({ page = 1 }) => {
+    setLoading(true);
+    axios
+      .post(
+        import.meta.env.VITE_SERVER_DOMAIN + "/reported-blogs",
+        { page },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then(async ({ data }) => {
+        let formattedData = await filterPaginationData(
+          {
+            state: reportedBlogs,
+            data: data.blogs,
+            page,
+            countRoute: "/reported-blogs-count",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          }
+        );
+        setReportedBlogs(formattedData);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Error fetching reported blogs");
+        setLoading(false);
+      });
   };
 
   const confirmModeration = (comment = "") => {
@@ -83,7 +122,7 @@ const ModerateBlogsPage = () => {
       )
       .then(() => {
         toast.success(`Blog ${action === "approve" ? "approved" : "rejected"}`);
-        setBlogs((prev) => ({
+        setPendingBlogs((prev) => ({
           ...prev,
           results: prev.results.filter((b) => b._id !== blog._id),
         }));
@@ -99,27 +138,57 @@ const ModerateBlogsPage = () => {
 
   useEffect(() => {
     fetchPendingBlogs({ page: 1 });
+    fetchReportedBlogs({ page: 1 });
   }, [access_token]);
 
   return (
     <>
-      <h1 className="max-md:hidden text-2xl font-medium mb-8">Pending Posts</h1>
+      <h1 className="max-md:hidden text-2xl font-medium mb-4">Moderation</h1>
       <Toaster />
 
-      {loading ? (
-        <Loader />
-      ) : blogs?.results?.length ? (
-        <>
-          {blogs.results.map((blog, i) => (
-            <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
-                {/* Fix: Pass content and author separately */}
-                <ModeratedBlogPost blog={blog} author={blog.author} />
-            </AnimationWrapper>
-          ))}
-        </>
-      ) : (
-        <NoDataMessage message="No posts pending review" />
-      )}
+      <InPageNavigaion
+        routes={["Pending Review", "Reported Posts"]}
+        defaultActiveIndex={0}
+      >
+        {/* Вкладка 1: Ожидающие модерации */}
+        {loading ? (
+          <Loader />
+        ) : pendingBlogs?.results?.length ? (
+          <>
+            {pendingBlogs.results.map((blog, i) => (
+              <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
+                <ModeratedBlogPost
+                  blog={{ ...blog, setStateFunc: setPendingBlogs }}
+                  author={blog.author}
+                />
+              </AnimationWrapper>
+            ))}
+          </>
+        ) : (
+          <NoDataMessage message="No posts pending review" />
+        )}
+
+        {/* Reported Posts tab */}
+        {loading ? (
+          <Loader />
+        ) : reportedBlogs?.results?.length ? (
+          <>
+            {reportedBlogs.results.map((blog, i) => (
+              <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
+                <ReportedBlogPost
+                  blog={{
+                    ...blog,
+                    setStateFunc: setReportedBlogs, // Передаем функцию обновления состояния
+                  }}
+                  author={blog.author.personal_info || blog.author}
+                />
+              </AnimationWrapper>
+            ))}
+          </>
+        ) : (
+          <NoDataMessage message="No reported posts" />
+        )}
+      </InPageNavigaion>
 
       <ConfirmDialog
         isOpen={showDialog.show}
