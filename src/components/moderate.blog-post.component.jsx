@@ -104,13 +104,13 @@ export const ModeratedBlogPost = ({ blog, author }) => {
           <div className="flex gap-6 mt-3">
             <button
               onClick={() => handleAction("approv")}
-              className="btn-dark bg-green"
+              className="btn-dark bg-green text-rly-white"
             >
               Approve
             </button>
             <button
               onClick={() => handleAction("reject")}
-              className="btn-dark bg-red"
+              className="btn-dark bg-red text-rly-white"
             >
               Reject
             </button>

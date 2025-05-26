@@ -159,7 +159,7 @@ const ModerateBlogsPage = () => {
               <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
                 <ModeratedBlogPost
                   blog={{ ...blog, setStateFunc: setPendingBlogs }}
-                  author={blog.author}
+                  author={blog.author.personal_info || blog.author}
                 />
               </AnimationWrapper>
             ))}

@@ -70,7 +70,7 @@ const Navbar = () => {
     if (role === "admin") {
       return "border-2 border-red";
     } else if (role === "moderator") {
-      return "border-2 border-green-500";
+      return "border-2 border-green";
     }
     return "border-2 border-magenta";
   };
