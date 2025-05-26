@@ -6,6 +6,30 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import ConfirmDialog from "./confirm-dialog.component";
 
+const ReportReasons = {
+  "Harmful Content": [
+    "hate_speech",
+    "harassment",
+    "violence",
+    "self_harm",
+    "nsfw_content",
+  ],
+  "Content Issues": [
+    "spam",
+    "copyright",
+    "plagiarism",
+    "misinformation",
+    "fake_news",
+  ],
+  "Technical Issues": [
+    "broken_links",
+    "formatting",
+    "missing_images",
+    "loading_issues",
+  ],
+  Other: ["inappropriate", "other"],
+};
+
 const BlogPostCard = ({ content, author }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -185,7 +209,7 @@ const BlogPostCard = ({ content, author }) => {
             className="flex items-center gap-2 text-dark-grey"
           >
             <i
-              className={`fi fi-${isLiked ? "sr" : "rr"}-heart text-xl icon ${
+              className={`fi fi-${isLiked ? "sr" : "rr"}-heart flex text-xl icon ${
                 isLiked ? "text-red" : ""
               }`}
             ></i>
@@ -193,7 +217,7 @@ const BlogPostCard = ({ content, author }) => {
           </button>
 
           <span className="flex items-center gap-2 text-dark-grey">
-            <i className="flex-center fi fi-rr-comment-dots text-xl icon"></i>
+            <i className="flex-center flex fi fi-rr-comment-dots text-xl icon"></i>
             {total_comments}
           </span>
 
@@ -206,7 +230,7 @@ const BlogPostCard = ({ content, author }) => {
                 <i
                   className={`fi fi-${
                     isBookmarked ? "sr" : "rr"
-                  }-bookmark text-xl icon ${isBookmarked ? "text-purple" : ""}`}
+                  }-bookmark flex text-xl icon ${isBookmarked ? "text-purple" : ""}`}
                 ></i>
               </button>
 
@@ -216,7 +240,7 @@ const BlogPostCard = ({ content, author }) => {
                 }}
                 className="flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
               >
-                <i className="fi fi-rr-flag text-xl"></i>
+                <i className="fi fi-rr-flag text-xl flex"></i>
                 Report
               </button>
             </>
@@ -232,24 +256,33 @@ const BlogPostCard = ({ content, author }) => {
           setReportReason("");
         }}
         onConfirm={handleReport}
-        title="Report Blog"
-        message="Please provide a reason for reporting this blog:"
+        title="Report Post"
+        message="Please provide a reason for reporting this post:"
         confirmText="Submit Report"
         cancelText="Cancel"
         customContent={
           <select
-            className="w-full p-4 mb-4 border border-grey rounded-md"
+            className="w-full p-3 pr-8 rounded-md bg-light-grey border border-grey 
+              appearance-none bg-no-repeat bg-[right_0.75rem_center] 
+              bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
             value={reportReason}
             onChange={(e) => setReportReason(e.target.value)}
           >
             <option value="">Select a reason</option>
-            <option value="spam">Spam</option>
-            <option value="hate_speech">Hate Speech</option>
-            <option value="inappropriate">Inappropriate Content</option>
-            <option value="harassment">Harassment</option>
-            <option value="violence">Violence</option>
-            <option value="copyright">Copyright Violation</option>
-            <option value="other">Other</option>
+            {Object.entries(ReportReasons).map(([category, reasons]) => (
+              <optgroup key={category} label={category}>
+                {reasons.map((reason) => (
+                  <option key={reason} value={reason}>
+                    {reason
+                      .split("_")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         }
       />
