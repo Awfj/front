@@ -24,11 +24,14 @@ export default {
   plugins: [
     createThemes({
       light: {
+        "rly-white": "#FFFFFF",
         white: "#FFFFFF",
         black: "#242424",
         grey: "#d9d9d9",
         "light-grey": "#F3F3F3",
         "dark-grey": "#6B6B6B",
+        green: "#22c55e",
+        "dark-red": "#991F1F",
         red: "#FF4E4E",
         transparent: "transparent",
         twitter: "#1DA1F2",
@@ -43,8 +46,9 @@ export default {
         grey: "#404040",
         "light-grey": "#2A2A2A",
         "dark-grey": "#E7E7E7",
-        // red: "#991F1F",
-        red: "#FF4E4E",
+        green: "#1da34e",
+        "dark-red": "#991F1F",
+        red: "#c13838",
         transparent: "transparent",
         twitter: "#0E71A8",
         blue: "#834dff",
