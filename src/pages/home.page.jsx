@@ -787,7 +787,7 @@ const Home = () => {
                           <img
                             src={author.personal_info.profile_img}
                             alt={author.personal_info.fullname}
-                            className="w-14 h-14 rounded-full"
+                            className="w-14 h-14 rounded-full border border-magenta"
                           />
                           <div>
                             <h3 className="font-medium text-xl line-clamp-1">
