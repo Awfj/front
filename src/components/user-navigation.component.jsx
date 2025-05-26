@@ -27,7 +27,13 @@ const UserNavigationPanel = () => {
           Profile
         </Link>
         <Link
-          to={role === "admin" ? "/dashboard/users" : "/dashboard/blogs"}
+          to={
+            role === "admin"
+              ? "/dashboard/users"
+              : role === "moderator"
+              ? "/dashboard/moderation"
+              : "/dashboard/blogs"
+          }
           className="link pl-8 py-4"
         >
           Dashboard

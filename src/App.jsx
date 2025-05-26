@@ -64,7 +64,7 @@ const App = () => {
             <Route path="dashboard" element={<SideNav />}>
               <Route path="users" element={<Users />} />
               <Route path="blogs" element={<ManageBlog />} />
-              <Route path="moderate" element={<ModerateBlogsPage />} />
+              <Route path="moderation" element={<ModerateBlogsPage />} />
               <Route path="notifications" element={<Notification />} />
               <Route path="bookmarks" element={<ManageBookmarks />} />
             </Route>
