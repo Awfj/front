@@ -13,7 +13,7 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
     if (role === "admin") {
       return "border-red";
     } else if (role === "moderator") {
-      return "border-green-500";
+      return "border-green";
     }
     return "border-magenta";
   };
