@@ -13,6 +13,7 @@ import LoadMoreDataBtn from "../components/load-more.component";
 import PageNotFound from "./404.page";
 import toast, { Toaster } from "react-hot-toast";
 import UserCard from "../components/user-card.component";
+import AchievementBadge from "../components/achievement-badge.component";
 
 export const profileDataStructure = {
   personal_info: {
@@ -27,6 +28,7 @@ export const profileDataStructure = {
     total_followers: 0,
     total_following: 0,
   },
+  achievements: [],
   social_links: {},
   joinedAt: "",
 };
@@ -39,6 +41,7 @@ const ProfilePage = () => {
   const { id: profileId } = useParams();
   const [followers, setFollowers] = useState(null);
   const [following, setFollowing] = useState(null);
+  console.log(profile);
 
   const getFollowers = ({ page = 1, user_id }) => {
     axios
@@ -92,7 +95,8 @@ const ProfilePage = () => {
     },
     social_links,
     joinedAt,
-    role
+    role,
+    achievements,
   } = profile;
 
   let {
@@ -262,15 +266,55 @@ const ProfilePage = () => {
             <img
               src={profile_img}
               alt="Profile img"
-              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(role)}`}
+              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
+                role
+              )}`}
             />
             <h1 className="text-2xl font-medium">@{profile_username}</h1>
             <p className="text-xl capitalize h-6">{fullname}</p>
-            <p>{total_posts.toLocaleString()} Blogs</p>
-            <p>{total_reads.toLocaleString()} Reads</p>
-            {/* TODO: FOLLOWER COUNT */}
-            <p>{total_followers.toLocaleString()} Followers</p>
-            <p>{total_following.toLocaleString()} Following</p>
+            {/* Статистика профиля */}
+            <div className="grid grid-cols-2 gap-4 w-full mb-2">
+              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                  <span className="text-3xl font-bold">
+                    {total_posts.toLocaleString()}
+                  </span>
+                  <span className="text-dark-grey text-md flex items-center gap-1">
+                    <i className="fi fi-rr-document"></i> Blogs
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                  <span className="text-3xl font-bold">
+                    {total_reads.toLocaleString()}
+                  </span>
+                  <span className="text-dark-grey text-md flex items-center gap-1">
+                    <i className="fi fi-rr-book-open-reader"></i> Reads
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                  <span className="text-3xl font-bold">
+                    {total_followers.toLocaleString()}
+                  </span>
+                  <span className="text-dark-grey text-md flex items-center gap-1">
+                    <i className="fi fi-rr-user"></i> Followers
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                  <span className="text-3xl font-bold">
+                    {total_following.toLocaleString()}
+                  </span>
+                  <span className="text-dark-grey text-md flex items-center gap-1">
+                    <i className="fi fi-rr-users-alt"></i> Following
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* EDIT OR FOLLOW */}
             <div className="flex gap-4 mt-2">
@@ -299,6 +343,22 @@ const ProfilePage = () => {
               social_links={social_links}
               joinedAt={joinedAt}
             />
+
+            {/* Achievements Section */}
+            {achievements?.length > 0 && (
+              <div className="w-full border-t border-grey pt-6">
+                <h2 className="text-xl font-medium mb-4">Achievements</h2>
+                <div className="flex flex-wrap gap-4">
+                  {achievements.map((achievement) => (
+                    <AchievementBadge
+                      key={achievement.achievement._id}
+                      achievement={achievement.achievement}
+                      unlockedAt={achievement.unlockedAt}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="max-md:mt-12 w-full">
