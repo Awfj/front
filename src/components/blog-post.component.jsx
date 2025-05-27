@@ -161,6 +161,15 @@ const BlogPostCard = ({ content, author }) => {
       });
   };
 
+  const getBorderStyle = (role) => {
+    if (role === "admin") {
+      return "border-red";
+    } else if (role === "moderator") {
+      return "border-green";
+    }
+    return "border-magenta";
+  };
+
   return (
     <>
       <Toaster />
@@ -174,7 +183,7 @@ const BlogPostCard = ({ content, author }) => {
             <img
               src={profile_img}
               alt={fullname}
-              className="w-6 h-6 rounded-full border border-magenta"
+              className={`w-6 h-6 rounded-full border ${getBorderStyle(author.role)}`}
             />
             <p className="line-clamp-1">
               {fullname} @{username}

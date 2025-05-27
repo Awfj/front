@@ -546,7 +546,7 @@ const Home = () => {
                   >
                     <BlogPostCard
                       content={blog}
-                      author={blog.author.personal_info}
+                      author={{role: blog.author.role, ...blog.author.personal_info}}
                     />
                   </AnimationWrapper>
                 ))
@@ -574,7 +574,7 @@ const Home = () => {
                     >
                       <BlogPostCard
                         content={blog}
-                        author={blog.author.personal_info}
+                        author={{role: blog.author.role, ...blog.author.personal_info}}
                       />
                     </AnimationWrapper>
                   );
@@ -611,7 +611,7 @@ const Home = () => {
                   >
                     <BlogPostCard
                       content={blog}
-                      author={blog.author.personal_info}
+                      author={{role: blog.author.role, ...blog.author.personal_info}}
                     />
                   </AnimationWrapper>
                 ))}

@@ -92,6 +92,7 @@ const ProfilePage = () => {
     },
     social_links,
     joinedAt,
+    role
   } = profile;
 
   let {
@@ -245,7 +246,7 @@ const ProfilePage = () => {
     if (role === "admin") {
       return "border-red";
     } else if (role === "moderator") {
-      return "border-green-500";
+      return "border-green";
     }
     return "border-magenta";
   };
@@ -261,7 +262,7 @@ const ProfilePage = () => {
             <img
               src={profile_img}
               alt="Profile img"
-              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32`}
+              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(role)}`}
             />
             <h1 className="text-2xl font-medium">@{profile_username}</h1>
             <p className="text-xl capitalize h-6">{fullname}</p>
