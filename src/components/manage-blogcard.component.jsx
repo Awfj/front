@@ -284,11 +284,16 @@ export const ManageRejectedBlogCard = ({ blog }) => {
       )
       .then(() => {
         toast.success("Blog resubmitted for review");
+        // Удаляем из rejected
         blog.setStateFunc((prev) => ({
           ...prev,
           results: prev.results.filter((b) => b.blog_id !== blog_id),
           totalDocs: prev.totalDocs - 1,
         }));
+        // Обновляем pending
+        if (typeof blog.setPendingBlogs === "function") {
+          blog.setPendingBlogs(null); // сбрасываем, чтобы useEffect подгрузил заново
+        }
       })
       .catch((err) => {
         console.error(err);

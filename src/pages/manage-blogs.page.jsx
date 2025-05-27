@@ -213,7 +213,12 @@ const ManageBlog = () => {
             {rejectedBlogs.results.map((blog, i) => (
               <AnimationWrapper key={i} transition={{ delay: i * 0.04 }}>
                 <ManageRejectedBlogCard
-                  blog={{ ...blog, index: i, setStateFunc: setRejectedBlogs }}
+                  blog={{
+                    ...blog,
+                    index: i,
+                    setStateFunc: setRejectedBlogs,
+                    setPendingBlogs,
+                  }}
                   isRejected={true}
                 />
               </AnimationWrapper>
