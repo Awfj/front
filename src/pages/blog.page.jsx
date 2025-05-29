@@ -210,7 +210,7 @@ const BlogPage = () => {
                 </div>
               </div>
 
-              <div className="mt-12 mb-8 font-gelasio blog-page-content">
+              <div className="mt-10 mb-8 font-gelasio blog-page-content">
                 {content[0].blocks.map((block, i) => {
                   return (
                     <div className="my-4 md:my-8" key={i}>
