@@ -65,7 +65,6 @@ const BlogPage = () => {
     category,
   } = blog;
 
-  console.log(role)
   const fetchBlog = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id })
@@ -77,11 +76,13 @@ const BlogPage = () => {
 
         setBlog(blog);
 
+        // Ищем похожие посты по категории и тегам
         axios
           .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
-            tag: blog.tags[0],
-            limit: 6,
+            category: blog.category,
+            tags: blog.tags,
             eliminate_blog: blog_id,
+            limit: 6,
           })
           .then(({ data: { blogs } }) => {
             setSimilarBlog(blogs);
