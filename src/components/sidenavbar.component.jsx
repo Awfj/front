@@ -116,6 +116,15 @@ const SideNav = () => {
               Bookmarks
             </NavLink>
 
+            <NavLink
+              to={"/dashboard/likes"}
+              onClick={(e) => setPageState(e.target.innerText)}
+              className="sidebar-link"
+            >
+              <i className="fi fi-rr-heart icon"></i>
+              Likes
+            </NavLink>
+
             {/* Notifications */}
             <NavLink
               to={"/dashboard/notifications"}
