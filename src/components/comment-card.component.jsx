@@ -38,7 +38,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
   const [isReplying, setReplying] = useState(false);
   const handleReplyClick = () => {
     if (!access_token) {
-      return toast.error("Login first to leave a reply");
+      return toast.error("Log In first to leave a reply");
     }
     setReplying((prev) => !prev);
   };
@@ -211,8 +211,8 @@ const CommentCard = ({ index, leftVal, commentData }) => {
               onClick={loadReplies}
               className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
             >
-              <i className="fi fi-rs-comment-dots"></i>
-              {children.length} Reply
+              <i className="flex fi fi-rs-comment-dots"></i>
+              {children.length}
             </button>
           )}
           <button onClick={handleReplyClick} className="underline">

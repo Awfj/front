@@ -63,11 +63,9 @@ const CommentContainer = () => {
   return (
     <div
       className={
-        "w-full "}
+        "w-full mt-6"}
     >
       <div className="relative">
-        <h1 className="text-xl font-medium">Comments</h1>
-        <hr className="border-grey my-8 w-[120%] -ml-10" />
         <CommentField action="comment" />
 
         {commentArr && commentArr.length ? (

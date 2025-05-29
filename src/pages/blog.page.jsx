@@ -187,7 +187,7 @@ const BlogPage = () => {
                 </div>
               </div>
 
-              <div className="my-12 font-gelasio blog-page-content">
+              <div className="mt-12 mb-8 font-gelasio blog-page-content">
                 {content[0].blocks.map((block, i) => {
                   return (
                     <div className="my-4 md:my-8" key={i}>
@@ -199,7 +199,7 @@ const BlogPage = () => {
 
               {/* Tags Section */}
               {tags?.length > 0 && (
-                <div className="flex items-center gap-3 flex-wrap my-8">
+                <div className="flex items-center gap-3 flex-wrap my-6">
                   <span className="text-dark-grey font-medium">Tags:</span>
                   {tags.map((tag, i) => (
                     <Link
@@ -220,7 +220,7 @@ const BlogPage = () => {
             {/* Similar Blogs Section - справа на десктопе */}
             {similarBlog !== null && similarBlog.length ? (
               <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen lg:overflow-y-auto">
-                <h1 className="font-medium text-2xl mb-8">Similar Blogs</h1>
+                <h1 className="font-medium text-2xl mb-8">Similar Posts</h1>
                 <div className="flex flex-col gap-6">
                   {similarBlog.map((blog, i) => (
                     <AnimationWrapper
