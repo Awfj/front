@@ -123,11 +123,11 @@ export const ModeratedBlogPost = ({ blog, author }) => {
         onClose={() => setShowActionDialog({ show: false, action: null })}
         onConfirm={confirmAction}
         title={`${
-          showActionDialog.action === "approve" ? "Approve" : "Reject"
+          showActionDialog.action === "approv" ? "Approve" : "Reject"
         } Post`}
         message="Add an optional comment for the author:"
         confirmText={
-          showActionDialog.action === "approve" ? "Approve" : "Reject"
+          showActionDialog.action === "approv" ? "Approve" : "Reject"
         }
         cancelText="Cancel"
         customContent={
