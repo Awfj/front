@@ -219,7 +219,7 @@ const BlogPostCard = ({ content, author }) => {
           >
             <i
               className={`fi fi-${isLiked ? "sr" : "rr"}-heart flex text-xl icon ${
-                isLiked ? "text-red" : ""
+                isLiked ? "text-magenta" : ""
               }`}
             ></i>
             {likesCount}
