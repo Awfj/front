@@ -104,14 +104,16 @@ export const ModeratedBlogPost = ({ blog, author }) => {
           <div className="flex gap-6 mt-3">
             <button
               onClick={() => handleAction("approv")}
-              className="btn-dark bg-green text-rly-white"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green text-white text-lg shadow hover:bg-green/80 transition-colors duration-200"
             >
+              <i className="flex fi fi-rr-check-circle text-2xl"></i>
               Approve
             </button>
             <button
               onClick={() => handleAction("reject")}
-              className="btn-dark bg-red text-rly-white"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-red text-white text-lg shadow hover:bg-red/80 transition-colors duration-200"
             >
+              <i className="flex fi fi-rr-cross-circle text-2xl"></i>
               Reject
             </button>
           </div>
@@ -294,9 +296,10 @@ export const ReportedBlogPost = ({ blog, author }) => {
           <div className="flex gap-6 mt-5">
             <button
               onClick={() => handleAction("reject")}
-              className="btn-dark text-rly-white bg-red"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-red text-white text-lg shadow hover:bg-red/80 transition-colors duration-200"
             >
-              Remove post
+              <i className="flex fi fi-rr-ban text-2xl"></i>
+              Remove
             </button>
           </div>
         </div>
