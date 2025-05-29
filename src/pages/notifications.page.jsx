@@ -8,6 +8,16 @@ import NoDataMessage from "../components/nodata.component";
 import NotificationCard from "../components/notification-card.component";
 import LoadMoreDataBtn from "../components/load-more.component";
 
+const filterLabels = {
+  all: "All",
+  like: "Likes",
+  comment: "Comments",
+  reply: "Replies",
+  achievement: "Achievements",
+  blog_approved: "Approved Posts",
+  blog_rejected: "Rejected Posts",
+};
+
 const Notification = () => {
   let {
     userAuth,
@@ -15,7 +25,15 @@ const Notification = () => {
     userAuth: { access_token, new_notification_available },
   } = useContext(UserContext);
   const [filter, setFilter] = useState("all");
-  const filters = ["all", "like", "comment", "reply"];
+  const filters = [
+    "all",
+    "like",
+    "comment",
+    "reply",
+    "achievement",
+    "blog_approved",
+    "blog_rejected",
+  ];
 
   const [notifications, setNotifications] = useState(null);
 
@@ -68,21 +86,22 @@ const Notification = () => {
 
   return (
     <div>
-      <h1 className="max-md:hidden">Recent Notification</h1>
-      <div className="my-8 flex gap-6 ">
-        {filters.map((filterName, i) => {
-          return (
+      <h1 className="max-md:hidden text-2xl mb-4">Recent Notifications</h1>
+      <div className="my-8">
+        <div className="flex flex-wrap gap-2 sm:gap-3 overflow-x-auto scrollbar-thin pb-2">
+          {filters.map((filterName, i) => (
             <button
               key={i}
               className={
-                "py-2 " + (filter == filterName ? "btn-dark" : "btn-light")
+                "py-2 px-4 whitespace-nowrap rounded-full transition-colors " +
+                (filter === filterName ? "btn-dark" : "btn-light")
               }
-              onClick={handleFilter}
+              onClick={() => setFilter(filterName)}
             >
-              {filterName}
+              {filterLabels[filterName]}
             </button>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       {notifications == null ? (
