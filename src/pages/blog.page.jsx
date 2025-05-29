@@ -76,7 +76,7 @@ const BlogPage = () => {
 
         setBlog(blog);
 
-        // Ищем похожие посты по категории и тегам
+        // Сначала ищем похожие посты по категории и тегам
         axios
           .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
             category: blog.category,
@@ -84,8 +84,31 @@ const BlogPage = () => {
             eliminate_blog: blog_id,
             limit: 6,
           })
-          .then(({ data: { blogs } }) => {
-            setSimilarBlog(blogs);
+          .then(async ({ data: { blogs } }) => {
+            // Если найдено меньше 6 похожих, добираем постами автора
+            let similar = blogs || [];
+            if (similar.length < 6) {
+              const alreadyIds = similar.map((b) => b._id);
+              const {
+                data: { blogs: authorBlogs },
+              } = await axios.post(
+                import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs",
+                {
+                  author: blog.author._id,
+                  eliminate_blog: blog_id,
+                  limit: 6 - similar.length,
+                }
+              );
+              const uniqueAuthorBlogs = authorBlogs
+                ? authorBlogs.filter((b) => !alreadyIds.includes(b._id))
+                : [];
+              similar = [...similar, ...uniqueAuthorBlogs];
+            }
+            // Удаляем текущий пост из similar (на всякий случай)
+            similar = similar.filter(
+              (b) => b.blog_id !== blog_id && b._id !== blog._id
+            );
+            setSimilarBlog(similar);
           })
           .catch((err) => {
             console.log(err);
@@ -218,11 +241,11 @@ const BlogPage = () => {
             </div>
 
             {/* Similar Blogs Section - справа на десктопе */}
-            {similarBlog !== null && similarBlog.length ? (
-              <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen lg:overflow-y-auto">
-                <h1 className="font-medium text-2xl mb-8">Similar Posts</h1>
-                <div className="flex flex-col gap-6">
-                  {similarBlog.map((blog, i) => (
+            <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen lg:overflow-y-auto min-h-[200px]">
+              <h1 className="font-medium text-2xl mb-8">Similar Posts</h1>
+              <div className="flex flex-col gap-6">
+                {similarBlog && similarBlog.length > 0 ? (
+                  similarBlog.map((blog, i) => (
                     <AnimationWrapper
                       key={i}
                       transition={{ duration: 1, delay: i * 0.08 }}
@@ -233,10 +256,14 @@ const BlogPage = () => {
                         isLastItem={i === similarBlog.length - 1}
                       />
                     </AnimationWrapper>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-dark-grey opacity-60 text-center pb-8">
+                    No similar posts found.
+                  </div>
+                )}
               </div>
-            ) : null}
+            </div>
           </div>
         </BlogContext.Provider>
       )}
