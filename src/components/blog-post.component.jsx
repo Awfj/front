@@ -183,7 +183,9 @@ const BlogPostCard = ({ content, author }) => {
             <img
               src={profile_img}
               alt={fullname}
-              className={`w-6 h-6 rounded-full border ${getBorderStyle(author.role)}`}
+              className={`w-6 h-6 rounded-full border ${getBorderStyle(
+                author.role
+              )}`}
             />
             <p className="line-clamp-1">
               {fullname} @{username}
@@ -218,9 +220,9 @@ const BlogPostCard = ({ content, author }) => {
             className="flex items-center gap-2 text-dark-grey"
           >
             <i
-              className={`fi fi-${isLiked ? "sr" : "rr"}-heart flex text-xl icon ${
-                isLiked ? "text-magenta" : ""
-              }`}
+              className={`fi fi-${
+                isLiked ? "sr" : "rr"
+              }-heart flex text-xl icon ${isLiked ? "text-magenta" : ""}`}
             ></i>
             {likesCount}
           </button>
@@ -231,28 +233,30 @@ const BlogPostCard = ({ content, author }) => {
           </span>
 
           {userAuth.access_token && (
-            <>
-              <button
-                onClick={handleBookmark}
-                className="flex items-center gap-2 text-dark-grey"
-              >
-                <i
-                  className={`fi fi-${
-                    isBookmarked ? "sr" : "rr"
-                  }-bookmark flex text-xl icon ${isBookmarked ? "text-purple" : ""}`}
-                ></i>
-              </button>
+            <button
+              onClick={handleBookmark}
+              className="flex items-center gap-2 text-dark-grey"
+            >
+              <i
+                className={`fi fi-${
+                  isBookmarked ? "sr" : "rr"
+                }-bookmark flex text-xl icon ${
+                  isBookmarked ? "text-magenta" : ""
+                }`}
+              ></i>
+            </button>
+          )}
 
-              <button
-                onClick={(e) => {
-                  setShowReportDialog(true);
-                }}
-                className="flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
-              >
-                <i className="fi fi-rr-flag text-xl flex"></i>
-                Report
-              </button>
-            </>
+          {userAuth.access_token && userAuth.username !== username && (
+            <button
+              onClick={(e) => {
+                setShowReportDialog(true);
+              }}
+              className="flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
+            >
+              <i className="fi fi-rr-flag text-xl flex"></i>
+              Report
+            </button>
           )}
         </div>
       </div>
