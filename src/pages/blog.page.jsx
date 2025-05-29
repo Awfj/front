@@ -25,7 +25,12 @@ export const blogStructure = {
 export const BlogContext = createContext({});
 
 const calculateReadingTime = (content) => {
-  const wordsPerMinute = 200; // Среднее количество слов в минуту
+  // Проверяем существование content и его структуру
+  if (!content || !Array.isArray(content) || !content[0]?.blocks) {
+    return "< 1 min read";
+  }
+
+  const wordsPerMinute = 200;
   let totalWords = 0;
 
   content[0].blocks.forEach((block) => {
@@ -37,9 +42,7 @@ const calculateReadingTime = (content) => {
   });
 
   const minutes = Math.ceil(totalWords / wordsPerMinute);
-
-  if (minutes < 1) return "< 1 min read";
-  return `${minutes} min read`;
+  return minutes < 1 ? "< 1 min read" : `${minutes} min read`;
 };
 
 const BlogPage = () => {
@@ -65,16 +68,29 @@ const BlogPage = () => {
     category,
   } = blog;
 
+  const readingTime =
+    content && content.length > 0
+      ? calculateReadingTime(content)
+      : "< 1 min read";
+
   const fetchBlog = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id })
       .then(async ({ data: { blog } }) => {
-        blog.comments = await fetchComment({
+        // Получаем комментарии с пагинацией
+        const { results: comments } = await fetchComment({
           blog_id: blog._id,
           setParentCommentCountFun: setTotalCommentsLoaded,
         });
 
-        setBlog(blog);
+        setBlog({
+          ...blog,
+          comments: {
+            results: comments || [], // Добавляем проверку на null
+            totalDocs: comments?.length || 0,
+            hasMore: comments?.length >= 5,
+          },
+        });
 
         // Сначала ищем похожие посты по категории и тегам
         axios
@@ -121,6 +137,29 @@ const BlogPage = () => {
       });
   };
 
+  const updateCommentLikeStatus = (commentId, likeData) => {
+    setBlog((prevBlog) => {
+      const newComments = prevBlog.comments.results.map((comment) => {
+        if (comment._id === commentId) {
+          return {
+            ...comment,
+            likes: likeData.likes,
+            liked_by: likeData.liked_by,
+          };
+        }
+        return comment;
+      });
+
+      return {
+        ...prevBlog,
+        comments: {
+          ...prevBlog.comments,
+          results: newComments,
+        },
+      };
+    });
+  };
+
   useEffect(() => {
     resetState();
     fetchBlog();
@@ -133,6 +172,24 @@ const BlogPage = () => {
     setLikedByUser(false);
     setBookmarkedByUser(false);
     setTotalCommentsLoaded(0);
+  };
+
+  // Добавьте функцию для загрузки дополнительных комментариев
+  const loadMoreComments = async ({ skip }) => {
+    const newComments = await fetchComment({
+      blog_id: blog._id,
+      skip,
+      setParentCommentCountFun: setTotalCommentsLoaded,
+    });
+
+    setBlog((prev) => ({
+      ...prev,
+      comments: {
+        results: [...prev.comments.results, ...newComments],
+        totalDocs: prev.comments.totalDocs,
+        hasMore: newComments.length >= 5,
+      },
+    }));
   };
 
   const getBorderStyle = (role) => {
@@ -159,6 +216,8 @@ const BlogPage = () => {
             setBookmarkedByUser,
             totalParentComentsLoaded,
             setTotalCommentsLoaded,
+            updateCommentLikeStatus,
+            loadMoreComments,
           }}
         >
           {/* Добавляем контейнер с flex для десктопа */}
@@ -201,7 +260,7 @@ const BlogPage = () => {
                         {category}
                       </span>
                       <span>•</span>
-                      <span>{calculateReadingTime(content)}</span>
+                      <span>{readingTime}</span>
                     </div>
                     <p className="text-dark-grey opacity-75">
                       Published on {getDay(publishedAt)}

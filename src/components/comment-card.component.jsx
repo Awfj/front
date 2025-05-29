@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { getDay } from "../common/date";
 import { UserContext } from "../App";
 import toast from "react-hot-toast";
@@ -7,9 +7,18 @@ import { BlogContext } from "../pages/blog.page";
 import axios from "axios";
 
 const CommentCard = ({ index, leftVal, commentData }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(commentData.likes || 0);
+  const [likeLoading, setLikeLoading] = useState(false);
+
   let {
     commented_by: {
-      personal_info: { profile_img, fullname, username: commented_by_username },
+      personal_info: {
+        profile_img,
+        fullname,
+        username,
+        username: commented_by_username,
+      },
     },
     commentedAt,
     comment,
@@ -30,9 +39,11 @@ const CommentCard = ({ index, leftVal, commentData }) => {
       },
     },
     setTotalCommentsLoaded,
+    updateCommentLikeStatus,
   } = useContext(BlogContext);
   let {
-    userAuth: { access_token, username },
+    userAuth: { access_token, username: currentUsername, _id: userId },
+    userAuth,
   } = useContext(UserContext);
 
   const [isReplying, setReplying] = useState(false);
@@ -181,6 +192,56 @@ const CommentCard = ({ index, leftVal, commentData }) => {
       }
     }
   };
+
+  useEffect(() => {
+    setIsLiked(commentData.liked_by?.includes(userId));
+    setLikesCount(commentData.likes || 0);
+  }, [commentData, userId]);
+
+  const handleLike = async () => {
+    if (!access_token) {
+      return toast.error("Please login to like comments");
+    }
+    if (likeLoading) return;
+
+    setLikeLoading(true);
+
+    try {
+      const newIsLiked = !isLiked;
+      const newLikesCount = likesCount + (newIsLiked ? 1 : -1);
+      const newLikedBy = newIsLiked
+        ? [...(commentData.liked_by || []), userId]
+        : (commentData.liked_by || []).filter((id) => id !== userId);
+
+      // Оптимистичное обновление UI
+      setIsLiked(newIsLiked);
+      setLikesCount(newLikesCount);
+
+      await axios.post(
+        import.meta.env.VITE_SERVER_DOMAIN + "/like-comment",
+        { comment_id: commentData._id },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // Обновляем состояние в родительском компоненте
+      updateCommentLikeStatus(commentData._id, {
+        likes: newLikesCount,
+        liked_by: newLikedBy,
+      });
+    } catch (err) {
+      // Откатываем изменения при ошибке
+      setIsLiked(!isLiked);
+      setLikesCount(likesCount);
+      toast.error("Error updating like");
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
   return (
     <div className="w-full" style={{ paddingLeft: `${leftVal * 10}px` }}>
       <div className="my-5 p-6 rounded-md border border-grey">
@@ -199,6 +260,20 @@ const CommentCard = ({ index, leftVal, commentData }) => {
         <p className="text-xl font-gelasio ml-3">{comment}</p>
 
         <div className="flex gap-5 items-center mt-5">
+          {/* Кнопка лайка */}
+          <button
+            onClick={handleLike}
+            className="flex items-center gap-2 text-dark-grey hover:text-black"
+            disabled={likeLoading}
+          >
+            <i
+              className={`fi fi-${isLiked ? "sr" : "rr"}-heart text-xl ${
+                isLiked ? "text-red" : ""
+              }`}
+            ></i>
+            <span className="text-xl">{likesCount}</span>
+          </button>
+
           {commentData.isReplyLoaded ? (
             <button
               onClick={hideReplies}

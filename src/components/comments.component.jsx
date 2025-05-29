@@ -12,27 +12,42 @@ export const fetchComment = async ({
   setParentCommentCountFun,
   comment_array = null,
 }) => {
-  let res;
+  try {
+    const { data } = await axios.post(
+      import.meta.env.VITE_SERVER_DOMAIN + "/get-blog-comments",
+      { blog_id, skip }
+    );
 
-  await axios
-    .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog-comments", {
-      blog_id,
-      skip,
-    })
-    .then(({ data }) => {
-      data.map((comment) => {
+    // Проверяем, что data содержит комментарии
+    if (data && Array.isArray(data.comments)) {
+      data.comments.forEach((comment) => {
         comment.childrenLevel = 0;
       });
-      setParentCommentCountFun((preVal) => preVal + data.length);
 
-      if (comment_array === null) {
-        res = { results: data };
-      } else {
-        res = { results: [...comment_array, ...data] };
-      }
-    });
+      setParentCommentCountFun((prev) => prev + data.comments.length);
 
-  return res;
+      return {
+        results: comment_array
+          ? [...comment_array, ...data.comments]
+          : data.comments,
+        totalDocs: data.totalDocs,
+        hasMore: data.hasMore,
+      };
+    }
+
+    return {
+      results: comment_array || [],
+      totalDocs: 0,
+      hasMore: false,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      results: comment_array || [],
+      totalDocs: 0,
+      hasMore: false,
+    };
+  }
 };
 
 const CommentContainer = () => {
@@ -40,36 +55,23 @@ const CommentContainer = () => {
     blog: {
       _id,
       title,
-      comments: { results: commentArr },
+      comments: { results: commentsArr },
       activity: { total_parent_comments },
     },
-    totalParentComentsLoaded,
-    setTotalCommentsLoaded,
     setBlog,
     blog,
+    totalParentComentsLoaded,
+    setTotalCommentsLoaded,
+    loadMoreComments,
   } = useContext(BlogContext);
 
-  const loadMoreComment = async () => {
-    let newCommentArr = await fetchComment({
-      skip: totalParentComentsLoaded,
-      blog_id: _id,
-      setParentCommentCountFun: setTotalCommentsLoaded,
-      comment_array: commentArr,
-    });
-
-    setBlog({ ...blog, comments: newCommentArr });
-  };
-  // console.log(commentsWrapper)
   return (
-    <div
-      className={
-        "w-full mt-6"}
-    >
+    <div className={"w-full mt-6"}>
       <div className="relative">
         <CommentField action="comment" />
 
-        {commentArr && commentArr.length ? (
-          commentArr.map((comment, i) => {
+        {commentsArr && commentsArr.length ? (
+          commentsArr.map((comment, i) => {
             return (
               <AnimationWrapper key={i}>
                 <CommentCard
@@ -84,15 +86,13 @@ const CommentContainer = () => {
           <NoDataMessage message={"No Comments"} />
         )}
 
-        {total_parent_comments > totalParentComentsLoaded ? (
+        {blog?.comments?.hasMore && (
           <button
-            onClick={loadMoreComment}
+            onClick={() => loadMoreComments({ skip: commentsArr.length })}
             className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
           >
-            Load More
+            Load More Comments
           </button>
-        ) : (
-          ""
         )}
       </div>
     </div>
