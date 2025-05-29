@@ -57,12 +57,15 @@ const BlogPage = () => {
     banner,
     author: {
       personal_info: { username: author_username, fullname, profile_img },
+      role,
     },
+    author,
     publishedAt,
     tags,
     category,
   } = blog;
 
+  console.log(role)
   const fetchBlog = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", { blog_id })
@@ -108,6 +111,16 @@ const BlogPage = () => {
     setTotalCommentsLoaded(0);
   };
 
+  const getBorderStyle = (role) => {
+    if (role === "admin") {
+      return "border-red";
+    } else if (role === "moderator") {
+      return "border-green";
+    }
+    return "border-magenta";
+  };
+  console.log(author);
+
   return (
     <AnimationWrapper>
       {loading ? (
@@ -134,7 +147,9 @@ const BlogPage = () => {
                   <img
                     src={profile_img}
                     alt="Author"
-                    className="w-12 h-12 rounded-full"
+                    className={`w-12 h-12 rounded-full border ${getBorderStyle(
+                      role
+                    )}`}
                   />
                   <p className="capitalize ">
                     {fullname}
