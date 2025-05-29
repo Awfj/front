@@ -155,7 +155,7 @@ const PublishForm = () => {
           <div className="w-full aspect-video rounded-lg overflow-hidden bg-grey mt-4">
             <img src={banner} alt="Banner" />
           </div>
-          <h1 className="text-4xl font-medium mt-2 leading-tight line-clamp-2">
+          <h1 className="text-3xl font-medium mt-2 leading-tight line-clamp-2">
             {title}
           </h1>
           <p className="font-gelasio line-clamp-3 text-xl leading-7 mt-4">
@@ -176,7 +176,7 @@ const PublishForm = () => {
 
           {/* SHORT DESCRIPTION */}
           <p className="text-dark-grey mb-2 mt-9">
-            Short description about your post
+            Short description of your post
           </p>
           <textarea
             maxLength={charLength}
