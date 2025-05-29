@@ -109,29 +109,30 @@ const BlogInteraction = () => {
       <Toaster />
       <hr className="border-grey my-2" />
       <div className="flex gap-6 justify-between">
-        <div className="flex gap-3 items-center">
-          <button
-            onClick={handleLike}
-            className={
-              "flex-center w-10 h-10 rounded-full flex items-center justify-center " +
-              (isLikedByUser ? "bg-red/20 text-red" : "bg-grey/80")
-            }
-          >
-            <i
+        <div className="flex gap-4 items-center">
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={handleLike}
               className={
-                "flex-center icon fi " +
-                (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
+                "flex-center rounded-full flex items-center justify-center "
               }
-            ></i>
-          </button>
-          <p className="text-xl text-dark-grey">{total_likes}</p>
+            >
+              <i
+                className={
+                  "flex-center icon fi " +
+                  (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
+                }
+              ></i>
+            </button>
+            <p className="text-xl text-dark-grey">{total_likes}</p>
+          </div>
 
-          <button
-            className="flex-center w-10 h-10 rounded-full flex items-center justify-center bg-grey/80"
-          >
-            <i className="flex-center icon fi fi-rr-comment-dots"></i>
-          </button>
-          <p className="text-xl text-dark-grey">{total_comments}</p>
+          <div className="flex gap-2 items-center">
+            <button className="flex-center rounded-full flex items-center justify-center ">
+              <i className="flex-center icon fi fi-rr-comment-dots"></i>
+            </button>
+            <p className="text-xl text-dark-grey">{total_comments}</p>
+          </div>
 
           <button
             onClick={handleBookmark}
