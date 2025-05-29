@@ -824,7 +824,7 @@ const Home = () => {
                           </div>
                           <div className="flex items-center gap-2">
                             <i className="fi fi-rr-document"></i>
-                            <span>{author.account_info.total_posts} blogs</span>
+                            <span>{author.account_info.total_posts} posts</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <i className="fi fi-rr-user"></i>
