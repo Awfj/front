@@ -81,7 +81,7 @@ const NotificationCard = ({ data, index, notificationState }) => {
         <img
           src={profile_img}
           alt="profile_img"
-          className="w-14 h-14 flex-none rounded-full"
+          className="w-14 h-14 flex-none rounded-full border border-magenta"
         />
         <div className="w-full ">
           <h1 className="text-xl font-medium text-dark-grey">
