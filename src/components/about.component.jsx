@@ -8,7 +8,7 @@ const AboutUser = ({ className, bio, social_links, joinedAt }) => {
       <p className="text-xl leading-7">
         {bio.length ? bio : "Nothing to read here"}
       </p>
-      <div className="flex gap-x-7 gap-y-2 flex-wrap my-7 items-center text-dark-grey">
+      {/* <div className="flex gap-x-7 gap-y-2 flex-wrap my-7 items-center text-dark-grey">
         {Object.keys(social_links).map((key) => {
           let link = social_links[key];
           return link ? (
@@ -25,8 +25,8 @@ const AboutUser = ({ className, bio, social_links, joinedAt }) => {
             " "
           );
         })}
-      </div>
-      <p className="text-xl leading-7 text-dark-grey">
+      </div> */}
+      <p className="text-xl leading-7 text-dark-grey mt-3">
         Joined on {getFullDay(joinedAt)}
       </p>
     </div>
