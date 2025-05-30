@@ -118,7 +118,7 @@ const ManageBlog = () => {
       <Toaster />
 
       <InPageNavigaion
-        routes={["Published", "Drafts", "Pending Review", "Rejected"]}
+        routes={["Published Posts", "Drafts", "Pending Review", "Needs Revision"]}
         defaultActiveIndex={
           activeTab === "draft"
             ? 1
