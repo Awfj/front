@@ -36,8 +36,6 @@ const EditProfile = () => {
     social_links,
   } = profile;
 
-  console.log(profile);
-
   useEffect(() => {
     if (access_token) {
       axios
@@ -185,13 +183,13 @@ const EditProfile = () => {
       ) : (
         <form ref={editProfileForm}>
           <Toaster />
-          <h1 className="max-md:hidden">Edit Profile</h1>
+          <h1 className="max-md:hidden text-2xl font-medium">Edit Profile</h1>
           <div className="flex flex-col lg:flex-row items-start py-10 gap-8 lg:gap-10">
             <div className="max-lg:center mb-5">
               <label
                 htmlFor="uploadImg"
                 id="profileImgLabel"
-                className="relative block w-48 h-48 bg-grey rounded-full overflow-hidden"
+                className="relative block w-48 h-48 bg-grey rounded-full border border-magenta overflow-hidden"
               >
                 <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center text-white bg-black/30 opacity-0 hover:opacity-100 cursor-pointer">
                   Upload Image
@@ -226,7 +224,7 @@ const EditProfile = () => {
                     value={fullname}
                     placeholder="Full Name"
                     icon="fi-rr-user"
-                    disable={true}
+                    // disable={true}
                   />
                 </div>
                 <div>
@@ -248,16 +246,12 @@ const EditProfile = () => {
                 placeholder="Username"
                 icon="fi-rr-at"
               />
-              <p className="text-dark-grey -mt-3">
-                Username will use to search user and will be visible to all
-                users
-              </p>
 
               <textarea
                 name="bio"
                 maxLength={bioLimit}
                 defaultValue={bio}
-                className="input-box h-64 lg:h-40 resize-none leading-7 mt-5 pl-5"
+                className="input-box h-64 lg:h-40 resize-none leading-7 pl-5"
                 placeholder="Bio"
                 onChange={handleCharacterChange}
               ></textarea>
@@ -266,28 +260,28 @@ const EditProfile = () => {
                 {charactersLeft} characters left
               </p>
 
-              {/* <p className="my-6 text-dark-grey">
-                Add your social handles below
-              </p>
-
               <div className="md:grid md:grid-cols-2 gap-x-6">
-                {Object.keys(social_links).map((key, i) => {
-                  let link = social_links[key];
-                  return (
-                    <InputBox
-                      key={i}
-                      name={key}
-                      type="text"
-                      value={link}
-                      placeholder="https://"
-                      icon={
-                        "fi " +
-                        (key !== "website" ? "fi-brands-" + key : "fi-rr-globe")
-                      }
-                    />
-                  );
-                })}
-              </div> */}
+                {Object.keys(social_links)
+                  .filter((key) => key !== "twitter" && key !== "facebook") // скрываем twitter и facebook
+                  .map((key, i) => {
+                    let link = social_links[key];
+                    return (
+                      <InputBox
+                        key={i}
+                        name={key}
+                        type="text"
+                        value={link}
+                        placeholder="https://"
+                        icon={
+                          "fi " +
+                          (key !== "website"
+                            ? "fi-brands-" + key
+                            : "fi-rr-globe")
+                        }
+                      />
+                    );
+                  })}
+              </div>
 
               <button
                 className="btn-dark w-auto px-10"

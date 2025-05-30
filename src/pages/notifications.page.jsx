@@ -65,6 +65,19 @@ const Notification = () => {
           user: access_token,
         });
 
+        // Удаляем дубликаты по _id
+        if (formatedData && formatedData.results) {
+          const unique = [];
+          const seen = new Set();
+          for (const notif of formatedData.results) {
+            if (!seen.has(notif._id)) {
+              unique.push(notif);
+              seen.add(notif._id);
+            }
+          }
+          formatedData.results = unique;
+        }
+
         setNotifications(formatedData);
       })
       .catch((err) => {
@@ -93,10 +106,13 @@ const Notification = () => {
             <button
               key={i}
               className={
-                "py-2 px-4 whitespace-nowrap rounded-full transition-colors " +
-                (filter === filterName ? "btn-dark" : "btn-light")
+                "py-2 px-4 whitespace-nowrap rounded-full transition-colors font-medium " +
+                (filter === filterName
+                  ? "btn-dark border-purple shadow font-bold"
+                  : "btn-light bg-light-grey text-black")
               }
               onClick={() => setFilter(filterName)}
+              style={filter === filterName ? { borderWidth: 2 } : {}}
             >
               {filterLabels[filterName]}
             </button>

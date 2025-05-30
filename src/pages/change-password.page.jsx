@@ -64,7 +64,7 @@ const ChangePassword = () => {
     <AnimationWrapper>
       <Toaster />
       <form ref={ChangePasswordForm}>
-        <h1 className="max-md:hidden">Change Password</h1>
+        <h1 className="max-md:hidden text-2xl font-medium">Change Password</h1>
         <div className="py-10 w-full md:max-w-[400px]">
           <InputBox
             name="currentPassword"
@@ -87,7 +87,7 @@ const ChangePassword = () => {
             className="btn-dark px-10"
             type="submit"
           >
-            Change Password
+            Update
           </button>
         </div>
       </form>

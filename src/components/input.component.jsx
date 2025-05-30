@@ -23,11 +23,11 @@ const InputBox = ({
         disabled={disable}
         className="input-box"
       />
-      <i className={"fi " + icon + " input-icon"}></i>
+      <i className={"flex fi " + icon + " input-icon"}></i>
       {type === "password" ? (
         <i
           className={
-            "fi fi-rr-eye" +
+            "flex fi fi-rr-eye" +
             (!passwordVisible ? "-crossed" : "") +
             " input-icon left-[auto] right-4 cursor-pointer"
           }
