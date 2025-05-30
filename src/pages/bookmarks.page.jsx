@@ -78,9 +78,9 @@ const ManageBookmarks = () => {
 
   return (
     <>
-      <h1 className="max-md:hidden text-2xl">Manage Bookmarks</h1>
+      <h1 className="max-md:hidden text-2xl mb-8">Manage Bookmarks</h1>
       <Toaster />
-      <div className="relative max-md:mt-5 md:mt-8 mb-10">
+      {/* <div className="relative max-md:mt-5 md:mt-8 mb-10">
         <input
           type="search"
           className="w-full bg-grey p-4 pl-12 pr-6 rounded-full placeholder:text-dark-grey"
@@ -89,7 +89,7 @@ const ManageBookmarks = () => {
           onKeyDown={handleSearch}
         />
         <i className="fi fi-rr-search absolute right-[10%] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
-      </div>
+      </div> */}
 
       {blogs == null ? (
         <Loader />
