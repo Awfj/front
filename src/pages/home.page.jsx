@@ -16,6 +16,13 @@ import { Link } from "react-router-dom";
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
 
+const formatCategoryName = (category) => {
+  return category
+    .split("_")
+    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
 export const CATEGORIES = {
   LIFE: [
     "Family",
@@ -546,7 +553,10 @@ const Home = () => {
                   >
                     <BlogPostCard
                       content={blog}
-                      author={{role: blog.author.role, ...blog.author.personal_info}}
+                      author={{
+                        role: blog.author.role,
+                        ...blog.author.personal_info,
+                      }}
                     />
                   </AnimationWrapper>
                 ))
@@ -574,7 +584,10 @@ const Home = () => {
                     >
                       <BlogPostCard
                         content={blog}
-                        author={{role: blog.author.role, ...blog.author.personal_info}}
+                        author={{
+                          role: blog.author.role,
+                          ...blog.author.personal_info,
+                        }}
                       />
                     </AnimationWrapper>
                   );
@@ -611,7 +624,10 @@ const Home = () => {
                   >
                     <BlogPostCard
                       content={blog}
-                      author={{role: blog.author.role, ...blog.author.personal_info}}
+                      author={{
+                        role: blog.author.role,
+                        ...blog.author.personal_info,
+                      }}
                     />
                   </AnimationWrapper>
                 ))}
@@ -735,7 +751,10 @@ const Home = () => {
                     <option value="all">All Categories</option>
                     {Object.entries(CATEGORIES).map(
                       ([mainCategory, subCategories]) => (
-                        <optgroup key={mainCategory} label={mainCategory}>
+                        <optgroup
+                          key={mainCategory}
+                          label={formatCategoryName(mainCategory)}
+                        >
                           {subCategories.map((subCategory, i) => (
                             <option key={i} value={subCategory.toLowerCase()}>
                               {subCategory}
