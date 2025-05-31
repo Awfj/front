@@ -10,6 +10,7 @@ import BlogContent from "../components/blog-content.component";
 import CommentContainer, {
   fetchComment,
 } from "../components/comments.component";
+import { formatReadingTime } from "../common/formatReadingTime";
 
 export const blogStructure = {
   title: "",
@@ -23,16 +24,6 @@ export const blogStructure = {
 };
 
 export const BlogContext = createContext({});
-
-const formatReadingTime = (minutes) => {
-  if (!minutes || minutes < 1) {
-    return "< 1 min read";
-  } else if (minutes === 1) {
-    return "1 min read";
-  } else {
-    return `${minutes} mins read`;
-  }
-};
 
 const BlogPage = () => {
   let { blog_id } = useParams();

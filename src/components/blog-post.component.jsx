@@ -5,6 +5,7 @@ import { UserContext } from "../App";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import ConfirmDialog from "./confirm-dialog.component";
+import { formatReadingTime } from "../common/formatReadingTime";
 
 const ReportReasons = {
   "Harmful Content": [
@@ -49,6 +50,7 @@ const BlogPostCard = ({ content, author }) => {
     activity: { total_comments },
     blog_id: id,
     _id,
+    reading_time,
   } = content;
   let { fullname, profile_img, username } = author;
 
@@ -191,7 +193,13 @@ const BlogPostCard = ({ content, author }) => {
               {fullname} @{username}
             </p>
           </Link>
+          <span>•</span>
           <p className="min-w-fit">{getDay(publishedAt)}</p>
+          <span>•</span>
+          {/* Add reading time here */}
+          <p className="min-w-fit text-dark-grey">
+            {formatReadingTime(reading_time)}
+          </p>
         </div>
 
         {/* Second row: Banner, Title, Description */}
