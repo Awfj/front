@@ -45,21 +45,34 @@ const BlogEditor = () => {
       );
     }
   }, []);
+
   const handleChangeBanner = (e) => {
     if (e.target.files[0]) {
-      let ladingTast = toast.loading("Uploading...");
+      let loadingToast = toast.loading("Uploading..."); // Fix typo in variable name
       uploadImage(e.target.files[0])
         .then((url) => {
-          toast.dismiss(ladingTast);
-          toast.success("Uploaded successfully");
-          setBlog({ ...blog, banner: url });
+          if (!url.includes("error")) {
+            // Add check for valid URL
+            toast.dismiss(loadingToast);
+            toast.success("Uploaded successfully");
+            setBlog({ ...blog, banner: url });
+
+            // Update preview image immediately
+            const bannerImg = document.querySelector("#banner-img");
+            if (bannerImg) {
+              bannerImg.src = url;
+            }
+          } else {
+            throw new Error("Error uploading image");
+          }
         })
         .catch((err) => {
-          toast.dismiss(ladingTast);
-          toast.error(err);
+          toast.dismiss(loadingToast);
+          toast.error(err.message || "Error uploading image");
         });
     }
   };
+
   const handleTitleKeyDown = (e) => {
     // for enter key
     if (e.keyCode === 13) e.preventDefault();
@@ -197,9 +210,10 @@ const BlogEditor = () => {
             <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey">
               <label htmlFor="uploadBanner">
                 <img
-                  src={banner}
-                  alt="Default Banner"
-                  className="z-20"
+                  id="banner-img" // Add ID for easy reference
+                  src={banner || (theme === "light" ? lightBanner : darkBanner)}
+                  alt="Blog Banner"
+                  className="z-20 w-full h-full object-cover"
                   onError={handleError}
                 />
                 <input

@@ -103,11 +103,15 @@ const PublishForm = () => {
 
     let loadingToast = toast.loading("Submitting for review...");
 
+    // Format content properly for reading time calculation
+    const contentForReading = content.blocks ? content.blocks : [];
+
     let blogObj = {
       title,
       banner,
       des,
       content,
+      contentForReading, // Add this field
       tags,
       category,
       status: "pending",
