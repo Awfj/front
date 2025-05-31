@@ -34,35 +34,41 @@ const BlogEditor = () => {
   } = useContext(EditorContext);
 
   useEffect(() => {
-    if (!textEditor.isReady) {
-      setTextEditor(
-        new EditorJS({
-          holderId: "textEditor",
-          data: Array.isArray(content) ? content[0] : content,
-          tools: tools,
-          placeholder: "Let's write an awesome story",
+    // Добавляем проверку на существование textEditor
+    if (!textEditor.isReady && !blog_id) {
+      let editor = new EditorJS({
+        holderId: "textEditor",
+        data: Array.isArray(content) ? content[0] : content,
+        tools: tools,
+        placeholder: "Let's write an awesome story",
+      });
+
+      editor.isReady
+        .then(() => {
+          setTextEditor(editor);
         })
-      );
+        .catch((err) => {
+          console.log("Editor.js initialization error:", err);
+        });
     }
   }, []);
 
   const handleChangeBanner = (e) => {
     if (e.target.files[0]) {
-      let loadingToast = toast.loading("Uploading..."); // Fix typo in variable name
+      let loadingToast = toast.loading("Uploading...");
       uploadImage(e.target.files[0])
         .then((url) => {
           if (!url.includes("error")) {
-            // Add check for valid URL
             toast.dismiss(loadingToast);
             toast.success("Uploaded successfully");
             setBlog({ ...blog, banner: url });
 
-            // Update preview image immediately
             const bannerImg = document.querySelector("#banner-img");
             if (bannerImg) {
               bannerImg.src = url;
             }
           } else {
+            toast.dismiss(loadingToast);
             throw new Error("Error uploading image");
           }
         })
