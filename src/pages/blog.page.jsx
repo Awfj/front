@@ -24,25 +24,14 @@ export const blogStructure = {
 
 export const BlogContext = createContext({});
 
-const calculateReadingTime = (content) => {
-  // Проверяем существование content и его структуру
-  if (!content || !Array.isArray(content) || !content[0]?.blocks) {
+const formatReadingTime = (minutes) => {
+  if (!minutes || minutes < 1) {
     return "< 1 min read";
+  } else if (minutes === 1) {
+    return "1 min read";
+  } else {
+    return `${minutes} mins read`;
   }
-
-  const wordsPerMinute = 200;
-  let totalWords = 0;
-
-  content[0].blocks.forEach((block) => {
-    if (block.type === "paragraph") {
-      totalWords += block.data.text.split(/\s+/).length;
-    } else if (block.type === "header") {
-      totalWords += block.data.text.split(/\s+/).length;
-    }
-  });
-
-  const minutes = Math.ceil(totalWords / wordsPerMinute);
-  return minutes < 1 ? "< 1 min read" : `${minutes} min read`;
 };
 
 const BlogPage = () => {
@@ -66,12 +55,8 @@ const BlogPage = () => {
     publishedAt,
     tags,
     category,
+    reading_time,
   } = blog;
-
-  const readingTime =
-    content && content.length > 0
-      ? calculateReadingTime(content)
-      : "< 1 min read";
 
   const fetchBlog = () => {
     axios
@@ -260,7 +245,7 @@ const BlogPage = () => {
                         {category}
                       </span>
                       <span>•</span>
-                      <span>{readingTime}</span>
+                      <span>{formatReadingTime(reading_time)}</span>
                     </div>
                     <p className="text-dark-grey opacity-75">
                       Published on {getDay(publishedAt)}
