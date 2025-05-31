@@ -221,7 +221,12 @@ const BlogPostCard = ({ content, author }) => {
 
         {/* Third row: Category, Likes, Comments and Bookmarks */}
         <div className="flex items-center gap-4">
-          <span className="btn-light py-1 px-4">{category}</span>
+          <Link
+            to={`/search/${category.toLowerCase()}`}
+            className="btn-light py-1 px-4 hover:bg-purple/10"
+          >
+            {category}
+          </Link>
 
           <button
             onClick={handleLike}

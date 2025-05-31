@@ -9,17 +9,35 @@ import LoadMoreDataBtn from "../components/load-more.component";
 import axios from "axios";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import UserCard from "../components/usercard.component";
+import { CATEGORIES, formatCategoryName } from "./home.page";
 
 const SearchPage = () => {
   const { query } = useParams();
   const [blogs, setBlogs] = useState(null);
   const [users, setUsers] = useState(null);
 
+  const isCategory = (query) => {
+    // Проверяем все категории и подкатегории из CATEGORIES
+    const allCategories = Object.values(CATEGORIES)
+      .flat()
+      .map((cat) => cat.toLowerCase());
+    // Добавляем основные категории
+    const mainCategories = Object.keys(CATEGORIES).map((cat) =>
+      formatCategoryName(cat).toLowerCase()
+    );
+
+    return [...allCategories, ...mainCategories].includes(query.toLowerCase());
+  };
+
   const searchBlog = ({ page = 1, create_new_arr = false }) => {
+    // Определяем, ищем ли мы по категории
+    const searchByCategory = isCategory(query);
+
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {
-        query,
+        query: searchByCategory ? "" : query, // Если это категория, не используем как поисковый запрос
         page,
+        category: searchByCategory ? query : undefined, // Используем как категорию только если это категория
       })
       .then(async ({ data }) => {
         let formateData = await filterPaginationData({
@@ -27,7 +45,10 @@ const SearchPage = () => {
           data: data.blogs,
           page,
           countRoute: "/all-search-blogs-count",
-          data_to_send: { query },
+          data_to_send: {
+            query: searchByCategory ? "" : query,
+            category: searchByCategory ? query : undefined,
+          },
           create_new_arr,
         });
         setBlogs(formateData);

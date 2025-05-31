@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
 
-const formatCategoryName = (category) => {
+export const formatCategoryName = (category) => {
   return category
     .split("_")
     .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
