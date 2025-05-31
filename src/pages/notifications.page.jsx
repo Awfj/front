@@ -85,9 +85,8 @@ const Notification = () => {
       });
   };
 
-  const handleFilter = (e) => {
-    let btn = e.target;
-    setFilter(btn.innerHTML);
+  const handleFilter = (filterName) => {
+    setFilter(filterName.toLowerCase()); // Convert to lowercase to match backend values
     setNotifications(null);
   };
 
@@ -107,12 +106,14 @@ const Notification = () => {
               key={i}
               className={
                 "py-2 px-4 whitespace-nowrap rounded-full transition-colors font-medium " +
-                (filter === filterName
+                (filter === filterName.toLowerCase() // Compare with lowercase
                   ? "btn-dark border-purple shadow font-bold"
                   : "btn-light bg-light-grey text-black")
               }
-              onClick={() => setFilter(filterName)}
-              style={filter === filterName ? { borderWidth: 2 } : {}}
+              onClick={() => handleFilter(filterName)}
+              style={
+                filter === filterName.toLowerCase() ? { borderWidth: 2 } : {}
+              }
             >
               {filterLabels[filterName]}
             </button>
