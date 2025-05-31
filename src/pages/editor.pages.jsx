@@ -74,7 +74,8 @@ const Editor = () => {
       {access_token === null || undefined ? (
         <Navigate to="/signin" />
       ) : loading ? (
-        <Loader />
+        // <Loader />
+        <></>
       ) : editorState === "editor" ? (
         <BlogEditor />
       ) : (
