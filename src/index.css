@@ -195,6 +195,32 @@
   height: 6px;
 }
 
+:root {
+  color-scheme: light dark;
+}
+
+html[data-theme='dark'],
+body[data-theme='dark'] {
+  background-color: #242424;
+  color: #F3F3F3;
+}
+
+html[data-theme='dark'] #root,
+body[data-theme='dark'] #root {
+  background-color: #242424;
+}
+
+/* Update existing body styles */
+body {
+  @apply font-inter font-normal text-black;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
 .notification-indicator {
   @apply absolute -top-1 -right-1 w-3 h-3 bg-red rounded-full;
   animation: pulse 2s infinite;

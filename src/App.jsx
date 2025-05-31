@@ -18,6 +18,7 @@ import ManageBookmarks from "./pages/bookmarks.page";
 import Users from "./pages/users.page";
 import ModerateBlogsPage from "./pages/moderate-blogs.page";
 import LikesPage from "./pages/likes.page";
+import FullScreenLoader from "./components/full-screen-loader.component";
 
 export const UserContext = createContext({});
 
@@ -28,33 +29,47 @@ const darkThemePreference = () =>
 
 const App = () => {
   const [userAuth, setUserAuth] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const [theme, setTheme] = useState(() =>
     darkThemePreference() ? "dark" : "light"
   );
 
   useEffect(() => {
-    let userInSession = lookInSession("user");
-    let themeInSession = lookInSession("theme");
+    const initializeApp = async () => {
+      let userInSession = lookInSession("user");
+      let themeInSession = lookInSession("theme");
 
-    // console.log(JSON.parse(userInSession))
-    userInSession
-      ? setUserAuth(JSON.parse(userInSession))
-      : setUserAuth({ access_token: null });
+      if (userInSession) {
+        setUserAuth(JSON.parse(userInSession));
+      } else {
+        setUserAuth({ access_token: null });
+      }
 
-    if (themeInSession) {
-      setTheme(() => {
-        document.body.setAttribute("data-theme", themeInSession);
+      if (themeInSession) {
+        setTheme(() => {
+          document.body.setAttribute("data-theme", themeInSession);
+          return themeInSession;
+        });
+      } else {
+        document.body.setAttribute("data-theme", theme);
+      }
 
-        return themeInSession;
-      });
-    } else document.body.setAttribute("data-theme", theme);
+      setIsLoading(false);
+    };
+
+    initializeApp();
   }, []);
   // console.log(userAuth)
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <UserContext.Provider value={{ userAuth, setUserAuth }}>
+        <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#242424]' : 'bg-white'}`}>
         <Routes>
           <Route path="/editor" element={<Editor />} />
           <Route path="/editor/:blog_id" element={<Editor />} />
@@ -84,6 +99,7 @@ const App = () => {
             <Route path="*" element={<PageNotFound />} />
           </Route>
         </Routes>
+        </div>
       </UserContext.Provider>
     </ThemeContext.Provider>
   );
