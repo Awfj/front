@@ -14,6 +14,7 @@ import PageNotFound from "./404.page";
 import toast, { Toaster } from "react-hot-toast";
 import UserCard from "../components/user-card.component";
 import AchievementBadge from "../components/achievement-badge.component";
+import ProfileCustomizationModal from "../components/profile-customization-modal.component";
 
 export const profileDataStructure = {
   personal_info: {
@@ -41,7 +42,30 @@ const ProfilePage = () => {
   const { id: profileId } = useParams();
   const [followers, setFollowers] = useState(null);
   const [following, setFollowing] = useState(null);
-  console.log(profile);
+
+  const [showCustomization, setShowCustomization] = useState(false);
+
+  const handleCustomization = async (customization) => {
+    try {
+      await axios.post(
+        import.meta.env.VITE_SERVER_DOMAIN + "/update-profile-customization",
+        customization,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // Обновляем профиль
+      fetchUserProfile();
+      setShowCustomization(false);
+      toast.success("Profile customization updated!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update customization");
+    }
+  };
 
   const getFollowers = ({ page = 1, user_id }) => {
     axios
@@ -261,270 +285,298 @@ const ProfilePage = () => {
       {loading ? (
         <Loader />
       ) : profile_username.length ? (
-        <section className="h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12">
-          <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">
-            <img
-              src={profile_img}
-              alt="Profile img"
-              className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
-                role
-              )}`}
-            />
-            <h1 className="text-2xl font-medium">@{profile_username}</h1>
-            <p className="text-xl capitalize h-6">{fullname}</p>
-            {/* Статистика профиля */}
-            <div className="grid grid-cols-2 gap-4 w-full mb-2">
-              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                  <span className="text-3xl font-bold">
-                    {total_posts.toLocaleString()}
-                  </span>
-                  <span className="text-dark-grey text-md flex items-center gap-1">
-                    <i className="fi fi-rr-document"></i> Blogs
-                  </span>
+        <>
+          <section
+            className="h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12"
+            style={{
+              background: profile?.profile_customization?.backgroundUrl
+                ? `url(${profile.profile_customization.backgroundUrl}) center/cover`
+                : undefined,
+            }}
+          >
+            <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">
+              <img
+                src={profile_img}
+                alt="Profile img"
+                className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
+                  role
+                )}`}
+              />
+              <h1 className="text-2xl font-medium">@{profile_username}</h1>
+              <p className="text-xl capitalize h-6">{fullname}</p>
+              {/* Статистика профиля */}
+              <div className="grid grid-cols-2 gap-4 w-full mb-2">
+                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                    <span className="text-3xl font-bold">
+                      {total_posts.toLocaleString()}
+                    </span>
+                    <span className="text-dark-grey text-md flex items-center gap-1">
+                      <i className="fi fi-rr-document"></i> Blogs
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                    <span className="text-3xl font-bold">
+                      {total_reads.toLocaleString()}
+                    </span>
+                    <span className="text-dark-grey text-md flex items-center gap-1">
+                      <i className="fi fi-rr-book-open-reader"></i> Reads
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                    <span className="text-3xl font-bold">
+                      {total_followers.toLocaleString()}
+                    </span>
+                    <span className="text-dark-grey text-md flex items-center gap-1">
+                      <i className="fi fi-rr-user"></i> Followers
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                    <span className="text-3xl font-bold">
+                      {total_following.toLocaleString()}
+                    </span>
+                    <span className="text-dark-grey text-md flex items-center gap-1">
+                      <i className="fi fi-rr-users-alt"></i> Following
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                  <span className="text-3xl font-bold">
-                    {total_reads.toLocaleString()}
-                  </span>
-                  <span className="text-dark-grey text-md flex items-center gap-1">
-                    <i className="fi fi-rr-book-open-reader"></i> Reads
-                  </span>
-                </div>
-              </div>
-              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                  <span className="text-3xl font-bold">
-                    {total_followers.toLocaleString()}
-                  </span>
-                  <span className="text-dark-grey text-md flex items-center gap-1">
-                    <i className="fi fi-rr-user"></i> Followers
-                  </span>
-                </div>
-              </div>
-              <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                  <span className="text-3xl font-bold">
-                    {total_following.toLocaleString()}
-                  </span>
-                  <span className="text-dark-grey text-md flex items-center gap-1">
-                    <i className="fi fi-rr-users-alt"></i> Following
-                  </span>
-                </div>
-              </div>
-            </div>
 
-            {/* EDIT OR FOLLOW */}
-            <div className="flex gap-4 mt-2">
-              {profileId === username ? (
-                <Link
-                  to={`/settings/edit-profile`}
-                  className="btn-light rounded-md"
-                >
-                  Edit Profile
-                </Link>
-              ) : (
-                <button
-                  onClick={handleFollow}
-                  className={`btn-light rounded-md ${
-                    profile.isFollowing ? "bg-red-500 text-white" : ""
-                  }`}
-                >
-                  {profile.isFollowing ? "Unfollow" : "Follow"}
-                </button>
+              {/* EDIT OR FOLLOW */}
+              <div className="flex gap-4 mt-2">
+                {profileId === username ? (
+                  <>
+                    <Link
+                      to={`/settings/edit-profile`}
+                      className="btn-light rounded-md"
+                    >
+                      Edit Profile
+                    </Link>
+                    <button
+                      onClick={() => setShowCustomization(true)}
+                      className="btn-light rounded-md"
+                    >
+                      Customize Profile
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleFollow}
+                    className={`btn-light rounded-md ${
+                      profile.isFollowing ? "bg-red-500 text-white" : ""
+                    }`}
+                  >
+                    {profile.isFollowing ? "Unfollow" : "Follow"}
+                  </button>
+                )}
+              </div>
+
+              <AboutUser
+                className="max-md:hidden"
+                bio={bio}
+                social_links={social_links}
+                joinedAt={joinedAt}
+              />
+
+              {/* Achievements Section */}
+              {achievements?.length > 0 && (
+                <div className="w-full border-t border-grey pt-6">
+                  <h2 className="text-xl font-medium mb-4">Achievements</h2>
+                  <div className="flex flex-wrap gap-4">
+                    {achievements.map((achievement) => (
+                      <AchievementBadge
+                        key={achievement.achievement._id}
+                        achievement={achievement.achievement}
+                        unlockedAt={achievement.unlockedAt}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 
-            <AboutUser
-              className="max-md:hidden"
-              bio={bio}
-              social_links={social_links}
-              joinedAt={joinedAt}
-            />
+            <div className="max-md:mt-12 w-full">
+              <InPageNavigaion
+                routes={["Posts Published", "Followers", "Following"]}
+                defaultActiveIndex={0}
+                // defaultHidden={["About"]}
+              >
+                <>
+                  {blogs === null ? (
+                    <Loader />
+                  ) : !blogs.results.length ? (
+                    <NoDataMessage message={"No published posts"} />
+                  ) : (
+                    blogs.results.map((blog, i) => {
+                      return (
+                        <AnimationWrapper
+                          key={i}
+                          transition={{ duration: 1, delay: i * 0.1 }}
+                        >
+                          <BlogPostCard
+                            content={blog}
+                            author={blog.author.personal_info}
+                          />
+                        </AnimationWrapper>
+                      );
+                    })
+                  )}
+                  <LoadMoreDataBtn state={blogs} fetchDataFun={getBlogs} />
+                </>
 
-            {/* Achievements Section */}
-            {achievements?.length > 0 && (
-              <div className="w-full border-t border-grey pt-6">
-                <h2 className="text-xl font-medium mb-4">Achievements</h2>
-                <div className="flex flex-wrap gap-4">
-                  {achievements.map((achievement) => (
-                    <AchievementBadge
-                      key={achievement.achievement._id}
-                      achievement={achievement.achievement}
-                      unlockedAt={achievement.unlockedAt}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="max-md:mt-12 w-full">
-            <InPageNavigaion
-              routes={["Blogs Published", "Followers", "Following"]}
-              defaultActiveIndex={0}
-              // defaultHidden={["About"]}
-            >
-              <>
-                {blogs === null ? (
-                  <Loader />
-                ) : !blogs.results.length ? (
-                  <NoDataMessage message={"No blog published"} />
-                ) : (
-                  blogs.results.map((blog, i) => {
-                    return (
+                {/* Followers tab */}
+                <>
+                  {followers === null ? (
+                    <Loader />
+                  ) : !followers.results.length ? (
+                    <NoDataMessage message={"No followers yet"} />
+                  ) : (
+                    followers.results.map((user, i) => (
                       <AnimationWrapper
                         key={i}
                         transition={{ duration: 1, delay: i * 0.1 }}
                       >
-                        <BlogPostCard
-                          content={blog}
-                          author={blog.author.personal_info}
+                        <UserCard
+                          user={user}
+                          options={{
+                            btnMessage: "Remove",
+                            btnHandler: (followerId) => {
+                              axios
+                                .post(
+                                  `${
+                                    import.meta.env.VITE_SERVER_DOMAIN
+                                  }/unfollow-user`,
+                                  {
+                                    targetUserId: profile._id,
+                                    currentUserId: followerId,
+                                  },
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${access_token}`,
+                                    },
+                                  }
+                                )
+                                .then(() => {
+                                  // Update followers list
+                                  setFollowers((prev) => ({
+                                    ...prev,
+                                    results: prev.results.filter(
+                                      (user) => user._id !== followerId
+                                    ),
+                                  }));
+
+                                  // Update profile counters immediately
+                                  setProfile((prev) => ({
+                                    ...prev,
+                                    account_info: {
+                                      ...prev.account_info,
+                                      total_followers:
+                                        prev.account_info.total_followers - 1,
+                                    },
+                                  }));
+
+                                  toast.success(
+                                    "Follower removed successfully"
+                                  );
+                                })
+                                .catch((err) => {
+                                  console.log(err);
+                                  toast.error(
+                                    err.response?.data?.error ||
+                                      "Error removing follower"
+                                  );
+                                });
+                            },
+                          }}
                         />
                       </AnimationWrapper>
-                    );
-                  })
-                )}
-                <LoadMoreDataBtn state={blogs} fetchDataFun={getBlogs} />
-              </>
+                    ))
+                  )}
+                </>
 
-              {/* Followers tab */}
-              <>
-                {followers === null ? (
-                  <Loader />
-                ) : !followers.results.length ? (
-                  <NoDataMessage message={"No followers yet"} />
-                ) : (
-                  followers.results.map((user, i) => (
-                    <AnimationWrapper
-                      key={i}
-                      transition={{ duration: 1, delay: i * 0.1 }}
-                    >
-                      <UserCard
-                        user={user}
-                        options={{
-                          btnMessage: "Remove",
-                          btnHandler: (followerId) => {
-                            axios
-                              .post(
-                                `${
-                                  import.meta.env.VITE_SERVER_DOMAIN
-                                }/unfollow-user`,
-                                {
-                                  targetUserId: profile._id,
-                                  currentUserId: followerId,
-                                },
-                                {
-                                  headers: {
-                                    Authorization: `Bearer ${access_token}`,
-                                  },
-                                }
-                              )
-                              .then(() => {
-                                // Update followers list
-                                setFollowers((prev) => ({
-                                  ...prev,
-                                  results: prev.results.filter(
-                                    (user) => user._id !== followerId
-                                  ),
-                                }));
+                {/* Following tab */}
+                <>
+                  {following === null ? (
+                    <Loader />
+                  ) : !following.results.length ? (
+                    <NoDataMessage message={"Not following anyone"} />
+                  ) : (
+                    following.results.map((user, i) => (
+                      <AnimationWrapper
+                        key={i}
+                        transition={{ duration: 1, delay: i * 0.1 }}
+                      >
+                        <UserCard
+                          user={user}
+                          options={{
+                            btnMessage: "Unfollow",
+                            btnHandler: (userId) => {
+                              axios
+                                .post(
+                                  `${
+                                    import.meta.env.VITE_SERVER_DOMAIN
+                                  }/unfollow-user`,
+                                  { targetUserId: userId },
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${access_token}`,
+                                    },
+                                  }
+                                )
+                                .then(() => {
+                                  // Update following list
+                                  setFollowing((prev) => ({
+                                    ...prev,
+                                    results: prev.results.filter(
+                                      (user) => user._id !== userId
+                                    ),
+                                  }));
 
-                                // Update profile counters immediately
-                                setProfile((prev) => ({
-                                  ...prev,
-                                  account_info: {
-                                    ...prev.account_info,
-                                    total_followers:
-                                      prev.account_info.total_followers - 1,
-                                  },
-                                }));
+                                  // Update profile counters immediately
+                                  setProfile((prev) => ({
+                                    ...prev,
+                                    account_info: {
+                                      ...prev.account_info,
+                                      total_following:
+                                        prev.account_info.total_following - 1,
+                                    },
+                                  }));
 
-                                toast.success("Follower removed successfully");
-                              })
-                              .catch((err) => {
-                                console.log(err);
-                                toast.error(
-                                  err.response?.data?.error ||
-                                    "Error removing follower"
-                                );
-                              });
-                          },
-                        }}
-                      />
-                    </AnimationWrapper>
-                  ))
-                )}
-              </>
+                                  toast.success("Unfollowed successfully");
+                                })
+                                .catch((err) => {
+                                  console.log(err);
+                                  toast.error(
+                                    err.response?.data?.error ||
+                                      "Error unfollowing user"
+                                  );
+                                });
+                            },
+                          }}
+                        />
+                      </AnimationWrapper>
+                    ))
+                  )}
+                </>
+              </InPageNavigaion>
+            </div>
+          </section>
 
-              {/* Following tab */}
-              <>
-                {following === null ? (
-                  <Loader />
-                ) : !following.results.length ? (
-                  <NoDataMessage message={"Not following anyone"} />
-                ) : (
-                  following.results.map((user, i) => (
-                    <AnimationWrapper
-                      key={i}
-                      transition={{ duration: 1, delay: i * 0.1 }}
-                    >
-                      <UserCard
-                        user={user}
-                        options={{
-                          btnMessage: "Unfollow",
-                          btnHandler: (userId) => {
-                            axios
-                              .post(
-                                `${
-                                  import.meta.env.VITE_SERVER_DOMAIN
-                                }/unfollow-user`,
-                                { targetUserId: userId },
-                                {
-                                  headers: {
-                                    Authorization: `Bearer ${access_token}`,
-                                  },
-                                }
-                              )
-                              .then(() => {
-                                // Update following list
-                                setFollowing((prev) => ({
-                                  ...prev,
-                                  results: prev.results.filter(
-                                    (user) => user._id !== userId
-                                  ),
-                                }));
-
-                                // Update profile counters immediately
-                                setProfile((prev) => ({
-                                  ...prev,
-                                  account_info: {
-                                    ...prev.account_info,
-                                    total_following:
-                                      prev.account_info.total_following - 1,
-                                  },
-                                }));
-
-                                toast.success("Unfollowed successfully");
-                              })
-                              .catch((err) => {
-                                console.log(err);
-                                toast.error(
-                                  err.response?.data?.error ||
-                                    "Error unfollowing user"
-                                );
-                              });
-                          },
-                        }}
-                      />
-                    </AnimationWrapper>
-                  ))
-                )}
-              </>
-            </InPageNavigaion>
-          </div>
-        </section>
+          {/* Добавить модальное окно здесь */}
+          {showCustomization && (
+            <ProfileCustomizationModal
+              initialData={profile?.profile_customization}
+              onSave={handleCustomization}
+              onClose={() => setShowCustomization(false)}
+            />
+          )}
+        </>
       ) : (
         <PageNotFound />
       )}
