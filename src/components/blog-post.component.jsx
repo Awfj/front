@@ -254,7 +254,7 @@ const BlogPostCard = ({ content, author }) => {
                 className={`fi fi-${
                   isBookmarked ? "sr" : "rr"
                 }-bookmark flex text-xl icon ${
-                  isBookmarked ? "text-magenta" : ""
+                  isBookmarked ? "text-purple" : ""
                 }`}
               ></i>
             </button>
