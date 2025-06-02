@@ -232,9 +232,12 @@ const BlogPage = () => {
                   {/* Добавляем информацию о категории и времени чтения */}
                   <div className="flex flex-col items-end gap-2 max-sm:items-start max-sm:ml-12 max-sm:mt-4">
                     <div className="flex items-center gap-2 text-dark-grey">
-                      <span className="btn-light py-1 px-4 capitalize">
+                      <Link
+                        to={`/search/${category.toLowerCase()}`}
+                        className="btn-light py-1 px-4 hover:bg-purple/10"
+                      >
                         {category}
-                      </span>
+                      </Link>
                       <span>•</span>
                       <span>{formatReadingTime(reading_time)}</span>
                     </div>
