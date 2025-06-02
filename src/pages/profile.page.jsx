@@ -295,15 +295,20 @@ const ProfilePage = () => {
             }}
           >
             <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">
-              <img
-                src={profile_img}
-                alt="Profile img"
-                className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
-                  role
-                )}`}
-              />
-              <h1 className="text-2xl font-medium">@{profile_username}</h1>
-              <p className="text-xl capitalize h-6">{fullname}</p>
+              <div className="flex max-md:flex-col md:items-center gap-5 md:mb-4">
+                <img
+                  src={profile_img}
+                  alt="Profile img"
+                  className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
+                    role
+                  )}`}
+                />
+                <div className="flex flex-col max-md:items-center">
+                  <h1 className="text-2xl font-medium">@{profile_username}</h1>
+                  <p className="text-xl capitalize h-6">{fullname}</p>
+                </div>
+              </div>
+
               {/* Статистика профиля */}
               <div className="grid grid-cols-2 gap-4 w-full mb-2">
                 <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
