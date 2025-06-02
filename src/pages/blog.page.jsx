@@ -279,9 +279,10 @@ const BlogPage = () => {
             </div>
 
             {/* Similar Blogs Section - справа на десктопе */}
-            <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen lg:overflow-y-auto min-h-[200px]">
+            <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen min-h-[200px]">
               <h1 className="font-medium text-2xl mb-8">Similar Posts</h1>
-              <div className="flex flex-col gap-6">
+              {/* Добавляем контейнер с правым отступом для скролла */}
+              <div className="flex flex-col gap-6 pr-4 overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-thin">
                 {similarBlog && similarBlog.length > 0 ? (
                   similarBlog.map((blog, i) => (
                     <AnimationWrapper
