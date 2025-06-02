@@ -17,7 +17,6 @@ const ChangePassword = () => {
     e.preventDefault();
 
     let form = new FormData(ChangePasswordForm.current);
-
     let formData = {};
 
     for (let [key, value] of form.entries()) {
@@ -51,6 +50,8 @@ const ChangePassword = () => {
       .then(() => {
         toast.dismiss(loadingToast);
         e.target.removeAttribute("disabled");
+        // Clear the form after successful password change
+        ChangePasswordForm.current.reset();
         return toast.success("Password Updated");
       })
       .catch(({ response }) => {
