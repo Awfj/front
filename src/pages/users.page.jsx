@@ -405,7 +405,7 @@ const Users = () => {
                 key={role}
                 onClick={() => confirmRoleChange(role)}
                 className={`btn-light rounded-md capitalize py-2 ${
-                  roleDialog.currentRole === role ? "bg-purple/10" : ""
+                  roleDialog.currentRole === role ? "bg-purple" : ""
                 } ${
                   role === "admin"
                     ? "border-red text-red hover:bg-red/10"
@@ -458,7 +458,7 @@ const Users = () => {
             <select
               value={banDuration}
               onChange={(e) => setBanDuration(e.target.value)}
-              className="w-full p-2 border rounded bg-white dark:bg-dark text-black dark:text-white"
+              className="w-full p-2 border rounded bg-white dark:bg-dark text-black"
             >
               <option value="1">1 day</option>
               <option value="3">3 days</option>
@@ -469,7 +469,7 @@ const Users = () => {
               value={banReason}
               onChange={(e) => setBanReason(e.target.value)}
               placeholder="Reason for ban"
-              className="w-full p-2 border rounded bg-white dark:bg-dark text-black dark:text-white"
+              className="w-full p-2 border rounded bg-white dark:bg-dark text-black"
               rows={3}
             />
           </div>
