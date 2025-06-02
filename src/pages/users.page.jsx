@@ -480,7 +480,7 @@ const Users = () => {
             ? "Are you sure you want to delete this user? This action cannot be undone."
             : `Are you sure you want to change this user's role to ${confirmDialog.newRole}?`
         }
-        confirmText={confirmDialog.action === "delete" ? "Delete" : "Confirm"}
+        confirmText="Confirm"
         cancelText="Cancel"
       />
 
