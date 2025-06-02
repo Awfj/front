@@ -470,16 +470,8 @@ const Users = () => {
           setConfirmDialog({ isOpen: false, userId: null, action: null })
         }
         onConfirm={handleConfirm}
-        title={
-          confirmDialog.action === "delete"
-            ? "Delete User"
-            : "Confirm Role Change"
-        }
-        message={
-          confirmDialog.action === "delete"
-            ? "Are you sure you want to delete this user? This action cannot be undone."
-            : `Are you sure you want to change this user's role to ${confirmDialog.newRole}?`
-        }
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
         confirmText="Confirm"
         cancelText="Cancel"
       />
