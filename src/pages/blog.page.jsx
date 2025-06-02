@@ -278,11 +278,19 @@ const BlogPage = () => {
               <CommentContainer />
             </div>
 
-            {/* Similar Blogs Section - справа на десктопе */}
+            {/* Similar Blogs Section */}
             <div className="lg:w-[380px] lg:sticky lg:top-[100px] lg:max-h-screen min-h-[200px]">
               <h1 className="font-medium text-2xl mb-8">Similar Posts</h1>
-              {/* Добавляем контейнер с правым отступом для скролла */}
-              <div className="flex flex-col gap-6 pr-4 overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-thin">
+              {/* Update container styles for mobile/desktop */}
+              <div
+                className={`flex flex-col gap-6 
+    ${
+      // On desktop: scrollable container with padding
+      "lg:pr-4 lg:overflow-y-auto lg:max-h-[calc(100vh-200px)] lg:scrollbar-thin" +
+      // On mobile: no scroll, full height
+      " max-lg:h-full max-lg:overflow-visible"
+    }`}
+              >
                 {similarBlog && similarBlog.length > 0 ? (
                   similarBlog.map((blog, i) => (
                     <AnimationWrapper
