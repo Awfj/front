@@ -13,6 +13,13 @@ import ConfirmDialog from "../components/confirm-dialog.component";
 import { useNavigate } from "react-router-dom";
 import { storeInSession, logOutUser } from "../common/session";
 
+const BAN_DURATIONS = [
+  { label: "1 Day", value: "1" },
+  { label: "3 Days", value: "3" },
+  { label: "7 Days", value: "7" },
+  { label: "30 Days", value: "30" },
+];
+
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState(null);
@@ -455,16 +462,21 @@ const Users = () => {
         message="Select ban duration and reason:"
         customContent={
           <div className="flex flex-col gap-4">
-            <select
-              value={banDuration}
-              onChange={(e) => setBanDuration(e.target.value)}
-              className="w-full p-2 border rounded bg-white dark:bg-dark text-black"
-            >
-              <option value="1">1 day</option>
-              <option value="3">3 days</option>
-              <option value="7">7 days</option>
-              <option value="30">30 days</option>
-            </select>
+            <div className="flex flex-wrap gap-2">
+              {BAN_DURATIONS.map((duration) => (
+                <button
+                  key={duration.value}
+                  onClick={() => setBanDuration(duration.value)}
+                  className={`py-2 px-4 whitespace-nowrap rounded-full transition-colors font-medium ${
+                    banDuration === duration.value
+                      ? "btn-dark border-purple text-purple shadow font-bold"
+                      : "btn-light bg-light-grey"
+                  }`}
+                >
+                  {duration.label}
+                </button>
+              ))}
+            </div>
             <textarea
               value={banReason}
               onChange={(e) => setBanReason(e.target.value)}
