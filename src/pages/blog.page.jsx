@@ -74,12 +74,12 @@ const BlogPage = () => {
             category: blog.category,
             tags: blog.tags,
             eliminate_blog: blog_id,
-            limit: 6,
+            limit: 4,
           })
           .then(async ({ data: { blogs } }) => {
             // Если найдено меньше 6 похожих, добираем постами автора
             let similar = blogs || [];
-            if (similar.length < 6) {
+            if (similar.length < 4) {
               const alreadyIds = similar.map((b) => b._id);
               const {
                 data: { blogs: authorBlogs },
@@ -88,7 +88,7 @@ const BlogPage = () => {
                 {
                   author: blog.author._id,
                   eliminate_blog: blog_id,
-                  limit: 6 - similar.length,
+                  limit: 4 - similar.length,
                 }
               );
               const uniqueAuthorBlogs = authorBlogs
