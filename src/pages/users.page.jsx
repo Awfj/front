@@ -144,7 +144,7 @@ const Users = () => {
   };
 
   const handleRoleChangeConfirm = () => {
-    const { userId, newRole } = confirmDialog;
+    const { userId, selectedRole } = roleDialog;
     const isCurrentUser = userId === userAuth._id;
 
     axios
@@ -152,7 +152,7 @@ const Users = () => {
         `${import.meta.env.VITE_SERVER_DOMAIN}/change-user-role`,
         {
           userId,
-          newRole,
+          newRole: selectedRole,
         },
         {
           headers: {
@@ -187,11 +187,11 @@ const Users = () => {
         toast.error(err.response?.data?.error || "Error updating role");
       })
       .finally(() => {
-        setConfirmDialog({
+        setRoleDialog({
           isOpen: false,
           userId: null,
-          action: null,
-          newRole: null,
+          currentRole: null,
+          selectedRole: null,
         });
       });
   };
@@ -456,7 +456,7 @@ const Users = () => {
         }
         confirmText="Confirm"
         cancelText="Cancel"
-        onConfirm={confirmRoleChange}
+        onConfirm={handleRoleChangeConfirm}
         disabled={
           !roleDialog.selectedRole ||
           roleDialog.selectedRole === roleDialog.currentRole
