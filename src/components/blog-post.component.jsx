@@ -235,7 +235,7 @@ const BlogPostCard = ({ content, author }) => {
             <i
               className={`fi fi-${
                 isLiked ? "sr" : "rr"
-              }-heart flex text-xl icon ${isLiked ? "text-magenta" : ""}`}
+              }-heart flex text-xl icon ${isLiked ? "text-purple" : ""}`}
             ></i>
             {likesCount}
           </button>

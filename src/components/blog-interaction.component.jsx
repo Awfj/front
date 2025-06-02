@@ -26,7 +26,7 @@ const BlogInteraction = () => {
     setBookmarkedByUser,
   } = blogContexData;
 
-  let icon = isBookmarkedByUser ? "fi fi-ss-bookmark" : "fi fi-rs-bookmark"; // bs
+  let bookmarkedIcon = isBookmarkedByUser ? "fi fi-ss-bookmark text-purple" : "fi fi-rs-bookmark"; // bs
 
   let {
     userAuth: { username, access_token },
@@ -119,7 +119,7 @@ const BlogInteraction = () => {
               <i
                 className={
                   "flex-center icon fi " +
-                  (isLikedByUser ? "fi-sr-heart" : "fi-rr-heart")
+                  (isLikedByUser ? "fi-sr-heart text-purple" : "fi-rr-heart")
                 }
               ></i>
             </button>
@@ -137,7 +137,7 @@ const BlogInteraction = () => {
             onClick={handleBookmark}
             className="flex items-center gap-2 text-dark-grey"
           >
-            <i className={`flex-center ${icon} text-xl icon`}></i>
+            <i className={`flex flex-center ${bookmarkedIcon} text-xl icon`}></i>
           </button>
         </div>
 
