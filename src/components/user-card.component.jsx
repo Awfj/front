@@ -4,10 +4,20 @@ import { UserContext } from "../App";
 import DropdownMenu from "./dropdown-menu.component";
 
 const UserCard = ({ user, hasDropdownMenu = false, options }) => {
-  const { personal_info, role } = user;
+  const { personal_info, role, ban } = user;
   const {
     userAuth: { access_token, username },
   } = useContext(UserContext);
+
+  const getBanStatus = (ban) => {
+    if (!ban?.isBanned) return null;
+    const now = new Date();
+    const banEnd = new Date(ban.bannedUntil);
+    if (now > banEnd) return null;
+    
+    const days = Math.ceil((banEnd - now) / (1000 * 60 * 60 * 24));
+    return `Banned for ${days} more days`;
+  };
 
   const getBorderStyle = (role) => {
     if (role === "admin") {
@@ -34,6 +44,9 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
             {personal_info.fullname}
           </h1>
           <p className="text-dark-grey">@{personal_info.username}</p>
+          {ban?.isBanned && (
+            <p className="text-red text-sm">{getBanStatus(ban)}</p>
+          )}
         </div>
       </Link>
 

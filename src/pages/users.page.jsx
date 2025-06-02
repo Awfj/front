@@ -19,6 +19,9 @@ const Users = () => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [banDuration, setBanDuration] = useState("1");
+  const [banReason, setBanReason] = useState("");
+
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     userId: null,
@@ -221,6 +224,96 @@ const Users = () => {
       });
   };
 
+  const [banDialog, setBanDialog] = useState({
+    isOpen: false,
+    userId: null,
+  });
+
+  const handleBanUser = (userId) => {
+    setBanDialog({
+      isOpen: true,
+      userId,
+    });
+  };
+
+  const confirmBan = async (duration, reason) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/ban-user`,
+        {
+          userId: banDialog.userId,
+          duration,
+          reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // Update users list
+      setUsers((prev) => ({
+        ...prev,
+        results: prev.results.map((user) =>
+          user._id === banDialog.userId
+            ? {
+                ...user,
+                ban: {
+                  isBanned: true,
+                  bannedUntil: new Date(
+                    Date.now() + duration * 24 * 60 * 60 * 1000
+                  ),
+                  reason,
+                },
+              }
+            : user
+        ),
+      }));
+
+      toast.success("User banned successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Error banning user");
+    } finally {
+      setBanDialog({ isOpen: false, userId: null });
+    }
+  };
+
+  const handleUnbanUser = async (userId) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/unban-user`,
+        { userId },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      // Update users list
+      setUsers((prev) => ({
+        ...prev,
+        results: prev.results.map((user) =>
+          user._id === userId
+            ? {
+                ...user,
+                ban: {
+                  isBanned: false,
+                  bannedUntil: null,
+                  reason: "",
+                },
+              }
+            : user
+        ),
+      }));
+
+      toast.success("User unbanned successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Error unbanning user");
+    }
+  };
+
   useEffect(() => {
     if (access_token) {
       getUsers({ page: 1 });
@@ -271,6 +364,15 @@ const Users = () => {
                     label: "Change Role",
                     onClick: () => handleRoleChange(user._id, user.role),
                     icon: "fi fi-rr-user-gear",
+                  },
+                  {
+                    label: user.ban?.isBanned ? "Unban User" : "Ban User",
+                    onClick: () =>
+                      user.ban?.isBanned
+                        ? handleUnbanUser(user._id)
+                        : handleBanUser(user._id),
+                    icon: "fi fi-rr-ban",
+                    danger: !user.ban?.isBanned,
                   },
                   {
                     label: "Delete",
@@ -339,6 +441,42 @@ const Users = () => {
         }
         confirmText={confirmDialog.action === "delete" ? "Delete" : "Confirm"}
         cancelText="Cancel"
+      />
+
+      <ConfirmDialog
+        isOpen={banDialog.isOpen}
+        onClose={() => {
+          setBanDialog({ isOpen: false, userId: null });
+          setBanDuration("1");
+          setBanReason("");
+        }}
+        onConfirm={() => confirmBan(parseInt(banDuration), banReason)}
+        title="Ban User"
+        message="Select ban duration and reason:"
+        customContent={
+          <div className="flex flex-col gap-4">
+            <select
+              value={banDuration}
+              onChange={(e) => setBanDuration(e.target.value)}
+              className="w-full p-2 border rounded bg-white dark:bg-dark text-black dark:text-white"
+            >
+              <option value="1">1 day</option>
+              <option value="3">3 days</option>
+              <option value="7">7 days</option>
+              <option value="30">30 days</option>
+            </select>
+            <textarea
+              value={banReason}
+              onChange={(e) => setBanReason(e.target.value)}
+              placeholder="Reason for ban"
+              className="w-full p-2 border rounded bg-white dark:bg-dark text-black dark:text-white"
+              rows={3}
+            />
+          </div>
+        }
+        confirmText="Ban User"
+        cancelText="Cancel"
+        disabled={!banReason.trim()}
       />
     </>
   );

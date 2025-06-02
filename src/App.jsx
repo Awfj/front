@@ -19,6 +19,8 @@ import Users from "./pages/users.page";
 import ModerateBlogsPage from "./pages/moderate-blogs.page";
 import LikesPage from "./pages/likes.page";
 import FullScreenLoader from "./components/full-screen-loader.component";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 export const UserContext = createContext({});
 
@@ -34,6 +36,38 @@ const App = () => {
   const [theme, setTheme] = useState(() =>
     darkThemePreference() ? "dark" : "light"
   );
+
+  const handleApiError = (error) => {
+    if (error.response?.data?.isBanned) {
+      const { bannedUntil, reason } = error.response.data;
+      // Показываем пользователю информацию о бане
+      toast.error(
+        `Your account is banned until ${new Date(
+          bannedUntil
+        ).toLocaleDateString()}. Reason: ${reason}`
+      );
+
+      // Разлогиниваем пользователя
+      logOutUser();
+      setUserAuth({ access_token: null });
+      navigate("/signin");
+    }
+  };
+
+  useEffect(() => {
+    // Add axios interceptor for handling ban responses
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        handleApiError(error);
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -69,36 +103,40 @@ const App = () => {
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <UserContext.Provider value={{ userAuth, setUserAuth }}>
-        <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#242424]' : 'bg-white'}`}>
-        <Routes>
-          <Route path="/editor" element={<Editor />} />
-          <Route path="/editor/:blog_id" element={<Editor />} />
+        <div
+          className={`min-h-screen ${
+            theme === "dark" ? "bg-[#242424]" : "bg-white"
+          }`}
+        >
+          <Routes>
+            <Route path="/editor" element={<Editor />} />
+            <Route path="/editor/:blog_id" element={<Editor />} />
 
-          <Route path="/" element={<Navbar />}>
-            <Route index element={<Home />} />
+            <Route path="/" element={<Navbar />}>
+              <Route index element={<Home />} />
 
-            <Route path="dashboard" element={<SideNav />}>
-              <Route path="users" element={<Users />} />
-              <Route path="blogs" element={<ManageBlog />} />
-              <Route path="moderation" element={<ModerateBlogsPage />} />
-              <Route path="notifications" element={<Notification />} />
-              <Route path="bookmarks" element={<ManageBookmarks />} />
-              <Route path="likes" element={<LikesPage />} />
+              <Route path="dashboard" element={<SideNav />}>
+                <Route path="users" element={<Users />} />
+                <Route path="blogs" element={<ManageBlog />} />
+                <Route path="moderation" element={<ModerateBlogsPage />} />
+                <Route path="notifications" element={<Notification />} />
+                <Route path="bookmarks" element={<ManageBookmarks />} />
+                <Route path="likes" element={<LikesPage />} />
+              </Route>
+
+              <Route path="settings" element={<SideNav />}>
+                <Route path="edit-profile" element={<EditProfile />} />
+                <Route path="change-password" element={<ChangePassword />} />
+              </Route>
+
+              <Route path="signin" element={<UserAuthForm type="sign-in" />} />
+              <Route path="signup" element={<UserAuthForm type="sign-up" />} />
+              <Route path="search/:query" element={<SearchPage />} />
+              <Route path="user/:id" element={<ProfilePage />} />
+              <Route path="blog/:blog_id" element={<BlogPage />} />
+              <Route path="*" element={<PageNotFound />} />
             </Route>
-
-            <Route path="settings" element={<SideNav />}>
-              <Route path="edit-profile" element={<EditProfile />} />
-              <Route path="change-password" element={<ChangePassword />} />
-            </Route>
-
-            <Route path="signin" element={<UserAuthForm type="sign-in" />} />
-            <Route path="signup" element={<UserAuthForm type="sign-up" />} />
-            <Route path="search/:query" element={<SearchPage />} />
-            <Route path="user/:id" element={<ProfilePage />} />
-            <Route path="blog/:blog_id" element={<BlogPage />} />
-            <Route path="*" element={<PageNotFound />} />
-          </Route>
-        </Routes>
+          </Routes>
         </div>
       </UserContext.Provider>
     </ThemeContext.Provider>

@@ -22,12 +22,31 @@ const UserAuthForm = ({ type }) => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
       .then(({ data }) => {
-        storeInSession("user", JSON.stringify(data));
+        if (data.isBanned) {
+          const banEnd = new Date(data.bannedUntil);
+          toast.error(
+            `Your account is banned until ${banEnd.toLocaleDateString()}. Reason: ${
+              data.reason
+            }`
+          );
+          return;
+        }
 
+        storeInSession("user", JSON.stringify(data));
         setUserAuth(data);
       })
       .catch(({ response }) => {
-        toast.error(response.data.error);
+        // Проверяем ответ на наличие информации о бане
+        if (response.data.isBanned) {
+          const banEnd = new Date(response.data.bannedUntil);
+          toast.error(
+            `Your account is banned until ${banEnd.toLocaleDateString()}. Reason: ${
+              response.data.reason
+            }`
+          );
+        } else {
+          toast.error(response.data.error);
+        }
       });
   };
 
@@ -148,7 +167,10 @@ const UserAuthForm = ({ type }) => {
           ) : (
             <p className="mt-6 text-dark-grey text-xl text-center">
               Already have an account?
-              <Link to="/signin" className="underline text-black ml-1 interactivity">
+              <Link
+                to="/signin"
+                className="underline text-black ml-1 interactivity"
+              >
                 <em className="text-xl">Sign In here</em>
               </Link>
             </p>
