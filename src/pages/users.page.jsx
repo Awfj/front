@@ -28,6 +28,7 @@ const Users = () => {
 
   const [banDuration, setBanDuration] = useState("1");
   const [banReason, setBanReason] = useState("");
+  const [showBanError, setShowBanError] = useState(false);
 
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -244,6 +245,11 @@ const Users = () => {
   };
 
   const confirmBan = async (duration, reason) => {
+    if (!reason.trim()) {
+      setShowBanError(true);
+      return;
+    }
+
     try {
       await axios.post(
         `${import.meta.env.VITE_SERVER_DOMAIN}/ban-user`,
@@ -279,10 +285,11 @@ const Users = () => {
       }));
 
       toast.success("User banned successfully");
+      setBanDialog({ isOpen: false, userId: null });
+      setBanReason("");
+      setShowBanError(false);
     } catch (err) {
       toast.error(err.response?.data?.error || "Error banning user");
-    } finally {
-      setBanDialog({ isOpen: false, userId: null });
     }
   };
 
@@ -456,6 +463,7 @@ const Users = () => {
           setBanDialog({ isOpen: false, userId: null });
           setBanDuration("1");
           setBanReason("");
+          setShowBanError(false);
         }}
         onConfirm={() => confirmBan(parseInt(banDuration), banReason)}
         title="Ban User"
@@ -479,11 +487,20 @@ const Users = () => {
             </div>
             <textarea
               value={banReason}
-              onChange={(e) => setBanReason(e.target.value)}
-              placeholder="Reason for ban"
-              className="w-full p-2 border rounded bg-white dark:bg-dark text-black"
+              onChange={(e) => {
+                setBanReason(e.target.value);
+                if (showBanError) setShowBanError(false);
+              }}
+              placeholder="Reason for the ban (required)"
+              className={`w-full p-2 border rounded bg-white dark:bg-dark text-black 
+              ${showBanError ? "border-red" : "border-grey"}`}
               rows={3}
             />
+            {showBanError && (
+              <p className="text-red text-sm">
+                Please provide a reason for the ban
+              </p>
+            )}
           </div>
         }
         confirmText="Ban User"
