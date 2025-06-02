@@ -503,7 +503,7 @@ const Users = () => {
             )}
           </div>
         }
-        confirmText="Ban User"
+        confirmText="Confirm"
         cancelText="Cancel"
         disabled={!banReason.trim()}
       />
