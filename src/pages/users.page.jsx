@@ -39,6 +39,7 @@ const Users = () => {
     isOpen: false,
     userId: null,
     currentRole: null,
+    selectedRole: null, // Add new state for selected role
   });
 
   let {
@@ -103,19 +104,34 @@ const Users = () => {
       isOpen: true,
       userId,
       currentRole,
+      selectedRole: currentRole, // Устанавливаем текущую роль как выбранную
     });
   };
 
-  const confirmRoleChange = (newRole) => {
-    // Закрываем диалог выбора роли
-    setRoleDialog({ isOpen: false, userId: null, currentRole: null });
+  const selectRole = (role) => {
+    setRoleDialog((prev) => ({
+      ...prev,
+      selectedRole: role,
+    }));
+  };
 
-    // Показываем диалог подтверждения
+  const confirmRoleChange = () => {
+    if (!roleDialog.selectedRole) return;
+
+    // Close role dialog
+    setRoleDialog({
+      isOpen: false,
+      userId: null,
+      currentRole: null,
+      selectedRole: null,
+    });
+
+    // Show confirmation dialog
     setConfirmDialog({
       isOpen: true,
       userId: roleDialog.userId,
       action: "changeRole",
-      newRole: newRole,
+      newRole: roleDialog.selectedRole,
     });
   };
 
@@ -408,32 +424,43 @@ const Users = () => {
       <ConfirmDialog
         isOpen={roleDialog.isOpen}
         onClose={() =>
-          setRoleDialog({ isOpen: false, userId: null, currentRole: null })
+          setRoleDialog({
+            isOpen: false,
+            userId: null,
+            currentRole: null,
+            selectedRole: null,
+          })
         }
         title="Change User Role"
         message="Select new role for this user:"
         customContent={
-          <div className="flex flex-col gap-2 mb-4">
+          <div className="flex flex-col gap-2 mb-3">
             {["author", "moderator", "admin"].map((role) => (
               <button
                 key={role}
-                onClick={() => confirmRoleChange(role)}
+                onClick={() => selectRole(role)}
                 className={`btn-light rounded-md capitalize py-2 ${
-                  roleDialog.currentRole === role ? "bg-purple" : ""
+                  roleDialog.selectedRole === role ? "bg-purple/30" : ""
                 } ${
                   role === "admin"
                     ? "border-red text-red hover:bg-red/10"
                     : role === "moderator"
-                    ? "border-green-500 text-green-500 hover:bg-green-500/10"
+                    ? "border-green text-green hover:bg-green/10"
                     : ""
-                }`}
+                } ${role === roleDialog.currentRole ? "border-2" : ""}`}
               >
                 {role === "admin" ? "administrator" : role}
               </button>
             ))}
           </div>
         }
-        confirmText="Cancel"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        onConfirm={confirmRoleChange}
+        disabled={
+          !roleDialog.selectedRole ||
+          roleDialog.selectedRole === roleDialog.currentRole
+        }
       />
 
       {/* Existing delete dialog */}
