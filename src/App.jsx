@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Navbar from "./components/navbar.component";
 import UserAuthForm from "./pages/userAuthForm.page";
 import { createContext, useEffect, useState } from "react";
@@ -21,6 +21,7 @@ import LikesPage from "./pages/likes.page";
 import FullScreenLoader from "./components/full-screen-loader.component";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { logOutUser } from "./common/session";
 
 export const UserContext = createContext({});
 
@@ -30,6 +31,7 @@ const darkThemePreference = () =>
   window.matchMedia("(prefers-color-scheme: dark)").matches;
 
 const App = () => {
+  const navigate = useNavigate();
   const [userAuth, setUserAuth] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,13 +43,23 @@ const App = () => {
     if (error.response?.data?.isBanned) {
       const { bannedUntil, reason } = error.response.data;
       // Показываем пользователю информацию о бане
-      toast.error(
-        `Your account is banned until ${new Date(
-          bannedUntil
-        ).toLocaleDateString()}. Reason: ${reason}`
-      );
+      // toast.error(
+      //   `Your account is banned until ${new Date(
+      //     bannedUntil
+      //   ).toLocaleDateString()}. Reason: ${reason}`
+      // );
 
       // Разлогиниваем пользователя
+      logOutUser();
+      setUserAuth({ access_token: null });
+      navigate("/signin");
+    }
+
+    if (
+      error.response?.status === 404 &&
+      error.response?.data?.error === "User not found"
+    ) {
+      toast.error("Your account has been deleted");
       logOutUser();
       setUserAuth({ access_token: null });
       navigate("/signin");

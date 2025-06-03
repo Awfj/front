@@ -224,7 +224,7 @@ const Users = () => {
           // Если админ удалил себя
           logOutUser();
           setUserAuth({ access_token: null });
-          navigate("/");
+          navigate("/signin");
         } else {
           // Обновляем список пользователей
           setUsers((prev) => {
@@ -236,8 +236,8 @@ const Users = () => {
               totalDocs: prev.totalDocs - 1,
             };
           });
+          toast.success("User deleted successfully");
         }
-        toast.success("User deleted successfully");
       })
       .catch((err) => {
         console.error(err);

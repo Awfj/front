@@ -12,6 +12,7 @@ import { filterPaginationData } from "../common/filter-pagination-data";
 import LoadMoreDataBtn from "../components/load-more.component";
 import { UserContext } from "../App";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 // import postImg from "../imgs/post.png";
 // import avatarImg from "../imgs/avatar.jpg";
@@ -252,7 +253,7 @@ const Home = () => {
         }
         return newSet;
       });
-      toast.error("Error updating follow status");
+      // toast.error("Error updating follow status");
     }
   };
 
