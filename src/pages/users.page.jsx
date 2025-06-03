@@ -20,6 +20,8 @@ const BAN_DURATIONS = [
   { label: "30 Days", value: "30" },
 ];
 
+const MAX_BAN_REASON_LENGTH = 25;
+
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState(null);
@@ -507,14 +509,22 @@ const Users = () => {
             <textarea
               value={banReason}
               onChange={(e) => {
-                setBanReason(e.target.value);
-                if (showBanError) setShowBanError(false);
+                const newValue = e.target.value;
+                if (newValue.length <= MAX_BAN_REASON_LENGTH) {
+                  setBanReason(newValue);
+                  if (showBanError) setShowBanError(false);
+                }
               }}
               placeholder="Reason for the ban (required)"
               className={`w-full p-2 border rounded bg-white dark:bg-dark text-black 
-              ${showBanError ? "border-red" : "border-grey"}`}
+    ${showBanError ? "border-red" : "border-grey"}`}
               rows={3}
+              maxLength={MAX_BAN_REASON_LENGTH}
             />
+            {/* Add character counter */}
+            <div className="text-sm text-dark-grey text-right">
+              {banReason.length}/{MAX_BAN_REASON_LENGTH}
+            </div>
             {showBanError && (
               <p className="text-red text-sm">
                 Please provide a reason for the ban
