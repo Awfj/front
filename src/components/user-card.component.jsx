@@ -17,7 +17,13 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
     if (now > banEnd) return null;
 
     const days = Math.ceil((banEnd - now) / (1000 * 60 * 60 * 24));
-    return `Banned for ${days} more days`;
+    return (
+      <>
+        Banned for {days} more {days === 1 ? "day" : "days"}
+        <br />
+        Reason: {ban.reason}
+      </>
+    );
   };
 
   const getStatusColor = () => {
