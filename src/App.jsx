@@ -94,7 +94,41 @@ const App = () => {
 
     initializeApp();
   }, []);
-  // console.log(userAuth)
+
+  useEffect(() => {
+    if (userAuth?.access_token) {
+      // Set online when app loads
+      axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/update-online-status`,
+        { is_online: true },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+
+      // Set offline when user leaves/closes tab
+      const handleBeforeUnload = () => {
+        axios.post(
+          `${import.meta.env.VITE_SERVER_DOMAIN}/update-online-status`,
+          { is_online: false },
+          {
+            headers: {
+              Authorization: `Bearer ${userAuth.access_token}`,
+            },
+          }
+        );
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        handleBeforeUnload();
+      };
+    }
+  }, [userAuth?.access_token]);
 
   if (isLoading) {
     return <FullScreenLoader />;
