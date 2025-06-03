@@ -735,9 +735,9 @@ const Home = () => {
                     className="w-full p-3 pr-8 rounded-md bg-light-grey border border-magenta appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')]"
                   >
                     <option value="any">Any Length</option>
-                    <option value="short">Short (0-5 min)</option>
-                    <option value="medium">Medium (5-15 min)</option>
-                    <option value="long">Long (15+ min)</option>
+                    <option value="short">Short (0-4 minutes)</option>
+                    <option value="medium">Medium (5-14 minutes)</option>
+                    <option value="long">Long (15+ minutes)</option>
                   </select>
                 </div>
 
