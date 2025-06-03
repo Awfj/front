@@ -318,30 +318,37 @@ const Home = () => {
   };
 
   // POPULAR BLOGS
-  const fetchPopularBlogs = ({
+  const fetchPopularBlogs = async ({
     page = 1,
     category = null,
     create_new_arr = false,
+    sortBy,
+    readingTime,
   }) => {
-    axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/popular-blogs", {
-        page,
-        category,
-      })
-      .then(async ({ data }) => {
-        let formattedData = await filterPaginationData({
-          state: popularBlogs,
-          data: data.blogs,
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/popular-blogs`,
+        {
           page,
-          countRoute: "/popular-blogs-count",
-          data_to_send: { category },
-          create_new_arr,
-        });
-        setPopularBlogs(formattedData);
-      })
-      .catch((err) => {
-        console.log(err);
+          category,
+          sortBy,
+          readingTime,
+        }
+      );
+
+      const formattedData = await filterPaginationData({
+        state: popularBlogs,
+        data: data.blogs,
+        page,
+        countRoute: "/popular-blogs-count",
+        data_to_send: { category },
+        create_new_arr,
       });
+
+      setPopularBlogs(formattedData);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // FOLLOWING BLOGS
