@@ -75,7 +75,23 @@ const App = () => {
       let themeInSession = lookInSession("theme");
 
       if (userInSession) {
-        setUserAuth(JSON.parse(userInSession));
+        const parsedUser = JSON.parse(userInSession);
+        setUserAuth(parsedUser);
+
+        // Устанавливаем онлайн статус сразу при инициализации
+        try {
+          await axios.post(
+            `${import.meta.env.VITE_SERVER_DOMAIN}/update-online-status`,
+            { is_online: true },
+            {
+              headers: {
+                Authorization: `Bearer ${parsedUser.access_token}`,
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Failed to update online status:", error);
+        }
       } else {
         setUserAuth({ access_token: null });
       }
