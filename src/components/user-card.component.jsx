@@ -42,7 +42,7 @@ const UserCard = ({ user, hasDropdownMenu = false, options }) => {
         <div className="relative">
           <img
             src={personal_info.profile_img}
-            className={`w-14 h-14 rounded-full border-2 ${getBorderStyle(
+            className={`w-14 h-14 rounded-full border-4 ${getBorderStyle(
               role
             )}`}
             alt={personal_info.fullname}
