@@ -55,6 +55,10 @@
     @apply transition-all duration-500 ease-in-out;
   }
 
+  .transition-custom-300 {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
   .flex-center {
     @apply flex items-center justify-center;
   }
@@ -121,11 +125,15 @@
   }
 
   .sidebar-link {
-    @apply flex gap-4 items-center py-5 text-dark-grey hover:text-black;
+    @apply flex gap-4 items-center py-5 text-dark-grey hover:text-black pl-6 -ml-6 transition-custom-300;
   }
 
   .sidebar-link.active {
-    @apply text-black border-r-2 border-black pl-6 bg-grey/50 -ml-6 md:rounded-tl-lg md:rounded-bl-lg max-md:border-none;
+    @apply text-black border-r-2 border-purple bg-grey/50 md:rounded-tl-lg md:rounded-bl-lg max-md:border-none;
+  }
+
+  .sidebar-link:hover {
+    @apply text-black border-r-2 border-black bg-grey/50 md:rounded-tl-lg md:rounded-bl-lg max-md:border-none;
   }
 
   #textEditor h2,
@@ -199,14 +207,14 @@
   color-scheme: light dark;
 }
 
-html[data-theme='dark'],
-body[data-theme='dark'] {
+html[data-theme="dark"],
+body[data-theme="dark"] {
   background-color: #242424;
-  color: #F3F3F3;
+  color: #f3f3f3;
 }
 
-html[data-theme='dark'] #root,
-body[data-theme='dark'] #root {
+html[data-theme="dark"] #root,
+body[data-theme="dark"] #root {
   background-color: #242424;
 }
 
