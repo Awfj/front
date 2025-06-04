@@ -15,6 +15,7 @@ import toast, { Toaster } from "react-hot-toast";
 import UserCard from "../components/user-card.component";
 import AchievementBadge from "../components/achievement-badge.component";
 import ProfileCustomizationModal from "../components/profile-customization-modal.component";
+import AvatarWrapper from "../components/avatar-wrapper.component";
 
 export const profileDataStructure = {
   personal_info: {
@@ -49,7 +50,7 @@ const ProfilePage = () => {
     try {
       await axios.post(
         import.meta.env.VITE_SERVER_DOMAIN + "/update-profile-customization",
-        customization,
+        customization, // Передаем весь объект customization
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -63,7 +64,7 @@ const ProfilePage = () => {
       toast.success("Profile customization updated!");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update customization");
+      toast.error("Failed to update profile customization");
     }
   };
 
@@ -120,6 +121,7 @@ const ProfilePage = () => {
     social_links,
     joinedAt,
     role,
+    online_status,
     achievements,
   } = profile;
 
@@ -296,13 +298,20 @@ const ProfilePage = () => {
           >
             <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">
               <div className="flex max-md:flex-col md:items-center gap-5 md:mb-4">
-                <img
-                  src={profile_img}
-                  alt="Profile img"
-                  className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border ${getBorderStyle(
-                    role
-                  )}`}
-                />
+                <AvatarWrapper
+                  style={
+                    profile?.profile_customization?.avatarStyle || "gradient"
+                  }
+                  online_status={online_status}
+                >
+                  <img
+                    src={profile_img}
+                    alt="Profile img"
+                    className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 ${getBorderStyle(
+                      role
+                    )}`}
+                  />
+                </AvatarWrapper>
                 <div className="flex flex-col max-md:items-center">
                   <h1 className="text-2xl font-medium">@{profile_username}</h1>
                   <p className="text-xl capitalize h-6">{fullname}</p>

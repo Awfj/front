@@ -7,30 +7,64 @@ import bg2 from "../imgs/bg/bg-2.jpg";
 const PRESET_BACKGROUNDS = [
   {
     url: bg1,
-    label: "Abstract Pattern"
+    label: "Abstract Pattern",
   },
   {
     url: bg2,
-    label: "Geometric Pattern"
-  }
+    label: "Geometric Pattern",
+  },
+];
+
+const AVATAR_STYLES = [
+  { id: "gradient", label: "Gradient Border", icon: "fi fi-rr-palette" },
+  { id: "shine", label: "Shining Effect", icon: "fi fi-rr-sparkles" },
+  { id: "pulse", label: "Pulse Effect", icon: "fi fi-rr-rings-wedding" },
+  { id: "float", label: "Floating Effect", icon: "fi fi-rr-cloud" },
 ];
 
 const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
   const [customization, setCustomization] = useState(
     initialData || {
       backgroundUrl: "",
+      avatarStyle: "gradient",
     }
   );
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-light-grey rounded-xl p-6 max-w-lg w-full">
-        <h2 className="text-2xl font-bold mb-4">Customize Your Profile</h2>
+      <div className="bg-white dark:bg-light-grey rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-6">Customize Your Profile</h2>
 
-        <div className="space-y-6">
-          {/* Предустановленные фоны */}
+        <div className="space-y-8">
+          {/* Avatar Style Selection */}
           <div>
-            <h3 className="text-xl mb-3">Select Background</h3>
+            <h3 className="text-xl mb-4">Avatar Style</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {AVATAR_STYLES.map((style) => (
+                <button
+                  key={style.id}
+                  onClick={() =>
+                    setCustomization((prev) => ({
+                      ...prev,
+                      avatarStyle: style.id,
+                    }))
+                  }
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+                    customization.avatarStyle === style.id
+                      ? "border-purple bg-purple/10"
+                      : "border-grey hover:border-purple/50"
+                  }`}
+                >
+                  <i className={`${style.icon} text-xl`}></i>
+                  <span>{style.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Background Selection */}
+          <div>
+            <h3 className="text-xl mb-4">Profile Background</h3>
             <div className="grid grid-cols-2 gap-4">
               {PRESET_BACKGROUNDS.map((bg, index) => (
                 <div
@@ -61,23 +95,40 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Preview */}
-        {customization.backgroundUrl && (
-          <div className="mt-6">
-            <h3 className="text-xl mb-3">Preview</h3>
-            <div className="relative rounded-lg overflow-hidden aspect-video">
-              <img
-                src={customization.backgroundUrl}
-                alt="Background Preview"
-                className="w-full h-full object-cover"
-              />
+          {/* Preview Section */}
+          <div>
+            <h3 className="text-xl mb-4">Preview</h3>
+            <div className="bg-light-grey rounded-lg p-6">
+              <div className="flex items-center gap-4">
+                {/* Avatar Preview */}
+                <div className={`avatar-${customization.avatarStyle}`}>
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-grey">
+                    <img
+                      src="https://api.dicebear.com/6.x/avataaars/svg?seed=19"
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                {/* Background Preview (if selected) */}
+                {customization.backgroundUrl && (
+                  <div className="flex-1">
+                    <div className="relative rounded-lg overflow-hidden h-20">
+                      <img
+                        src={customization.backgroundUrl}
+                        alt="Background Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div className="flex gap-4 mt-6">
           <button
             onClick={() => onSave(customization)}
