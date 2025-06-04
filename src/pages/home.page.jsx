@@ -356,6 +356,8 @@ const Home = () => {
     page = 1,
     category = null,
     create_new_arr = false,
+    sortBy,
+    readingTime,
   }) => {
     if (!userAuth.access_token) {
       return;
@@ -376,6 +378,8 @@ const Home = () => {
           state: followingBlogs,
           data: data.blogs,
           page,
+          sortBy,
+          readingTime,
           user: userAuth.access_token,
           countRoute: "/following-blogs-count",
           data_to_send: { category },
