@@ -140,8 +140,8 @@ const SideNav = () => {
               Notifications
             </NavLink>
 
-            <h1 className="text-xl text-dark-grey mb-3 mt-20">Settings</h1>
-            <hr className="border-grey -ml-6 mb-8 mr-6" />
+            <h1 className="text-xl text-dark-grey mb-3 mt-8">Settings</h1>
+            <hr className="border-grey -ml-6 mr-6" />
 
             {/* Edit Profile */}
             <NavLink
