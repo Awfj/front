@@ -189,7 +189,7 @@ const BlogPostCard = ({ content, author }) => {
                 author.role
               )}`}
             />
-            <p className="line-clamp-1">
+            <p className="line-clamp-1 transition-custom">
               {fullname} @{username}
             </p>
           </Link>
@@ -204,7 +204,7 @@ const BlogPostCard = ({ content, author }) => {
 
         {/* Second row: Banner, Title, Description */}
         <Link to={`/blog/${id}`} className="block">
-          <div className="flex gap-6 mb-4">
+          <div className="flex gap-6 mb-4 hover:text-purple">
             <div className="h-32 w-32 bg-grey flex-shrink-0">
               <img
                 src={banner}
@@ -213,7 +213,9 @@ const BlogPostCard = ({ content, author }) => {
               />
             </div>
             <div className="flex flex-col">
-              <h1 className="blog-title text-xl font-bold mb-2">{title}</h1>
+              <h1 className="blog-title text-xl font-bold mb-2 transition-custom">
+                {title}
+              </h1>
               <p className="text-dark-grey line-clamp-2">{des}</p>
             </div>
           </div>
@@ -223,17 +225,17 @@ const BlogPostCard = ({ content, author }) => {
         <div className="flex items-center gap-4">
           <Link
             to={`/search/${category.toLowerCase()}`}
-            className="btn-light py-1 px-4 hover:bg-purple/10"
+            className="btn-light py-1 px-4"
           >
             {category}
           </Link>
 
           <button
             onClick={handleLike}
-            className="flex items-center gap-2 text-dark-grey"
+            className="flex items-center gap-2"
           >
             <i
-              className={`fi fi-${
+              className={`transition-custom hover:text-purple fi fi-${
                 isLiked ? "sr" : "rr"
               }-heart flex text-xl icon ${isLiked ? "text-purple" : ""}`}
             ></i>
@@ -248,10 +250,10 @@ const BlogPostCard = ({ content, author }) => {
           {userAuth.access_token && (
             <button
               onClick={handleBookmark}
-              className="flex items-center gap-2 text-dark-grey"
+              className="flex items-center gap-2 "
             >
               <i
-                className={`fi fi-${
+                className={`transition-custom hover:text-purple fi fi-${
                   isBookmarked ? "sr" : "rr"
                 }-bookmark flex text-xl icon ${
                   isBookmarked ? "text-purple" : ""
@@ -265,9 +267,9 @@ const BlogPostCard = ({ content, author }) => {
               onClick={(e) => {
                 setShowReportDialog(true);
               }}
-              className="flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
+              className="transition-custom flex items-center gap-2 text-dark-grey hover:text-red ml-auto"
             >
-              <i className="fi fi-rr-flag text-xl flex"></i>
+              <i className="transition-custom fi fi-rr-flag text-xl flex"></i>
               Report
             </button>
           )}
