@@ -264,7 +264,7 @@ const EditProfile = () => {
                 </div>
 
                 {/* Bio */}
-                <div className="flex flex-col gap-2 w-[100%]">
+                <div className="flex flex-col gap-1 w-[100%]">
                   <label htmlFor="bio" className="text-dark-grey">
                     Bio
                   </label>
@@ -276,7 +276,7 @@ const EditProfile = () => {
                     placeholder="Bio"
                     onChange={handleCharacterChange}
                   ></textarea>
-                  <p className="mt-1 text-dark-grey">
+                  <p className="text-dark-grey">
                     {charactersLeft} characters left
                   </p>
                 </div>
