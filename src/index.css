@@ -385,3 +385,8 @@ body {
   justify-content: center;
   /* border: 2px solid black; */
 }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Учитываем высоту fixed navbar */
+}

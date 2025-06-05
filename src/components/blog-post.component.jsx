@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { getDay } from "../common/date";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
@@ -138,6 +138,22 @@ const BlogPostCard = ({ content, author }) => {
       });
   };
 
+  const handleCommentClick = (e) => {
+    e.preventDefault();
+
+    // Создаем URL с якорем
+    const blogUrl = `/blog/${id}#comments`;
+    window.location.href = blogUrl;
+
+    // Добавляем обработчик события для прокрутки после загрузки страницы
+    window.onload = () => {
+      const commentsSection = document.getElementById("comments");
+      if (commentsSection) {
+        commentsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+  };
+
   const handleBookmark = (e) => {
     e.preventDefault(); // Prevent navigation
 
@@ -230,10 +246,7 @@ const BlogPostCard = ({ content, author }) => {
             {category}
           </Link>
 
-          <button
-            onClick={handleLike}
-            className="flex items-center gap-2"
-          >
+          <button onClick={handleLike} className="flex items-center gap-2">
             <i
               className={`transition-custom hover:text-purple fi fi-${
                 isLiked ? "sr" : "rr"
@@ -242,10 +255,13 @@ const BlogPostCard = ({ content, author }) => {
             {likesCount}
           </button>
 
-          <span className="flex items-center gap-2 text-dark-grey">
+          <button
+            onClick={handleCommentClick}
+            className="flex items-center gap-2 text-dark-grey hover:text-purple transition-custom"
+          >
             <i className="flex-center flex fi fi-rr-comment-dots text-xl icon"></i>
             {total_comments}
-          </span>
+          </button>
 
           {userAuth.access_token && (
             <button
