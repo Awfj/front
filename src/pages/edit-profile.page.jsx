@@ -384,13 +384,15 @@ const EditProfile = () => {
                 </div>
               </div>
 
-              <button
-                className="btn-dark w-auto px-10 mt-6"
-                type="submit"
-                onClick={handleSubmit}
-              >
-                Update
-              </button>
+              <div className="flex mt-6 justify-end">
+                <button
+                  className="btn-dark w-auto px-10 mr-0"
+                  type="submit"
+                  onClick={handleSubmit}
+                >
+                  Update
+                </button>
+              </div>
             </div>
           </div>
         </form>
