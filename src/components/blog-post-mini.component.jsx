@@ -23,7 +23,7 @@ const BlogPostCardMini = ({ blog, author, isLastItem }) => {
             alt={fullname}
             className="w-6 h-6 rounded-full border border-magenta"
           />
-          <p className="line-clamp-1 text-dark-grey">{fullname}</p>
+          <p className="line-clamp-1 transition-custom">{fullname}</p>
         </Link>
         <span className="text-dark-grey">•</span>
         <span className="text-dark-grey text-sm">{getDay(publishedAt)}</span>
@@ -32,8 +32,8 @@ const BlogPostCardMini = ({ blog, author, isLastItem }) => {
       {/* Blog content */}
       <Link to={`/blog/${blog_id}`} className="flex gap-4 group">
         {/* Text content */}
-        <div className="flex-1">
-          <h3 className="font-bold text-xl mb-2 group-hover:text-purple transition-colors">
+        <div className="flex-1 transition-custom">
+          <h3 className="font-bold text-xl mb-2 group-hover:text-purple transition-custom">
             {title}
           </h3>
           <p className="text-dark-grey line-clamp-2 text-sm">{des}</p>
