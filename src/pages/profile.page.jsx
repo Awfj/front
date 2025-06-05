@@ -313,8 +313,8 @@ const ProfilePage = () => {
                   />
                 </AvatarWrapper>
                 <div className="flex flex-col max-md:items-center">
-                  <h1 className="text-2xl font-medium">@{profile_username}</h1>
-                  <p className="text-xl capitalize h-6">{fullname}</p>
+                  <h1 className="text-2xl font-medium">{fullname}</h1>
+                  <p className="text-xl h-6">@{profile_username}</p>
                 </div>
               </div>
 
@@ -383,7 +383,7 @@ const ProfilePage = () => {
                   <button
                     onClick={handleFollow}
                     className={`btn-light rounded-md ${
-                      profile.isFollowing ? "bg-red-500 text-white" : ""
+                      profile.isFollowing ? "bg-red-500 text-black" : ""
                     }`}
                   >
                     {profile.isFollowing ? "Unfollow" : "Follow"}
