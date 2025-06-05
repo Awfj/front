@@ -22,11 +22,11 @@ const DropdownMenu = ({ children, items }) => {
         className="btn-light rounded-md px-4 py-2 flex items-center gap-2"
       >
         Actions
-        <i className="fi fi-rr-angle-small-down"></i>
+        <i className="flex fi fi-rr-angle-small-down transition-custom"></i>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div className="absolute right-0 mt-2 w-48 border border-grey rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-1" role="menu">
             {items.map((item, index) => (
               <button
