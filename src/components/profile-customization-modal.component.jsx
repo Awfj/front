@@ -102,8 +102,8 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
             <div className="bg-light-grey rounded-lg p-6">
               <div className="flex items-center gap-4">
                 {/* Avatar Preview */}
-                <div className={`avatar-${customization.avatarStyle}`}>
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-grey">
+                <div className={`w-[70px] h-[70px] avatar-${customization.avatarStyle}`}>
+                  <div className="rounded-full overflow-hidden border-4 border-grey">
                     <img
                       src="https://api.dicebear.com/6.x/avataaars/svg?seed=19"
                       alt="Preview"

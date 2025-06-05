@@ -307,7 +307,7 @@ const ProfilePage = () => {
                   <img
                     src={profile_img}
                     alt="Profile img"
-                    className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 ${getBorderStyle(
+                    className={`w-48 h-48 bg-grey rounded-full md:w-32 md:h-32 border-4 ${getBorderStyle(
                       role
                     )}`}
                   />
