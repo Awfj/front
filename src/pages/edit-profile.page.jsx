@@ -44,6 +44,8 @@ const EditProfile = () => {
         })
         .then(({ data }) => {
           setProfile(data);
+          // Устанавливаем начальное значение оставшихся символов
+          setCharactersLeft(bioLimit - (data.personal_info.bio?.length || 0));
           setLoading(false);
         })
         .catch((err) => {
@@ -54,7 +56,8 @@ const EditProfile = () => {
   }, [access_token]);
 
   const handleCharacterChange = (e) => {
-    setCharactersLeft(bioLimit - e.target.value.length);
+    const currentLength = e.target.value.length;
+    setCharactersLeft(bioLimit - currentLength);
   };
 
   const handleImagePrev = (e) => {
