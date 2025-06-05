@@ -347,7 +347,7 @@ const EditProfile = () => {
                     maxLength={bioLimit}
                     defaultValue={bio}
                     className="input-box min-h-[150px] h-[100%] resize-none leading-7 pl-5"
-                    placeholder="Bio"
+                    placeholder="Write something about yourself..."
                     onChange={handleCharacterChange}
                   ></textarea>
                   <p className="text-dark-grey">
