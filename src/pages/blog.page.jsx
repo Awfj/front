@@ -234,7 +234,7 @@ const BlogPage = () => {
                     <div className="flex items-center gap-2 text-dark-grey">
                       <Link
                         to={`/search/${category.toLowerCase()}`}
-                        className="btn-light py-1 px-4 hover:bg-purple/10"
+                        className="btn-light py-1 px-4"
                       >
                         {category}
                       </Link>

@@ -32,7 +32,7 @@ const BlogPostCardMini = ({ blog, author, isLastItem }) => {
       {/* Blog content */}
       <Link to={`/blog/${blog_id}`} className="flex gap-4 group">
         {/* Text content */}
-        <div className="flex-1 transition-custom">
+        <div className="flex-1">
           <h3 className="font-bold text-xl mb-2 group-hover:text-purple transition-custom">
             {title}
           </h3>
