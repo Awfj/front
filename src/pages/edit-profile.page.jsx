@@ -111,28 +111,36 @@ const EditProfile = () => {
     e.preventDefault();
 
     let form = new FormData(editProfileForm.current);
-
     let formData = {};
+
     for (let [key, value] of form.entries()) {
       formData[key] = value;
     }
+
     let {
       username,
       bio,
+      fullname,
       youtube,
       facebook,
-      // twitter,
       github,
       instagram,
       website,
     } = formData;
 
+    // Валидация fullname
+    if (fullname.length < 3) {
+      return toast.error("Full name should be at least 3 letters long");
+    }
+
+    // Валидация username
     if (username.length < 3) {
       return toast.error("Username should be at least 3 letters long");
     }
 
+    // Валидация bio
     if (bio.length > bioLimit) {
-      return toast.error(`Bio should not be more than ${bioLimit} characters `);
+      return toast.error(`Bio should not be more than ${bioLimit} characters`);
     }
 
     let loadingToast = toast.loading("Updating...");
@@ -142,12 +150,12 @@ const EditProfile = () => {
       .post(
         import.meta.env.VITE_SERVER_DOMAIN + "/update-profile",
         {
+          fullname,
           username,
           bio,
           social_links: {
             youtube,
             facebook,
-            // twitter,
             github,
             instagram,
             website,
@@ -161,13 +169,17 @@ const EditProfile = () => {
       )
       .then(({ data }) => {
         if (userAuth.username != data.username) {
-          let newUserAuth = { ...userAuth, username: data.username };
+          let newUserAuth = {
+            ...userAuth,
+            username: data.username,
+            fullname: data.fullname,
+          };
           storeInSession("user", JSON.stringify(newUserAuth));
           setUserAuth(newUserAuth);
         }
         toast.dismiss(loadingToast);
         e.target.removeAttribute("disabled");
-        toast.success("Profile updated successfully :)");
+        toast.success("Profile updated successfully!");
       })
       .catch(({ response }) => {
         toast.dismiss(loadingToast);
