@@ -661,7 +661,7 @@ const Home = () => {
             <div>
               <h1 className="font-medium text-xl mb-8">
                 Popular Categories{" "}
-                <i className="fi fi-rr-fire-flame-curved"></i>
+                <i className="flex fi fi-rr-fire-flame-curved"></i>
               </h1>
               <div className="flex gap-3 flex-wrap">
                 {popularCategories.map((category, i) => (
@@ -685,14 +685,14 @@ const Home = () => {
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
                 <h1 className="font-medium text-xl">
-                  Filter Posts<i className="fi fi-rr-filter"></i>
+                  Filter Posts<i className="flex fi fi-rr-filter"></i>
                 </h1>
                 <button
                   onClick={toggleFilters}
-                  className="flex items-center gap-2 text-dark-grey hover:text-black transition-colors"
+                  className="transition-custom flex items-center gap-2 text-dark-grey hover:text-purple"
                 >
                   <i
-                    className={`fi fi-rr-angle-${showFilters ? "up" : "down"}`}
+                    className={`transition-custom flex fi fi-rr-angle-${showFilters ? "up" : "down"}`}
                   ></i>
                   {showFilters ? "Hide Filters" : "Show Filters"}
                 </button>
