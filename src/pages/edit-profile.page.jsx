@@ -128,17 +128,30 @@ const EditProfile = () => {
       website,
     } = formData;
 
-    // Валидация fullname
-    if (fullname.length < 3) {
-      return toast.error("Full name should be at least 3 letters long");
+    // Validation for fullname
+    if (!fullname.trim()) {
+      return toast.error("Full name is required");
     }
 
-    // Валидация username
+    if (fullname.length < 3) {
+      return toast.error("Full name should be at least 3 characters long");
+    }
+
+    if (fullname.length > 50) {
+      return toast.error("Full name should not exceed 50 characters");
+    }
+
+    // Check if fullname contains only letters and spaces
+    if (!/^[A-Za-zА-Яа-яЁё\s]+$/.test(fullname)) {
+      return toast.error("Full name should contain only letters and spaces");
+    }
+
+    // Validate username
     if (username.length < 3) {
       return toast.error("Username should be at least 3 letters long");
     }
 
-    // Валидация bio
+    // Validate bio
     if (bio.length > bioLimit) {
       return toast.error(`Bio should not be more than ${bioLimit} characters`);
     }
