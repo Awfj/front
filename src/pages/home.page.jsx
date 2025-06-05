@@ -556,7 +556,7 @@ const Home = () => {
               {popularBlogs === null ? (
                 <Loader />
               ) : !popularBlogs?.results?.length ? (
-                <NoDataMessage message={"No popular blogs"} />
+                <NoDataMessage message={"No popular posts"} />
               ) : (
                 popularBlogs.results.map((blog, i) => (
                   <AnimationWrapper
@@ -586,7 +586,7 @@ const Home = () => {
               {blogs === null ? (
                 <Loader />
               ) : !blogs.results.length ? (
-                <NoDataMessage message={"No published blogs"} />
+                <NoDataMessage message={"No published posts"} />
               ) : (
                 blogs.results.map((blog, i) => {
                   return (
@@ -659,7 +659,7 @@ const Home = () => {
           <div className="flex flex-col gap-10">
             {/* POPULAR CATEGORIES */}
             <div>
-              <h1 className="font-medium text-xl mb-8">
+              <h1 className="flex items-center gap-1 font-medium text-xl mb-8">
                 Popular Categories{" "}
                 <i className="flex fi fi-rr-fire-flame-curved"></i>
               </h1>
@@ -684,7 +684,7 @@ const Home = () => {
             {/* FILTER POSTS */}
             <div className="flex flex-col">
               <div className="flex items-center justify-between">
-                <h1 className="font-medium text-xl">
+                <h1 className="flex items-center gap-1 font-medium text-xl">
                   Filter Posts<i className="flex fi fi-rr-filter"></i>
                 </h1>
                 <button
@@ -798,8 +798,8 @@ const Home = () => {
 
             {/* TRENDING AUTHORS */}
             <div>
-              <h1 className="text-xl font-medium mb-8">
-                Trending Authors <i className="fi fi-rr-arrow-trend-up"></i>
+              <h1 className="flex items-center gap-1 text-xl font-medium mb-8">
+                Trending Authors <i className="flex fi fi-rr-arrow-trend-up"></i>
               </h1>
               {trendingAuthors === null ? (
                 <Loader />
