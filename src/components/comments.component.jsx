@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { BlogContext } from "../pages/blog.page";
 import CommentField from "./comment-field.component";
 import axios from "axios";
@@ -65,8 +65,17 @@ const CommentContainer = () => {
     loadMoreComments,
   } = useContext(BlogContext);
 
+  useEffect(() => {
+    if (window.location.hash === "#comments") {
+      const commentsSection = document.getElementById("comments");
+      if (commentsSection) {
+        commentsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
+
   return (
-    <div className={"w-full mt-6"}>
+    <div id="comments" className={"w-full mt-6"}>
       <div className="relative">
         <CommentField action="comment" />
 
