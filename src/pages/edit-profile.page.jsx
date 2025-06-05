@@ -216,75 +216,105 @@ const EditProfile = () => {
             </div>
 
             <div className="w-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 md:gap-5">
-                <div>
-                  <InputBox
-                    name="fullname"
-                    type="text"
-                    value={fullname}
-                    placeholder="Full Name"
-                    icon="fi-rr-user"
-                    // disable={true}
-                  />
+              <div className="flex xl:flex-row flex-col gap-6">
+                {/* Personal info */}
+                <div className="flex flex-col gap-6 w-[100%]">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="fullname" className="text-dark-grey">
+                      Full Name
+                    </label>
+                    <InputBox
+                      name="fullname"
+                      type="text"
+                      value={fullname}
+                      placeholder="Full Name"
+                      icon="fi-rr-user"
+                      bottomMargin={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="username" className="text-dark-grey">
+                      Username
+                    </label>
+                    <InputBox
+                      type="text"
+                      name="username"
+                      value={profile_username}
+                      placeholder="Username"
+                      icon="fi-rr-at"
+                      bottomMargin={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="email" className="text-dark-grey">
+                      Email
+                    </label>
+                    <InputBox
+                      name="email"
+                      type="email"
+                      value={email}
+                      placeholder="Email"
+                      icon="fi-rr-envelope"
+                      disable={true}
+                      bottomMargin={false}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <InputBox
-                    name="email"
-                    type="email"
-                    value={email}
-                    placeholder="Email"
-                    icon="fi-rr-envelope"
-                    disable={true}
-                  />
+
+                {/* Bio */}
+                <div className="flex flex-col gap-2 w-[100%]">
+                  <label htmlFor="bio" className="text-dark-grey">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    maxLength={bioLimit}
+                    defaultValue={bio}
+                    className="input-box min-h-[150px] h-[100%] resize-none leading-7 pl-5"
+                    placeholder="Bio"
+                    onChange={handleCharacterChange}
+                  ></textarea>
+                  <p className="mt-1 text-dark-grey">
+                    {charactersLeft} characters left
+                  </p>
                 </div>
               </div>
 
-              <InputBox
-                type="text"
-                name="username"
-                value={profile_username}
-                placeholder="Username"
-                icon="fi-rr-at"
-              />
-
-              <textarea
-                name="bio"
-                maxLength={bioLimit}
-                defaultValue={bio}
-                className="input-box h-64 lg:h-40 resize-none leading-7 pl-5"
-                placeholder="Bio"
-                onChange={handleCharacterChange}
-              ></textarea>
-
-              <p className="mt-1 text-dark-grey my-6">
-                {charactersLeft} characters left
-              </p>
-
-              <div className="md:grid md:grid-cols-2 gap-x-6">
-                {Object.keys(social_links)
-                  .filter((key) => key !== "twitter" && key !== "facebook") // скрываем twitter и facebook
-                  .map((key, i) => {
-                    let link = social_links[key];
-                    return (
-                      <InputBox
-                        key={i}
-                        name={key}
-                        type="text"
-                        value={link}
-                        placeholder="https://"
-                        icon={
-                          "fi " +
-                          (key !== "website"
-                            ? "fi-brands-" + key
-                            : "fi-rr-globe")
-                        }
-                      />
-                    );
-                  })}
+              {/* Social links section */}
+              <div className="mt-8">
+                <label className="text-dark-grey mb-4 block">
+                  Social Links
+                </label>
+                <div className="md:grid md:grid-cols-2 gap-x-6 gap-y-2">
+                  {Object.keys(social_links)
+                    .filter((key) => key !== "twitter" && key !== "facebook")
+                    .map((key, i) => {
+                      let link = social_links[key];
+                      return (
+                        <InputBox
+                          key={i}
+                          name={key}
+                          type="text"
+                          value={link}
+                          placeholder={`${
+                            key.charAt(0).toUpperCase() + key.slice(1)
+                          } URL`}
+                          icon={
+                            "fi " +
+                            (key !== "website"
+                              ? "fi-brands-" + key
+                              : "fi-rr-globe")
+                          }
+                        />
+                      );
+                    })}
+                </div>
               </div>
 
               <button
-                className="btn-dark w-auto px-10"
+                className="btn-dark w-auto px-10 mt-6"
                 type="submit"
                 onClick={handleSubmit}
               >

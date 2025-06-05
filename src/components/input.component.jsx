@@ -8,10 +8,11 @@ const InputBox = ({
   placeholder,
   icon,
   disable = false,
+  bottomMargin = true,
 }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   return (
-    <div className="relative w-[100%] mb-4 ">
+    <div className={`relative w-[100%] ${bottomMargin ? "mb-4" : ""}`}>
       <input
         name={name}
         type={
