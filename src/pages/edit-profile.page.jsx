@@ -128,8 +128,8 @@ const EditProfile = () => {
       website,
     } = formData;
 
-    // Validation for fullname
-    if (!fullname.trim()) {
+    // Validate fullname
+    if (!fullname && !fullname.trim()) {
       return toast.error("Full name is required");
     }
 
@@ -141,19 +141,65 @@ const EditProfile = () => {
       return toast.error("Full name should not exceed 50 characters");
     }
 
-    // Check if fullname contains only letters and spaces
     if (!/^[A-Za-zА-Яа-яЁё\s]+$/.test(fullname)) {
       return toast.error("Full name should contain only letters and spaces");
     }
 
     // Validate username
+    if (!username && !username.trim()) {
+      return toast.error("Username is required");
+    }
+
     if (username.length < 3) {
-      return toast.error("Username should be at least 3 letters long");
+      return toast.error("Username should be at least 3 characters long");
+    }
+
+    if (username.length > 30) {
+      return toast.error("Username should not exceed 30 characters");
+    }
+
+    // Username can contain only letters, numbers, dots and underscores
+    if (!/^[a-zA-Z0-9._]+$/.test(username)) {
+      return toast.error(
+        "Username can contain only letters, numbers, dots and underscores"
+      );
     }
 
     // Validate bio
     if (bio.length > bioLimit) {
       return toast.error(`Bio should not be more than ${bioLimit} characters`);
+    }
+
+    // Validate social links
+    const socialLinks = { youtube, facebook, github, instagram, website };
+    const urlRegex =
+      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+    for (let [platform, url] of Object.entries(socialLinks)) {
+      if (url && url.trim()) {
+        // Skip empty URLs
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          return toast.error(
+            `${platform} URL must start with http:// or https://`
+          );
+        }
+
+        if (!urlRegex.test(url)) {
+          return toast.error(`Invalid ${platform} URL format`);
+        }
+
+        // Validate platform-specific domains
+        if (platform !== "website") {
+          try {
+            const hostname = new URL(url).hostname;
+            if (!hostname.includes(`${platform}.com`)) {
+              return toast.error(`Invalid ${platform} URL domain`);
+            }
+          } catch (err) {
+            return toast.error(`Invalid ${platform} URL`);
+          }
+        }
+      }
     }
 
     let loadingToast = toast.loading("Updating...");
