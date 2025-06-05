@@ -21,7 +21,11 @@ const AvatarWrapper = ({
     <div className="avatar-wrapper">
       <div className={`${getWrapperClass()} ${className}`}>{children}</div>
       {online_status && (
-        <div className="status-ring bg-black">
+        <div
+          className={`status-ring ${
+            online_status.is_online ? "bg-black" : "bg-transparent"
+          }`}
+        >
           <span
             className={`w-5 h-5 rounded-full ${
               online_status.is_online ? "bg-green" : "bg-transparent"
