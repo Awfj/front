@@ -43,7 +43,7 @@ const BlogPostCardMini = ({ blog, author, isLastItem }) => {
         <img
           src={banner}
           alt={title}
-          className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+          className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-magenta"
         />
       </Link>
     </div>
