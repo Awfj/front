@@ -225,7 +225,7 @@ const BlogPostCard = ({ content, author }) => {
               <img
                 src={banner}
                 alt="Banner"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-lg border border-magenta"
               />
             </div>
             <div className="flex flex-col">
@@ -246,20 +246,20 @@ const BlogPostCard = ({ content, author }) => {
             {category}
           </Link>
 
-          <button onClick={handleLike} className="flex items-center gap-2">
+          <button onClick={handleLike} className="flex items-center gap-2 transition-custom hover:text-purple">
             <i
-              className={`transition-custom hover:text-purple fi fi-${
+              className={`transition-custom flex fi fi-${
                 isLiked ? "sr" : "rr"
-              }-heart flex text-xl icon ${isLiked ? "text-purple" : ""}`}
+              }-heart flex text-xl ${isLiked ? "text-purple" : ""}`}
             ></i>
             {likesCount}
           </button>
 
           <button
             onClick={handleCommentClick}
-            className="flex items-center gap-2 text-dark-grey hover:text-purple transition-custom"
+            className="flex items-center gap-2 text-black hover:text-purple transition-custom"
           >
-            <i className="flex-center flex fi fi-rr-comment-dots text-xl icon"></i>
+            <i className="flex-center flex fi fi-rr-comment-dots text-xl transition-custom"></i>
             {total_comments}
           </button>
 
@@ -269,9 +269,9 @@ const BlogPostCard = ({ content, author }) => {
               className="flex items-center gap-2 "
             >
               <i
-                className={`transition-custom hover:text-purple fi fi-${
+                className={`transition-custom flex hover:text-purple fi fi-${
                   isBookmarked ? "sr" : "rr"
-                }-bookmark flex text-xl icon ${
+                }-bookmark flex text-xl ${
                   isBookmarked ? "text-purple" : ""
                 }`}
               ></i>
