@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { UserContext } from "../App";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
@@ -51,47 +57,43 @@ const MessagesPage = () => {
   };
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
+  e.preventDefault();
+  if (!newMessage.trim()) return;
 
-    try {
-      // Сначала сохраняем сообщение через API
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/send`,
-        {
-          recipient_id: currentChat._id,
-          content: newMessage,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userAuth.access_token}`,
-          },
-        }
-      );
-
-      // Добавляем новое сообщение в локальный state
-      setMessages((prev) => [...prev, data]);
-
-      // Эмитим событие через сокет для real-time обновления
-      socket.emit("send_message", {
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/messages/send`,
+      {
         recipient_id: currentChat._id,
-        sender_id: userAuth._id,
         content: newMessage,
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${userAuth.access_token}`,
+        },
+      }
+    );
 
-      // Очищаем поле ввода только после успешной отправки
-      setNewMessage("");
+    // Добавляем новое сообщение в локальный state
+    setMessages(prev => [...prev, data]);
 
-      // Прокручиваем к новому сообщению
-      scrollToBottom();
+    // Эмитим событие через сокет для real-time обновления
+    socket.emit("send_message", {
+      recipient_id: currentChat._id,
+      sender_id: userAuth._id,
+      content: newMessage,
+    });
 
-      // Обновляем список диалогов
-      fetchConversations();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to send message");
-    }
-  };
+    // Очищаем поле ввода только после успешной отправки
+    setNewMessage("");
+
+    // Обновляем список диалогов
+    fetchConversations();
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to send message");
+  }
+};
 
   const handleTyping = () => {
     socket.emit("typing", {
@@ -100,9 +102,15 @@ const MessagesPage = () => {
     });
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     if (socket) {
