@@ -26,7 +26,9 @@ const BlogInteraction = () => {
     setBookmarkedByUser,
   } = blogContexData;
 
-  let bookmarkedIcon = isBookmarkedByUser ? "fi fi-ss-bookmark text-purple" : "fi fi-rs-bookmark"; // bs
+  let bookmarkedIcon = isBookmarkedByUser
+    ? "fi fi-ss-bookmark text-purple"
+    : "fi fi-rs-bookmark"; // bs
 
   let {
     userAuth: { username, access_token },
@@ -84,6 +86,13 @@ const BlogInteraction = () => {
     }
   };
 
+  const handleCommentClick = (e) => {
+    e.preventDefault(); // Предотвращаем действие по умолчанию
+
+    // Навигация к блогу с якорем комментариев
+    window.location.href = `/blog/${blog_id}#comments`;
+  };
+
   const handleBookmark = () => {
     if (access_token) {
       setBookmarkedByUser((preVal) => !preVal);
@@ -109,36 +118,36 @@ const BlogInteraction = () => {
       <Toaster />
       <div className="flex gap-6 justify-between">
         <div className="flex gap-4 items-center">
-          <div className="flex gap-2 items-center">
-            <button
-              onClick={handleLike}
-              className={
-                "flex-center rounded-full flex items-center justify-center "
-              }
-            >
-              <i
-                className={
-                  "flex-center icon fi " +
-                  (isLikedByUser ? "fi-sr-heart text-purple" : "fi-rr-heart")
-                }
-              ></i>
-            </button>
-            <p className="text-xl text-dark-grey">{total_likes}</p>
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <button className="flex-center rounded-full flex items-center justify-center ">
-              <i className="flex-center icon fi fi-rr-comment-dots"></i>
-            </button>
-            <p className="text-xl text-dark-grey">{total_comments}</p>
-          </div>
+          <button
+            onClick={handleLike}
+            className="flex items-center gap-2 transition-custom hover:text-purple"
+          >
+            <i
+              className={`transition-custom flex fi fi-${
+                isLikedByUser ? "sr" : "rr"
+              }-heart flex text-xl ${isLikedByUser ? "text-purple" : ""}`}
+            ></i>
+            {total_likes}
+          </button>
 
           <button
-            onClick={handleBookmark}
-            className="flex items-center gap-2 text-dark-grey"
+            onClick={handleCommentClick}
+            className="flex items-center gap-2 text-black hover:text-purple transition-custom"
           >
-            <i className={`flex flex-center ${bookmarkedIcon} text-xl icon`}></i>
+            <i className="flex-center flex fi fi-rr-comment-dots text-xl transition-custom"></i>
+            {total_comments}
           </button>
+
+          {access_token && (
+            <button
+              onClick={handleBookmark}
+              className="flex items-center gap-2"
+            >
+              <i
+                className={`transition-custom hover:text-purple flex flex-center ${bookmarkedIcon} text-xl`}
+              ></i>
+            </button>
+          )}
         </div>
 
         <div className="flex gap-6 items-center">
