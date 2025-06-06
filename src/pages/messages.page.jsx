@@ -6,6 +6,8 @@ import AnimationWrapper from "../common/page-animation";
 import Loader from "../components/loader.component";
 import NoDataMessage from "../components/nodata.component";
 import { getDay } from "../common/date";
+import { toast } from "react-hot-toast";
+import { SocketContext } from "../contexts/SocketContext";
 
 const MessagesPage = () => {
   const { userAuth } = useContext(UserContext);
@@ -18,35 +20,9 @@ const MessagesPage = () => {
   const messagesEndRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const fetchConversations = async () => {
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/conversations`,
-        {
-          headers: {
-            Authorization: `Bearer ${userAuth.access_token}`,
-          },
-        }
-      );
-      setConversations(data);
-
-      // Если есть параметр chat в URL, открываем соответствующий чат
-      const chatId = searchParams.get("chat");
-      if (chatId) {
-        const conversation = data.find(
-          (c) => c._id.personal_info.username === chatId
-        );
-        if (conversation) {
-          setCurrentChat(conversation._id);
-          fetchMessages(conversation._id._id);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const socket = useContext(SocketContext);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
 
   const fetchMessages = async (userId) => {
     setLoadingMessages(true);
@@ -73,8 +49,9 @@ const MessagesPage = () => {
     if (!newMessage.trim()) return;
 
     try {
+      // Сначала сохраняем сообщение через API
       const { data } = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/send`,
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/send`,
         {
           recipient_id: currentChat._id,
           content: newMessage,
@@ -85,62 +62,144 @@ const MessagesPage = () => {
           },
         }
       );
-      setMessages([...messages, data]);
+
+      // Добавляем новое сообщение в локальный state
+      setMessages((prev) => [...prev, data]);
+
+      // Эмитим событие через сокет для real-time обновления
+      socket.emit("send_message", {
+        recipient_id: currentChat._id,
+        sender_id: userAuth._id,
+        content: newMessage,
+      });
+
+      // Очищаем поле ввода только после успешной отправки
       setNewMessage("");
+
+      // Прокручиваем к новому сообщению
       scrollToBottom();
 
       // Обновляем список диалогов
       fetchConversations();
     } catch (error) {
       console.error(error);
+      toast.error("Failed to send message");
     }
+  };
+
+  const handleTyping = () => {
+    socket.emit("typing", {
+      sender_id: userAuth._id,
+      recipient_id: currentChat._id,
+    });
   };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  //   useEffect(() => {
-  //     fetchConversations();
-  //     // Периодическое обновление диалогов
-  //     const interval = setInterval(fetchConversations, 10000);
-  //     return () => clearInterval(interval);
-  //   }, []);
-
   useEffect(() => {
-    fetchConversations();
+    if (socket) {
+      // При подключении сокета загружаем диалоги
+      fetchConversations();
 
-    // Получаем параметр chat из URL
-    const chatUsername = searchParams.get("chat");
+      // Проверяем наличие параметра chat в URL
+      const chatUsername = searchParams.get("chat");
 
-    if (chatUsername) {
-      // Находим пользователя по username
-      axios
-        .post(
-          `${import.meta.env.VITE_SERVER_DOMAIN}/get-profile`,
-          { username: chatUsername },
-          {
-            headers: {
-              Authorization: `Bearer ${userAuth.access_token}`,
-            },
-          }
-        )
-        .then(({ data }) => {
-          // Если пользователь найден, создаем или открываем чат с ним
-          if (data) {
-            setCurrentChat({
-              _id: data._id,
-              personal_info: data.personal_info,
-              online_status: data.online_status,
-            });
-            fetchMessages(data._id);
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      if (chatUsername) {
+        // Находим пользователя по username
+        axios
+          .post(
+            `${import.meta.env.VITE_SERVER_DOMAIN}/get-profile`,
+            { username: chatUsername },
+            {
+              headers: {
+                Authorization: `Bearer ${userAuth.access_token}`,
+              },
+            }
+          )
+          .then(({ data }) => {
+            if (data) {
+              setCurrentChat({
+                _id: data._id,
+                personal_info: data.personal_info,
+                online_status: data.online_status,
+              });
+              fetchMessages(data._id);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            setLoading(false);
+          });
+      } else {
+        setLoading(false);
+      }
+
+      // Слушаем входящие сообщения
+      socket.on("receive_message", (newMessage) => {
+        if (currentChat?._id === newMessage.sender._id) {
+          setMessages((prev) => [...prev, newMessage]);
+          scrollToBottom();
+        }
+        // Обновляем список диалогов
+        fetchConversations();
+      });
+
+      // Слушаем статус набора текста
+      socket.on("user_typing", (data) => {
+        if (currentChat?._id === data.sender_id) {
+          setIsTyping(true);
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
+        }
+      });
+
+      return () => {
+        socket.off("receive_message");
+        socket.off("user_typing");
+      };
     }
-  }, [searchParams]);
+  }, [socket, userAuth.access_token]);
+
+  // Обновляем URL при смене чата
+  useEffect(() => {
+    if (currentChat) {
+      setSearchParams({ chat: currentChat.personal_info.username });
+    }
+  }, [currentChat]);
+
+  // Обновляем fetchConversations для корректной обработки ошибок
+  const fetchConversations = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/conversations`,
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+      setConversations(data);
+
+      // Если есть параметр chat в URL, открываем соответствующий чат
+      const chatId = searchParams.get("chat");
+      if (chatId && !currentChat) {
+        const conversation = data.find(
+          (c) => c._id.personal_info.username === chatId
+        );
+        if (conversation) {
+          setCurrentChat(conversation._id);
+          fetchMessages(conversation._id._id);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      toast.error("Failed to load conversations");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) return <Loader />;
 
@@ -220,6 +279,10 @@ const MessagesPage = () => {
                     </p>
                   </div>
                 </div>
+
+                {isTyping && (
+                  <p className="text-sm text-dark-grey">Typing...</p>
+                )}
               </div>
 
               {/* Сообщения */}
@@ -263,7 +326,10 @@ const MessagesPage = () => {
                   <input
                     type="text"
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTyping();
+                    }}
                     placeholder="Type a message..."
                     className="flex-1 p-2 rounded-lg border border-grey focus:border-purple outline-none"
                   />

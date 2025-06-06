@@ -24,6 +24,8 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { logOutUser } from "./common/session";
 
+import { SocketProvider } from "./contexts/SocketContext";
+
 export const UserContext = createContext({});
 
 export const ThemeContext = createContext({});
@@ -166,42 +168,50 @@ const App = () => {
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <UserContext.Provider value={{ userAuth, setUserAuth }}>
-        <div
-          className={`min-h-screen ${
-            theme === "dark" ? "bg-[#242424]" : "bg-white"
-          }`}
-        >
-          <Routes>
-            <Route path="/editor" element={<Editor />} />
-            <Route path="/editor/:blog_id" element={<Editor />} />
+        <SocketProvider>
+          <div
+            className={`min-h-screen ${
+              theme === "dark" ? "bg-[#242424]" : "bg-white"
+            }`}
+          >
+            <Routes>
+              <Route path="/editor" element={<Editor />} />
+              <Route path="/editor/:blog_id" element={<Editor />} />
 
-            <Route path="/" element={<Navbar />}>
-              <Route index element={<Home />} />
+              <Route path="/" element={<Navbar />}>
+                <Route index element={<Home />} />
 
-              <Route path="dashboard" element={<SideNav />}>
-                <Route path="users" element={<Users />} />
-                <Route path="blogs" element={<ManageBlog />} />
-                <Route path="messages" element={<MessagesPage />} />
-                <Route path="moderation" element={<ModerateBlogsPage />} />
-                <Route path="notifications" element={<Notification />} />
-                <Route path="bookmarks" element={<ManageBookmarks />} />
-                <Route path="likes" element={<LikesPage />} />
+                <Route path="dashboard" element={<SideNav />}>
+                  <Route path="users" element={<Users />} />
+                  <Route path="blogs" element={<ManageBlog />} />
+                  <Route path="messages" element={<MessagesPage />} />
+                  <Route path="moderation" element={<ModerateBlogsPage />} />
+                  <Route path="notifications" element={<Notification />} />
+                  <Route path="bookmarks" element={<ManageBookmarks />} />
+                  <Route path="likes" element={<LikesPage />} />
+                </Route>
+
+                <Route path="settings" element={<SideNav />}>
+                  <Route path="edit-profile" element={<EditProfile />} />
+                  <Route path="change-password" element={<ChangePassword />} />
+                </Route>
+
+                <Route
+                  path="signin"
+                  element={<UserAuthForm type="sign-in" />}
+                />
+                <Route
+                  path="signup"
+                  element={<UserAuthForm type="sign-up" />}
+                />
+                <Route path="search/:query" element={<SearchPage />} />
+                <Route path="user/:id" element={<ProfilePage />} />
+                <Route path="blog/:blog_id" element={<BlogPage />} />
+                <Route path="*" element={<PageNotFound />} />
               </Route>
-
-              <Route path="settings" element={<SideNav />}>
-                <Route path="edit-profile" element={<EditProfile />} />
-                <Route path="change-password" element={<ChangePassword />} />
-              </Route>
-
-              <Route path="signin" element={<UserAuthForm type="sign-in" />} />
-              <Route path="signup" element={<UserAuthForm type="sign-up" />} />
-              <Route path="search/:query" element={<SearchPage />} />
-              <Route path="user/:id" element={<ProfilePage />} />
-              <Route path="blog/:blog_id" element={<BlogPage />} />
-              <Route path="*" element={<PageNotFound />} />
-            </Route>
-          </Routes>
-        </div>
+            </Routes>
+          </div>
+        </SocketProvider>
       </UserContext.Provider>
     </ThemeContext.Provider>
   );

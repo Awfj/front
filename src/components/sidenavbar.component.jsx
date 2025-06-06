@@ -43,7 +43,7 @@ const SideNav = () => {
       const fetchUnreadCount = async () => {
         try {
           const { data } = await axios.get(
-            `${import.meta.env.VITE_SERVER_DOMAIN}/conversations`,
+            `${import.meta.env.VITE_SERVER_DOMAIN}/messages/conversations`,
             {
               headers: {
                 Authorization: `Bearer ${userAuth.access_token}`,
