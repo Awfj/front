@@ -43,11 +43,6 @@ const MessagesPage = () => {
       );
 
       setMessages(data.messages);
-
-      // Добавляем небольшую задержку для корректной прокрутки
-      setTimeout(() => {
-        scrollToBottom();
-      }, 100);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load messages");
@@ -57,43 +52,42 @@ const MessagesPage = () => {
   };
 
   const handleSendMessage = async (e) => {
-  e.preventDefault();
-  if (!newMessage.trim()) return;
+    e.preventDefault();
+    if (!newMessage.trim()) return;
 
-  try {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_SERVER_DOMAIN}/messages/send`,
-      {
-        recipient_id: currentChat._id,
-        content: newMessage,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userAuth.access_token}`,
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/send`,
+        {
+          recipient_id: currentChat._id,
+          content: newMessage,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
 
-    // Добавляем новое сообщение в локальный state
-    setMessages(prev => [...prev, data]);
+      setMessages((prev) => [...prev, data]);
 
-    // Эмитим событие через сокет для real-time обновления
-    socket.emit("send_message", {
-      recipient_id: currentChat._id,
-      sender_id: userAuth._id,
-      content: newMessage,
-    });
+      socket.emit("send_message", {
+        recipient_id: currentChat._id,
+        sender_id: userAuth._id,
+        content: newMessage,
+      });
 
-    // Очищаем поле ввода только после успешной отправки
-    setNewMessage("");
+      setNewMessage("");
 
-    // Обновляем список диалогов
-    fetchConversations();
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to send message");
-  }
-};
+      // Для новых сообщений оставляем плавную прокрутку
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+
+      fetchConversations();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send message");
+    }
+  };
 
   const handleTyping = () => {
     socket.emit("typing", {
@@ -109,8 +103,11 @@ const MessagesPage = () => {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
+    if (!loadingMessages && messagesEndRef.current) {
+      // Прокручиваем моментально без анимации
+      messagesEndRef.current.scrollIntoView({ block: "end" });
+    }
+  }, [messages, loadingMessages]);
 
   useEffect(() => {
     if (socket) {
@@ -300,35 +297,42 @@ const MessagesPage = () => {
               </div>
 
               {/* Сообщения */}
-              <div className="flex-1 overflow-y-auto p-4">
+              <div
+                className="flex-1 overflow-y-auto p-4"
+                style={{ scrollbarGutter: "stable" }}
+              >
                 {loadingMessages ? (
                   <Loader />
                 ) : (
-                  messages.map((message) => (
-                    <div
-                      key={message._id}
-                      className={`flex ${
-                        message.sender._id === userAuth._id
-                          ? "justify-end"
-                          : "justify-start"
-                      } mb-4`}
-                    >
-                      <div
-                        className={`max-w-[70%] p-3 rounded-lg ${
-                          message.sender._id === userAuth._id
-                            ? "bg-purple text-white"
-                            : "bg-grey"
-                        }`}
-                      >
-                        <p>{message.content}</p>
-                        <span className="text-xs opacity-70">
-                          {new Date(message.createdAt).toLocaleTimeString()}
-                        </span>
-                      </div>
+                  <>
+                    <div className="flex-1">
+                      {messages.map((message) => (
+                        <div
+                          key={message._id}
+                          className={`flex ${
+                            message.sender._id === userAuth._id
+                              ? "justify-end"
+                              : "justify-start"
+                          } mb-4`}
+                        >
+                          <div
+                            className={`max-w-[70%] p-3 rounded-lg ${
+                              message.sender._id === userAuth._id
+                                ? "bg-purple text-white"
+                                : "bg-grey"
+                            }`}
+                          >
+                            <p>{message.content}</p>
+                            <span className="text-xs opacity-70">
+                              {new Date(message.createdAt).toLocaleTimeString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))
+                    <div ref={messagesEndRef} />
+                  </>
                 )}
-                <div ref={messagesEndRef} />
               </div>
 
               {/* Форма отправки */}
