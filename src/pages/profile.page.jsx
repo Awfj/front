@@ -380,14 +380,25 @@ const ProfilePage = () => {
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={handleFollow}
-                    className={`btn-light rounded-md ${
-                      profile.isFollowing ? "bg-red-500 text-black" : ""
-                    }`}
-                  >
-                    {profile.isFollowing ? "Unfollow" : "Follow"}
-                  </button>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={handleFollow}
+                      className={`btn-light rounded-md ${
+                        profile.isFollowing ? "bg-red-500 text-black" : ""
+                      }`}
+                    >
+                      {profile.isFollowing ? "Unfollow" : "Follow"}
+                    </button>
+
+                    {/* Добавляем кнопку сообщения */}
+                    <Link
+                      to={`/dashboard/messages?chat=${profile_username}`}
+                      className="btn-light rounded-md flex items-center gap-2"
+                    >
+                      <i className="flex transition-custom fi fi-rr-envelope"></i>
+                      Message
+                    </Link>
+                  </div>
                 )}
               </div>
 

@@ -18,6 +18,7 @@ import ManageBookmarks from "./pages/bookmarks.page";
 import Users from "./pages/users.page";
 import ModerateBlogsPage from "./pages/moderate-blogs.page";
 import LikesPage from "./pages/likes.page";
+import MessagesPage from "./pages/messages.page";
 import FullScreenLoader from "./components/full-screen-loader.component";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -180,6 +181,7 @@ const App = () => {
               <Route path="dashboard" element={<SideNav />}>
                 <Route path="users" element={<Users />} />
                 <Route path="blogs" element={<ManageBlog />} />
+                <Route path="messages" element={<MessagesPage />} />
                 <Route path="moderation" element={<ModerateBlogsPage />} />
                 <Route path="notifications" element={<Notification />} />
                 <Route path="bookmarks" element={<ManageBookmarks />} />

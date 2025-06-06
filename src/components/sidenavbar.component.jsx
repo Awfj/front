@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { NavLink, Navigate, Outlet } from "react-router-dom";
 import { UserContext } from "../App";
+import axios from "axios";
 
 const SideNav = () => {
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
   let {
     userAuth: { access_token, role, new_notification_available },
+    userAuth,
   } = useContext(UserContext);
 
   let page = location.pathname.split("/")[2];
@@ -33,6 +37,34 @@ const SideNav = () => {
     setShowSideNav(false);
     pageStateTap.current.click();
   }, [pageState]);
+
+  useEffect(() => {
+    if (userAuth.access_token) {
+      const fetchUnreadCount = async () => {
+        try {
+          const { data } = await axios.get(
+            `${import.meta.env.VITE_SERVER_DOMAIN}/conversations`,
+            {
+              headers: {
+                Authorization: `Bearer ${userAuth.access_token}`,
+              },
+            }
+          );
+          const totalUnread = data.reduce(
+            (sum, conv) => sum + conv.unreadCount,
+            0
+          );
+          setUnreadMessages(totalUnread);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [userAuth]);
 
   return access_token === null ? (
     <Navigate to="/signin" />
@@ -104,6 +136,21 @@ const SideNav = () => {
             >
               <i className="fi fi-rr-document icon"></i>
               Blog
+            </NavLink>
+
+            {/* Messages */}
+            <NavLink
+              to="/dashboard/messages"
+              onClick={(e) => setPageState(e.target.innerText)}
+              className="sidebar-link relative"
+            >
+              <i className="fi fi-rr-envelope icon"></i>
+              Messages
+              {unreadMessages > 0 && (
+                <span className="absolute top-4 right-4 bg-purple text-white rounded-full px-2 py-1 text-xs">
+                  {unreadMessages}
+                </span>
+              )}
             </NavLink>
 
             {/* Bookmarks */}
