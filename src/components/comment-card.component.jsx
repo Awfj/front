@@ -257,7 +257,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           <p className="min-w-fit">{getDay(commentedAt)}</p>
         </div>
 
-        <p className="text-xl font-gelasio ml-3">{comment}</p>
+        <p className="text-xl font-gelasio">{comment}</p>
 
         <div className="flex gap-5 items-center mt-5">
           {/* Кнопка лайка */}
@@ -277,16 +277,16 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           {commentData.isReplyLoaded ? (
             <button
               onClick={hideReplies}
-              className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
+              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2"
             >
-              <i className="fi fi-rs-comment-dots"></i>Hide Reply
+              <i className="transition-custom fi fi-rs-comment-dots"></i>Hide Reply
             </button>
           ) : (
             <button
               onClick={loadReplies}
-              className="text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2"
+              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2"
             >
-              <i className="flex fi fi-rs-comment-dots"></i>
+              <i className="transition-custom flex fi fi-rs-comment-dots"></i>
               {children.length}
             </button>
           )}
@@ -297,9 +297,9 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           {username === commented_by_username || username === blog_author ? (
             <button
               onClick={handleDeleteComment}
-              className="p-2 px-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center"
+              className="p-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center transition-custom"
             >
-              <i className="fi fi-rr-trash pointer-events-auto"></i>
+              <i className="transition-custom flex fi fi-rr-trash pointer-events-auto"></i>
             </button>
           ) : (
             ""
