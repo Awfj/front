@@ -35,10 +35,16 @@ const MessagesPage = () => {
           },
         }
       );
+
       setMessages(data.messages);
-      scrollToBottom();
+
+      // Добавляем небольшую задержку для корректной прокрутки
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load messages");
     } finally {
       setLoadingMessages(false);
     }
