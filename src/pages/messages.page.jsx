@@ -367,7 +367,7 @@ const MessagesPage = () => {
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <p className="text-dark-grey text-xs line-clamp-1 truncate">
+                      <p className="text-dark-grey text-xs line-clamp-1 truncate message-content">
                         {conversation.lastMessage.content}
                       </p>
                       {conversation.unreadCount > 0 && (
