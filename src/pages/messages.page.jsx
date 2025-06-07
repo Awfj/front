@@ -259,66 +259,61 @@ const MessagesPage = () => {
         <div
           className={`${
             currentChat ? "hidden md:block" : "block"
-          } md:w-1/3 lg:w-1/4 border-r border-grey p-4 overflow-y-auto`}
+          } md:w-80 xl:w-96 border-r border-grey overflow-y-auto scrollbar-thin`}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl md:text-2xl font-bold">Messages</h2>
-            {/* Кнопка возврата к списку диалогов на мобильных */}
-            {currentChat && (
-              <button
-                onClick={() => setCurrentChat(null)}
-                className="md:hidden btn-light p-2 rounded-full"
-              >
-                <i className="fi fi-rr-arrow-left"></i>
-              </button>
-            )}
+          <div className="sticky top-0 bg-white dark:bg-dark pr-3 border-b border-grey">
+            <h1 className="max-md:hidden text-2xl mb-8">Messages</h1>
           </div>
 
-          {conversations?.length ? (
-            conversations.map((conversation) => (
-              <div
-                key={conversation._id._id}
-                onClick={() => {
-                  setCurrentChat(conversation._id);
-                  fetchMessages(conversation._id._id);
-                  setSearchParams({
-                    chat: conversation._id.personal_info.username,
-                  });
-                }}
-                className={`flex items-center gap-4 p-3 md:p-4 cursor-pointer transition-all hover:bg-grey/20 rounded-lg ${
-                  currentChat?._id === conversation._id._id ? "bg-grey/30" : ""
-                }`}
-              >
-                <img
-                  src={conversation._id.personal_info.profile_img}
-                  alt="Profile"
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full"
-                />
-                <div className="flex-1 min-w-0">
-                  {" "}
-                  {/* Добавлен min-w-0 для корректного текстового переноса */}
-                  <h3 className="font-medium truncate">
-                    {conversation._id.personal_info.fullname}
-                  </h3>
-                  <p className="text-dark-grey text-sm line-clamp-1">
-                    {conversation.lastMessage.content}
-                  </p>
+          <div className="p-2">
+            {conversations?.length ? (
+              conversations.map((conversation) => (
+                <div
+                  key={conversation._id._id}
+                  onClick={() => {
+                    setCurrentChat(conversation._id);
+                    fetchMessages(conversation._id._id);
+                    setSearchParams({
+                      chat: conversation._id.personal_info.username,
+                    });
+                  }}
+                  className={`flex items-center gap-3 p-2 cursor-pointer transition-all hover:bg-grey/20 rounded-lg ${
+                    currentChat?._id === conversation._id._id
+                      ? "bg-grey/30"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={conversation._id.personal_info.profile_img}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-medium truncate text-xl">
+                        {conversation._id.personal_info.fullname}
+                      </h3>
+                      <span className="text-dark-grey text-xs whitespace-nowrap ml-2">
+                        {getDay(conversation.lastMessage.createdAt)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-dark-grey text-xs line-clamp-1">
+                        {conversation.lastMessage.content}
+                      </p>
+                      {conversation.unreadCount > 0 && (
+                        <span className="bg-purple text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
+                          {conversation.unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end ml-2">
-                  <span className="text-dark-grey text-xs whitespace-nowrap">
-                    {getDay(conversation.lastMessage.createdAt)}
-                  </span>
-                  {conversation.unreadCount > 0 && (
-                    <span className="bg-purple text-white rounded-full px-2 py-1 text-xs">
-                      {conversation.unreadCount}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <NoDataMessage message="No conversations yet" />
-          )}
+              ))
+            ) : (
+              <NoDataMessage message="No conversations yet" />
+            )}
+          </div>
         </div>
 
         {/* Область чата */}
@@ -366,7 +361,7 @@ const MessagesPage = () => {
 
               {/* Сообщения */}
               <div
-                className="flex-1 overflow-y-auto p-3 md:p-4"
+                className="flex-1 overflow-y-auto p-3 md:p-4 scrollbar-thin"
                 style={{ scrollbarGutter: "stable" }}
               >
                 {loadingMessages ? (
