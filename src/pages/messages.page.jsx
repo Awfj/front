@@ -323,7 +323,7 @@ const MessagesPage = () => {
 
   return (
     <AnimationWrapper>
-      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)] 2xl:w-[90%] border-r border-grey">
+      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)] lg:max-w-[700px] xl:max-w-[1000px] border-r border-grey">
         {/* Список диалогов */}
         <div
           className={`${
