@@ -254,10 +254,26 @@ const MessagesPage = () => {
 
   return (
     <AnimationWrapper>
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)]">
         {/* Список диалогов */}
-        <div className="w-1/3 border-r border-grey p-4 overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-4">Messages</h2>
+        <div
+          className={`${
+            currentChat ? "hidden md:block" : "block"
+          } md:w-1/3 lg:w-1/4 border-r border-grey p-4 overflow-y-auto`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl md:text-2xl font-bold">Messages</h2>
+            {/* Кнопка возврата к списку диалогов на мобильных */}
+            {currentChat && (
+              <button
+                onClick={() => setCurrentChat(null)}
+                className="md:hidden btn-light p-2 rounded-full"
+              >
+                <i className="fi fi-rr-arrow-left"></i>
+              </button>
+            )}
+          </div>
+
           {conversations?.length ? (
             conversations.map((conversation) => (
               <div
@@ -269,25 +285,27 @@ const MessagesPage = () => {
                     chat: conversation._id.personal_info.username,
                   });
                 }}
-                className={`flex items-center gap-4 p-4 cursor-pointer transition-all hover:bg-grey/20 rounded-lg ${
+                className={`flex items-center gap-4 p-3 md:p-4 cursor-pointer transition-all hover:bg-grey/20 rounded-lg ${
                   currentChat?._id === conversation._id._id ? "bg-grey/30" : ""
                 }`}
               >
                 <img
                   src={conversation._id.personal_info.profile_img}
                   alt="Profile"
-                  className="w-12 h-12 rounded-full"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full"
                 />
-                <div className="flex-1">
-                  <h3 className="font-medium">
+                <div className="flex-1 min-w-0">
+                  {" "}
+                  {/* Добавлен min-w-0 для корректного текстового переноса */}
+                  <h3 className="font-medium truncate">
                     {conversation._id.personal_info.fullname}
                   </h3>
                   <p className="text-dark-grey text-sm line-clamp-1">
                     {conversation.lastMessage.content}
                   </p>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-dark-grey text-xs">
+                <div className="flex flex-col items-end ml-2">
+                  <span className="text-dark-grey text-xs whitespace-nowrap">
                     {getDay(conversation.lastMessage.createdAt)}
                   </span>
                   {conversation.unreadCount > 0 && (
@@ -304,22 +322,34 @@ const MessagesPage = () => {
         </div>
 
         {/* Область чата */}
-        <div className="flex-1 flex flex-col">
+        <div
+          className={`${
+            currentChat ? "flex" : "hidden md:flex"
+          } flex-1 flex-col`}
+        >
           {currentChat ? (
             <>
               {/* Заголовок чата */}
-              <div className="p-4 border-b border-grey">
-                <div className="flex items-center gap-4">
+              <div className="p-3 md:p-4 border-b border-grey">
+                <div className="flex items-center gap-3 md:gap-4">
+                  {/* Кнопка возврата на мобильных */}
+                  <button
+                    onClick={() => setCurrentChat(null)}
+                    className="md:hidden"
+                  >
+                    <i className="fi fi-rr-arrow-left text-xl"></i>
+                  </button>
+
                   <img
                     src={currentChat.personal_info.profile_img}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full"
                   />
-                  <div>
-                    <h3 className="font-medium">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium truncate">
                       {currentChat.personal_info.fullname}
                     </h3>
-                    <p className="text-dark-grey text-sm">
+                    <p className="text-dark-grey text-sm truncate">
                       {currentChat.online_status?.is_online
                         ? "Online"
                         : `Last seen: ${new Date(
@@ -330,20 +360,20 @@ const MessagesPage = () => {
                 </div>
 
                 {isTyping && (
-                  <p className="text-sm text-dark-grey">Typing...</p>
+                  <p className="text-sm text-dark-grey mt-1">Typing...</p>
                 )}
               </div>
 
               {/* Сообщения */}
               <div
-                className="flex-1 overflow-y-auto p-4"
+                className="flex-1 overflow-y-auto p-3 md:p-4"
                 style={{ scrollbarGutter: "stable" }}
               >
                 {loadingMessages ? (
                   <Loader />
                 ) : (
                   <>
-                    <div className="flex-1">
+                    <div className="flex-1 max-w-3xl mx-auto w-full">
                       {messages.map((message) => (
                         <div
                           key={message._id}
@@ -351,21 +381,20 @@ const MessagesPage = () => {
                             message.sender._id === userAuth._id
                               ? "justify-end"
                               : "justify-start"
-                          } mb-4`}
+                          } mb-3 md:mb-4`}
                         >
                           <div
-                            className={`max-w-[70%] p-3 rounded-lg ${
+                            className={`max-w-[85%] md:max-w-[70%] p-2 md:p-3 rounded-lg ${
                               message.sender._id === userAuth._id
                                 ? "bg-purple text-white"
                                 : "bg-grey"
-                            } relative group`} // Добавили group для hover эффекта
+                            } relative group`}
                           >
-                            <p>{message.content}</p>
-                            <span className="text-xs opacity-70">
+                            <p className="break-words">{message.content}</p>
+                            <span className="text-[10px] md:text-xs opacity-70 block mt-1">
                               {new Date(message.createdAt).toLocaleTimeString()}
                             </span>
 
-                            {/* Кнопка удаления */}
                             {message.sender._id === userAuth._id && (
                               <button
                                 onClick={() => {
@@ -380,22 +409,6 @@ const MessagesPage = () => {
                           </div>
                         </div>
                       ))}
-
-                      {/* Диалог подтверждения удаления */}
-                      <ConfirmDialog
-                        isOpen={showDeleteConfirm}
-                        onClose={() => {
-                          setShowDeleteConfirm(false);
-                          setMessageToDelete(null);
-                        }}
-                        onConfirm={() =>
-                          handleDeleteMessage(messageToDelete._id)
-                        }
-                        title="Delete Message"
-                        message="Are you sure you want to delete this message?"
-                        confirmText="Delete"
-                        cancelText="Cancel"
-                      />
                     </div>
                     <div ref={messagesEndRef} />
                   </>
@@ -405,9 +418,9 @@ const MessagesPage = () => {
               {/* Форма отправки */}
               <form
                 onSubmit={handleSendMessage}
-                className="p-4 border-t border-grey"
+                className="p-3 md:p-4 border-t border-grey"
               >
-                <div className="flex gap-4">
+                <div className="flex gap-2 md:gap-4 max-w-3xl mx-auto">
                   <input
                     type="text"
                     value={newMessage}
@@ -416,11 +429,11 @@ const MessagesPage = () => {
                       handleTyping();
                     }}
                     placeholder="Type a message..."
-                    className="flex-1 p-2 rounded-lg border border-grey focus:border-purple outline-none"
+                    className="flex-1 p-2 text-sm md:text-base rounded-lg border border-grey focus:border-purple outline-none"
                   />
                   <button
                     type="submit"
-                    className="btn-dark px-6 py-2"
+                    className="btn-dark px-4 md:px-6 py-2"
                     disabled={!newMessage.trim()}
                   >
                     Send
@@ -429,11 +442,25 @@ const MessagesPage = () => {
               </form>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-dark-grey">
+            <div className="flex-1 flex items-center justify-center text-dark-grey p-4 text-center">
               Select a conversation to start messaging
             </div>
           )}
         </div>
+
+        {/* Диалог подтверждения удаления */}
+        <ConfirmDialog
+          isOpen={showDeleteConfirm}
+          onClose={() => {
+            setShowDeleteConfirm(false);
+            setMessageToDelete(null);
+          }}
+          onConfirm={() => handleDeleteMessage(messageToDelete._id)}
+          title="Delete Message"
+          message="Are you sure you want to delete this message?"
+          confirmText="Delete"
+          cancelText="Cancel"
+        />
       </div>
     </AnimationWrapper>
   );
