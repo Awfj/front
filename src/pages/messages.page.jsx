@@ -30,6 +30,9 @@ const MessagesPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
 
+  const [showDeleteChatConfirm, setShowDeleteChatConfirm] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
+
   const [showEmoji, setShowEmoji] = useState(false);
 
   const [editingMessage, setEditingMessage] = useState(null);
@@ -41,6 +44,36 @@ const MessagesPage = () => {
 
   const { theme } = useContext(ThemeContext);
   const emojiPickerRef = useRef(null);
+
+  const handleHideChat = async (chatPartnerId) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/hide-conversation`,
+        { conversationPartnerId: chatPartnerId },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+
+      // Удаляем чат из локального состояния
+      setConversations((prev) =>
+        prev.filter((conv) => conv._id._id !== chatPartnerId)
+      );
+
+      if (currentChat?._id === chatPartnerId) {
+        setCurrentChat(null);
+        setMessages([]);
+        setSearchParams({});
+      }
+
+      toast.success("Chat hidden successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to hide chat");
+    }
+  };
 
   const onEmojiClick = (emojiObject) => {
     setNewMessage((prev) => prev + emojiObject.emoji);
@@ -337,51 +370,80 @@ const MessagesPage = () => {
           <div className="p-2 pl-0">
             {conversations?.length ? (
               conversations.map((conversation) => (
-                <div
-                  key={conversation._id._id}
-                  onClick={() => {
-                    setCurrentChat(conversation._id);
-                    fetchMessages(conversation._id._id);
-                    setSearchParams({
-                      chat: conversation._id.personal_info.username,
-                    });
-                  }}
-                  className={`flex items-center gap-3 p-2 cursor-pointer border transition-all hover:bg-grey/20 rounded-lg ${
-                    currentChat?._id === conversation._id._id
-                      ? "bg-grey/30 border-purple"
-                      : "border-transparent"
-                  }`}
-                >
-                  <img
-                    src={conversation._id.personal_info.profile_img}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full flex-shrink-0 border border-magenta"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-medium truncate text-xl">
-                        {conversation._id.personal_info.fullname}
-                      </h3>
-                      <span className="text-dark-grey text-xs whitespace-nowrap ml-2">
-                        {getDay(conversation.lastMessage.createdAt)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-dark-grey text-xs line-clamp-1 truncate message-content">
-                        {conversation.lastMessage.content}
-                      </p>
-                      {conversation.unreadCount > 0 && (
-                        <span className="bg-purple text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
-                          {conversation.unreadCount}
+                <div key={conversation._id._id} className="relative group transition-custom">
+                  <div
+                    onClick={() => {
+                      setCurrentChat(conversation._id);
+                      fetchMessages(conversation._id._id);
+                      setSearchParams({
+                        chat: conversation._id.personal_info.username,
+                      });
+                    }}
+                    className={`flex items-center gap-3 p-2 cursor-pointer border hover:bg-grey/20 rounded-lg transition-custom ${
+                      currentChat?._id === conversation._id._id
+                        ? "bg-grey/30 border-purple"
+                        : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={conversation._id.personal_info.profile_img}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full flex-shrink-0 border border-magenta"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-medium truncate text-xl">
+                          {conversation._id.personal_info.fullname}
+                        </h3>
+                        <span className="text-dark-grey text-xs whitespace-nowrap ml-2">
+                          {getDay(conversation.lastMessage.createdAt)}
                         </span>
-                      )}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-dark-grey text-xs line-clamp-1 truncate message-content">
+                          {conversation.lastMessage.content}
+                        </p>
+                        {conversation.unreadCount > 0 && (
+                          <span className="bg-purple text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
+                            {conversation.unreadCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setChatToDelete(conversation._id);
+                      setShowDeleteChatConfirm(true);
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-custom text-dark-grey hover:text-red"
+                  >
+                    <i className="transition-custom fi fi-rr-trash text-sm"></i>
+                  </button>
                 </div>
               ))
             ) : (
               <NoDataMessage message="No conversations yet" />
             )}
+
+            {/* Диалог подтверждения удаления чата */}
+            <ConfirmDialog
+              isOpen={showDeleteChatConfirm}
+              onClose={() => {
+                setShowDeleteChatConfirm(false);
+                setChatToDelete(null);
+              }}
+              onConfirm={() => {
+                handleHideChat(chatToDelete._id);
+                setShowDeleteChatConfirm(false);
+                setChatToDelete(null);
+              }}
+              title="Remove Chat"
+              message="Are you sure you want to remove this chat?"
+              confirmText="Remove"
+              cancelText="Cancel"
+            />
           </div>
         </div>
 
