@@ -40,11 +40,27 @@ const MessagesPage = () => {
   const typingTimeoutRef = useRef(null);
 
   const { theme } = useContext(ThemeContext);
+  const emojiPickerRef = useRef(null);
 
   const onEmojiClick = (emojiObject) => {
     setNewMessage((prev) => prev + emojiObject.emoji);
-    setShowEmoji(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target) &&
+        !event.target.closest(".emoji-trigger")
+      ) {
+        // добавляем класс для кнопки
+        setShowEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleDeleteMessage = async (messageId) => {
     try {
@@ -541,13 +557,16 @@ const MessagesPage = () => {
                     <button
                       type="button"
                       onClick={() => setShowEmoji(!showEmoji)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 text-dark-grey hover:text-purple transition-colors"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 text-dark-grey hover:text-purple transition-colors emoji-trigger" // добавляем класс emoji-trigger
                     >
                       <i className="flex fi fi-rr-smile text-xl transition-custom"></i>
                     </button>
 
                     {showEmoji && (
-                      <div className="absolute bottom-full left-0 mb-2">
+                      <div
+                        className="absolute bottom-full left-0 mb-2"
+                        ref={emojiPickerRef}
+                      >
                         <EmojiPicker
                           theme={theme}
                           onEmojiClick={onEmojiClick}
