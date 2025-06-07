@@ -14,6 +14,7 @@ import NoDataMessage from "../components/nodata.component";
 import { getDay } from "../common/date";
 import { toast } from "react-hot-toast";
 import { SocketContext } from "../contexts/SocketContext";
+import ConfirmDialog from "../components/confirm-dialog.component";
 
 const MessagesPage = () => {
   const { userAuth } = useContext(UserContext);
@@ -25,10 +26,47 @@ const MessagesPage = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState(null);
 
   const socket = useContext(SocketContext);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/${messageId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+
+      // Удаляем сообщение из локального состояния
+      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      setShowDeleteConfirm(false);
+      setMessageToDelete(null);
+
+      toast.success("Message deleted successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete message");
+    }
+  };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("message_deleted", (messageId) => {
+        setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      });
+
+      return () => {
+        socket.off("message_deleted");
+      };
+    }
+  }, [socket]);
 
   const fetchMessages = async (userId) => {
     setLoadingMessages(true);
@@ -320,15 +358,44 @@ const MessagesPage = () => {
                               message.sender._id === userAuth._id
                                 ? "bg-purple text-white"
                                 : "bg-grey"
-                            }`}
+                            } relative group`} // Добавили group для hover эффекта
                           >
                             <p>{message.content}</p>
                             <span className="text-xs opacity-70">
                               {new Date(message.createdAt).toLocaleTimeString()}
                             </span>
+
+                            {/* Кнопка удаления */}
+                            {message.sender._id === userAuth._id && (
+                              <button
+                                onClick={() => {
+                                  setMessageToDelete(message);
+                                  setShowDeleteConfirm(true);
+                                }}
+                                className="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <i className="fi fi-rr-trash text-red hover:text-red"></i>
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
+
+                      {/* Диалог подтверждения удаления */}
+                      <ConfirmDialog
+                        isOpen={showDeleteConfirm}
+                        onClose={() => {
+                          setShowDeleteConfirm(false);
+                          setMessageToDelete(null);
+                        }}
+                        onConfirm={() =>
+                          handleDeleteMessage(messageToDelete._id)
+                        }
+                        title="Delete Message"
+                        message="Are you sure you want to delete this message?"
+                        confirmText="Delete"
+                        cancelText="Cancel"
+                      />
                     </div>
                     <div ref={messagesEndRef} />
                   </>
