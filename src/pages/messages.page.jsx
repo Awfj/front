@@ -5,7 +5,7 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { UserContext } from "../App";
+import { UserContext, ThemeContext } from "../App";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
@@ -15,6 +15,7 @@ import { getDay } from "../common/date";
 import { toast } from "react-hot-toast";
 import { SocketContext } from "../contexts/SocketContext";
 import ConfirmDialog from "../components/confirm-dialog.component";
+import EmojiPicker from "emoji-picker-react";
 
 const MessagesPage = () => {
   const { userAuth } = useContext(UserContext);
@@ -29,12 +30,21 @@ const MessagesPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
 
+  const [showEmoji, setShowEmoji] = useState(false);
+
   const [editingMessage, setEditingMessage] = useState(null);
   const [editContent, setEditContent] = useState("");
 
   const socket = useContext(SocketContext);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
+
+  const { theme } = useContext(ThemeContext);
+
+  const onEmojiClick = (emojiObject) => {
+    setNewMessage((prev) => prev + emojiObject.emoji);
+    setShowEmoji(false);
+  };
 
   const handleDeleteMessage = async (messageId) => {
     try {
@@ -514,22 +524,47 @@ const MessagesPage = () => {
               {/* Форма отправки */}
               <form
                 onSubmit={handleSendMessage}
-                className="p-3 md:p-4 border-t border-grey"
+                className="p-3 md:p-4 border-t border-grey relative"
               >
                 <div className="flex gap-2 md:gap-4 max-w-3xl mx-auto">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => {
-                      setNewMessage(e.target.value);
-                      handleTyping();
-                    }}
-                    placeholder="Type a message..."
-                    className="flex-1 p-2 text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none"
-                  />
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value);
+                        handleTyping();
+                      }}
+                      placeholder="Type a message..."
+                      className="w-full p-[0.6rem] text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmoji(!showEmoji)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 text-dark-grey hover:text-purple transition-colors"
+                    >
+                      <i className="flex fi fi-rr-smile text-xl transition-custom"></i>
+                    </button>
+
+                    {showEmoji && (
+                      <div className="absolute bottom-full left-0 mb-2">
+                        <EmojiPicker
+                          theme={theme}
+                          onEmojiClick={onEmojiClick}
+                          autoFocusSearch={false}
+                          searchPlaceHolder="Search emoji..."
+                          width={300}
+                          height={400}
+                          previewConfig={{
+                            showPreview: false,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                   <button
                     type="submit"
-                    className="btn-dark px-4 md:px-6 py-2 cursor-pointer"
+                    className="btn-dark px-4 md:px-6 py-2 cursor-pointer whitespace-nowrap"
                     disabled={!newMessage.trim()}
                   >
                     Send
