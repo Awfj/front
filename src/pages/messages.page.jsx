@@ -254,12 +254,12 @@ const MessagesPage = () => {
 
   return (
     <AnimationWrapper>
-      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)]">
+      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)] 2xl:w-[90%]">
         {/* Список диалогов */}
         <div
           className={`${
-            currentChat ? "hidden md:block" : "block"
-          } md:w-80 xl:w-96 border-r border-grey overflow-y-auto scrollbar-thin`}
+            currentChat ? "hidden xl:block" : "block"
+          } xl:w-80 2xl:w-96 border-r border-grey overflow-y-auto scrollbar-thin`}
         >
           <div className="sticky top-0 bg-white dark:bg-dark pr-3 border-b border-grey">
             <h1 className="max-md:hidden text-2xl mb-8">Messages</h1>
@@ -298,7 +298,7 @@ const MessagesPage = () => {
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <p className="text-dark-grey text-xs line-clamp-1">
+                      <p className="text-dark-grey text-xs line-clamp-1 truncate">
                         {conversation.lastMessage.content}
                       </p>
                       {conversation.unreadCount > 0 && (
@@ -319,7 +319,7 @@ const MessagesPage = () => {
         {/* Область чата */}
         <div
           className={`${
-            currentChat ? "flex" : "hidden md:flex"
+            currentChat ? "flex" : "hidden xl:flex"
           } flex-1 flex-col`}
         >
           {currentChat ? (
@@ -327,10 +327,10 @@ const MessagesPage = () => {
               {/* Заголовок чата */}
               <div className="p-3 md:p-4 border-b border-grey">
                 <div className="flex items-center gap-3 md:gap-4">
-                  {/* Кнопка возврата на мобильных */}
+                  {/* Кнопка возврата - теперь видима на средних разрешениях */}
                   <button
                     onClick={() => setCurrentChat(null)}
-                    className="md:hidden"
+                    className="xl:hidden"
                   >
                     <i className="fi fi-rr-arrow-left text-xl"></i>
                   </button>
@@ -361,14 +361,14 @@ const MessagesPage = () => {
 
               {/* Сообщения */}
               <div
-                className="flex-1 overflow-y-auto p-3 md:p-4 scrollbar-thin"
+                className="flex-1 overflow-y-auto p-3 md:p-8 scrollbar-thin"
                 style={{ scrollbarGutter: "stable" }}
               >
                 {loadingMessages ? (
                   <Loader />
                 ) : (
                   <>
-                    <div className="flex-1 max-w-3xl mx-auto w-full">
+                    <div className="flex-1 mx-auto w-full">
                       {messages.map((message) => (
                         <div
                           key={message._id}
@@ -379,10 +379,10 @@ const MessagesPage = () => {
                           } mb-3 md:mb-4`}
                         >
                           <div
-                            className={`max-w-[85%] md:max-w-[70%] p-2 md:p-3 rounded-lg ${
+                            className={`max-w-[85%] md:max-w-[70%] p-2 md:p-3 border rounded-lg ${
                               message.sender._id === userAuth._id
-                                ? "bg-purple text-white"
-                                : "bg-grey"
+                                ? "border-purple bg-grey "
+                                : "border-grey bg-grey"
                             } relative group`}
                           >
                             <p className="break-words">{message.content}</p>
@@ -424,11 +424,11 @@ const MessagesPage = () => {
                       handleTyping();
                     }}
                     placeholder="Type a message..."
-                    className="flex-1 p-2 text-sm md:text-base rounded-lg border border-grey focus:border-purple outline-none"
+                    className="flex-1 p-2 text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none"
                   />
                   <button
                     type="submit"
-                    className="btn-dark px-4 md:px-6 py-2"
+                    className="btn-dark px-4 md:px-6 py-2 cursor-pointer"
                     disabled={!newMessage.trim()}
                   >
                     Send
