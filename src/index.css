@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Gelasio&family=Inter:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap");
 @import "@flaticon/flaticon-uicons/css/all/all";
 @import "./editor-theme.css";
 
@@ -37,6 +38,15 @@
 
   select {
     @apply cursor-pointer;
+  }
+
+  .message-content {
+    @apply break-words font-['Noto_Color_Emoji',_sans-serif];
+  }
+
+  /* Добавим поддержку эмодзи для поля ввода */
+  .input-with-emoji {
+    @apply font-['Noto_Color_Emoji',_sans-serif];
   }
 
   .navbar {

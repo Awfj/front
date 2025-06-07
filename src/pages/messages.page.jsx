@@ -413,7 +413,13 @@ const MessagesPage = () => {
                     <h3 className="font-medium truncate">
                       {currentChat.personal_info.fullname}
                     </h3>
-                    <p className="text-dark-grey text-sm truncate">
+                    <p
+                      className={`${
+                        currentChat.online_status?.is_online
+                          ? "text-green"
+                          : "text-dark-grey"
+                      } text-sm truncate`}
+                    >
                       {currentChat.online_status?.is_online
                         ? "Online"
                         : `Last seen: ${new Date(
@@ -470,12 +476,13 @@ const MessagesPage = () => {
                                   className="w-full p-1 rounded border border-grey"
                                   autoFocus
                                 />
-                                <div className="flex gap-2 mt-2">
+                                <div className="flex gap-2 mt-2 justify-between p-1">
                                   <button
                                     type="submit"
-                                    className="text-xs text-purple hover:text-dark-grey"
+                                    className="text-dark-grey hover:text-green"
+                                    title="Save"
                                   >
-                                    Save
+                                    <i className="fi fi-rr-check text-sm transition-custom"></i>
                                   </button>
                                   <button
                                     type="button"
@@ -483,17 +490,20 @@ const MessagesPage = () => {
                                       setEditingMessage(null);
                                       setEditContent("");
                                     }}
-                                    className="text-xs text-dark-grey hover:text-black"
+                                    className="text-dark-grey hover:text-red"
+                                    title="Cancel"
                                   >
-                                    Cancel
+                                    <i className="fi fi-rr-cross text-sm transition-custom"></i>
                                   </button>
                                 </div>
                               </form>
                             ) : (
                               <>
-                                <p className="break-words">{message.content}</p>
+                                <p className="break-words message-content text-xl">
+                                  {message.content}
+                                </p>
                                 <div className="flex items-center justify-between mt-1">
-                                  <span className="text-[10px] md:text-xs text-dark-grey">
+                                  <span className="text-[12px] md:text-xs text-dark-grey">
                                     {new Date(
                                       message.createdAt
                                     ).toLocaleTimeString()}
@@ -552,7 +562,7 @@ const MessagesPage = () => {
                         handleTyping();
                       }}
                       placeholder="Type a message..."
-                      className="w-full p-[0.6rem] text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10"
+                      className="w-full p-[0.6rem] text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10 input-with-emoji"
                     />
                     <button
                       type="button"
@@ -574,6 +584,7 @@ const MessagesPage = () => {
                           searchPlaceHolder="Search emoji..."
                           width={300}
                           height={400}
+                          // lazyLoadEmojis={false}
                           previewConfig={{
                             showPreview: false,
                           }}
