@@ -297,7 +297,7 @@ const MessagesPage = () => {
 
   return (
     <AnimationWrapper>
-      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)] 2xl:w-[90%]">
+      <div className="flex flex-col md:flex-row h-[calc(100vh-100px)] 2xl:w-[90%] border-r border-grey">
         {/* Список диалогов */}
         <div
           className={`${
@@ -308,7 +308,7 @@ const MessagesPage = () => {
             <h1 className="max-md:hidden text-2xl mb-8">Messages</h1>
           </div>
 
-          <div className="p-2">
+          <div className="p-2 pl-0">
             {conversations?.length ? (
               conversations.map((conversation) => (
                 <div
@@ -320,16 +320,16 @@ const MessagesPage = () => {
                       chat: conversation._id.personal_info.username,
                     });
                   }}
-                  className={`flex items-center gap-3 p-2 cursor-pointer transition-all hover:bg-grey/20 rounded-lg ${
+                  className={`flex items-center gap-3 p-2 cursor-pointer border transition-all hover:bg-grey/20 rounded-lg ${
                     currentChat?._id === conversation._id._id
-                      ? "bg-grey/30"
-                      : ""
+                      ? "bg-grey/30 border-purple"
+                      : "border-transparent"
                   }`}
                 >
                   <img
                     src={conversation._id.personal_info.profile_img}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full flex-shrink-0"
+                    className="w-10 h-10 rounded-full flex-shrink-0 border border-magenta"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
@@ -381,7 +381,7 @@ const MessagesPage = () => {
                   <img
                     src={currentChat.personal_info.profile_img}
                     alt="Profile"
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-magenta"
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium truncate">

@@ -103,7 +103,7 @@ const SideNav = () => {
             }
           >
             <h1 className="text-xl text-dark-grey mb-3">Dashboard</h1>
-            <hr className="border-grey -ml-6 mr-6" />
+            <hr className="border-grey -ml-6" />
 
             {/* Users */}
             {role === "admin" && (
