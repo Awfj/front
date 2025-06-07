@@ -29,6 +29,9 @@ const MessagesPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
 
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [editContent, setEditContent] = useState("");
+
   const socket = useContext(SocketContext);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
@@ -64,6 +67,46 @@ const MessagesPage = () => {
 
       return () => {
         socket.off("message_deleted");
+      };
+    }
+  }, [socket]);
+
+  const handleEditMessage = async (messageId, content) => {
+    try {
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/messages/${messageId}`,
+        { content },
+        {
+          headers: {
+            Authorization: `Bearer ${userAuth.access_token}`,
+          },
+        }
+      );
+
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === messageId ? data : msg))
+      );
+
+      setEditingMessage(null);
+      setEditContent("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to edit message");
+    }
+  };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("message_updated", (updatedMessage) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg._id === updatedMessage._id ? updatedMessage : msg
+          )
+        );
+      });
+
+      return () => {
+        socket.off("message_updated");
       };
     }
   }, [socket]);
@@ -381,25 +424,83 @@ const MessagesPage = () => {
                           <div
                             className={`max-w-[85%] md:max-w-[70%] p-2 md:p-3 border rounded-lg ${
                               message.sender._id === userAuth._id
-                                ? "border-purple bg-grey "
+                                ? "border-purple bg-grey"
                                 : "border-grey bg-grey"
                             } relative group`}
                           >
-                            <p className="break-words">{message.content}</p>
-                            <span className="text-[10px] md:text-xs opacity-70 block mt-1">
-                              {new Date(message.createdAt).toLocaleTimeString()}
-                            </span>
-
-                            {message.sender._id === userAuth._id && (
-                              <button
-                                onClick={() => {
-                                  setMessageToDelete(message);
-                                  setShowDeleteConfirm(true);
+                            {editingMessage === message._id ? (
+                              <form
+                                onSubmit={(e) => {
+                                  e.preventDefault();
+                                  handleEditMessage(message._id, editContent);
                                 }}
-                                className="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
                               >
-                                <i className="fi fi-rr-trash text-red hover:text-red"></i>
-                              </button>
+                                <input
+                                  type="text"
+                                  value={editContent}
+                                  onChange={(e) =>
+                                    setEditContent(e.target.value)
+                                  }
+                                  className="w-full p-1 rounded border border-grey"
+                                  autoFocus
+                                />
+                                <div className="flex gap-2 mt-2">
+                                  <button
+                                    type="submit"
+                                    className="text-xs text-purple hover:text-dark-grey"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingMessage(null);
+                                      setEditContent("");
+                                    }}
+                                    className="text-xs text-dark-grey hover:text-black"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </form>
+                            ) : (
+                              <>
+                                <p className="break-words">{message.content}</p>
+                                <div className="flex items-center justify-between mt-1">
+                                  <span className="text-[10px] md:text-xs text-dark-grey">
+                                    {new Date(
+                                      message.createdAt
+                                    ).toLocaleTimeString()}
+                                    {message.isEdited && (
+                                      <span className="ml-1 italic">
+                                        (edited)
+                                      </span>
+                                    )}
+                                  </span>
+                                  {message.sender._id === userAuth._id && (
+                                    <div className="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-custom flex flex-col gap-2 pl-2">
+                                      <button
+                                        onClick={() => {
+                                          setEditingMessage(message._id);
+                                          setEditContent(message.content);
+                                        }}
+                                        className="text-dark-grey hover:text-purple"
+                                      >
+                                        <i className="fi fi-rr-edit text-sm transition-custom"></i>
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setMessageToDelete(message);
+                                          setShowDeleteConfirm(true);
+                                        }}
+                                        className="text-dark-grey hover:text-red"
+                                      >
+                                        <i className="fi fi-rr-trash text-sm transition-custom"></i>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </>
                             )}
                           </div>
                         </div>
