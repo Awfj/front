@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import { UserContext } from "../App";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { UserContext, ThemeContext } from "../App";
 import { Toaster, toast } from "react-hot-toast";
 import { BlogContext } from "../pages/blog.page";
 import axios from "axios";
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker from "emoji-picker-react";
 
 const CommentField = ({
   action,
@@ -31,12 +31,30 @@ const CommentField = ({
   } = useContext(UserContext);
 
   const [comment, setComment] = useState("");
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  const emojiPickerRef = useRef(null);
+  const { theme } = useContext(ThemeContext);
 
   const onEmojiClick = (emojiObject) => {
-    setComment(prevComment => prevComment + emojiObject.emoji);
-    setShowEmojiPicker(false);
+    setComment((prevComment) => prevComment + emojiObject.emoji);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target) &&
+        !event.target.closest(".emoji-trigger")
+      ) {
+        // добавляем класс для кнопки
+        setShowEmoji(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleComment = () => {
     if (!access_token) {
@@ -112,26 +130,28 @@ const CommentField = ({
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Leave a comment..."
-          className="input-box pl-5 placeholder:text-dark-grey resize-none h-[150px] overflow-auto"
+          className="input-box pl-5 placeholder:text-dark-grey resize-none h-[150px] text-xl overflow-auto message-content"
         ></textarea>
-        
-        <button 
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+
+        <button
+          onClick={() => setShowEmoji(!showEmoji)}
           className="absolute bottom-4 right-4 hover:text-purple"
         >
           <i className="flex fi fi-rr-smile text-2xl"></i>
         </button>
 
-        {showEmojiPicker && (
-          <div className="absolute bottom-20 right-0 z-50">
+        {showEmoji && (
+          <div className="absolute bottom-20 right-0 z-50" ref={emojiPickerRef}>
             <EmojiPicker
+              theme={theme}
               onEmojiClick={onEmojiClick}
+              autoFocusSearch={false}
+              searchPlaceHolder="Search emoji..."
               width={300}
               height={400}
-              searchDisabled
-              skinTonesDisabled
+              // lazyLoadEmojis={false}
               previewConfig={{
-                showPreview: false
+                showPreview: false,
               }}
             />
           </div>

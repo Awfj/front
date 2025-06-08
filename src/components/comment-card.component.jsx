@@ -248,8 +248,8 @@ const CommentCard = ({ index, leftVal, commentData }) => {
         <div className="flex gap-3 items-center mb-8 ">
           <img
             src={profile_img}
-            alt="Profile imag"
-            className="h-6 w-6 rounded-full"
+            alt="Profile image"
+            className="h-6 w-6 rounded-full border border-magenta"
           />
           <p className="line-clamp-1">
             {fullname} @{commented_by_username}
@@ -257,40 +257,40 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           <p className="min-w-fit">{getDay(commentedAt)}</p>
         </div>
 
-        <p className="text-xl font-gelasio">{comment}</p>
+        <p className="text-xl message-content">{comment}</p>
 
         <div className="flex gap-5 items-center mt-5">
           {/* Кнопка лайка */}
           <button
             onClick={handleLike}
-            className="flex items-center gap-2 text-dark-grey hover:text-black"
+            className="flex items-center gap-2 hover:text-purple"
             disabled={likeLoading}
           >
             <i
-              className={`fi fi-${isLiked ? "sr" : "rr"}-heart text-xl ${
-                isLiked ? "text-red" : ""
+              className={`transition-custom flex fi fi-${isLiked ? "sr" : "rr"}-heart text-xl ${
+                isLiked ? "text-purple" : ""
               }`}
             ></i>
-            <span className="text-xl">{likesCount}</span>
+            <span className="text-xl transition-custom">{likesCount}</span>
           </button>
 
           {commentData.isReplyLoaded ? (
             <button
               onClick={hideReplies}
-              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2"
+              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2 text-xl"
             >
-              <i className="transition-custom fi fi-rs-comment-dots"></i>Hide Reply
+              <i className="transition-custom flex fi fi-rs-comment-dots text-xl"></i>Hide Reply
             </button>
           ) : (
             <button
               onClick={loadReplies}
-              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2"
+              className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2 text-xl"
             >
-              <i className="transition-custom flex fi fi-rs-comment-dots"></i>
+              <i className="transition-custom flex fi fi-rs-comment-dots text-xl"></i>
               {children.length}
             </button>
           )}
-          <button onClick={handleReplyClick} className="underline">
+          <button onClick={handleReplyClick} className="underline transition-custom hover:text-purple text-xl">
             Reply
           </button>
 
