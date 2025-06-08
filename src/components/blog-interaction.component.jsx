@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { BlogContext } from "../pages/blog.page";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { UserContext } from "../App";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
@@ -25,6 +25,9 @@ const BlogInteraction = () => {
     isBookmarkedByUser,
     setBookmarkedByUser,
   } = blogContexData;
+
+  const location = useLocation();
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   let bookmarkedIcon = isBookmarkedByUser
     ? "fi fi-ss-bookmark text-purple"
@@ -113,6 +116,54 @@ const BlogInteraction = () => {
     }
   };
 
+  const shareMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(event.target)
+      ) {
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const copyLink = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success("Link copied to clipboard");
+      setShowShareMenu(false);
+    });
+  };
+
+  // Функции для шеринга
+  const shareLinks = {
+    facebook: () =>
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        window.location.href
+      )}`,
+    linkedin: () =>
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        window.location.href
+      )}`,
+    vk: () =>
+      `https://vk.com/share.php?url=${encodeURIComponent(
+        window.location.href
+      )}&title=${encodeURIComponent(title)}`,
+    telegram: () =>
+      `https://t.me/share/url?url=${encodeURIComponent(
+        window.location.href
+      )}&text=${encodeURIComponent(title)}`,
+    email: () =>
+      `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(
+        `Check out this article: ${title}\n\n${window.location.href}`
+      )}`,
+  };
+
   return (
     <>
       <Toaster />
@@ -158,14 +209,84 @@ const BlogInteraction = () => {
             >
               Edit
             </Link>
-          ) : (
-            ""
-          )}
-          {/* <Link
-            to={`https://twitter.com/intent/tweet?text=Read ${title}&url=${location.href}`}
-          >
-            <i className="fi fi-brands-twitter text-xl hover:text-twitter"></i>
-          </Link> */}
+          ) : null}
+
+          {/* Добавляем кнопку шеринга */}
+          <div className="relative">
+            <button
+              onClick={() => setShowShareMenu(!showShareMenu)}
+              className="text-dark-grey hover:text-purple transition-custom"
+              title="Share"
+            >
+              <i className="transition-custom flex fi fi-rr-share text-xl"></i>
+            </button>
+
+            {/* Выпадающее меню шеринга */}
+            {showShareMenu && (
+              <div
+                ref={shareMenuRef}
+                className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl border border-grey z-50"
+              >
+                <button
+                  onClick={copyLink}
+                  className="w-full text-left px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-rr-copy text-xl"></i>
+                  Copy Link
+                </button>
+
+                <a
+                  href={shareLinks.vk()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-brands-vk text-xl text-[#0077FF]"></i>
+                  VK
+                </a>
+
+                <a
+                  href={shareLinks.telegram()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-brands-telegram text-xl text-[#0088cc]"></i>
+                  Telegram
+                </a>
+
+                <a
+                  href={shareLinks.facebook()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-brands-facebook text-xl text-[#4267B2]"></i>
+                  Facebook
+                </a>
+
+                <a
+                  href={shareLinks.linkedin()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-brands-linkedin text-xl text-[#0077b5]"></i>
+                  LinkedIn
+                </a>
+
+                <a
+                  href={shareLinks.email()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 hover:bg-grey/20 flex items-center gap-2"
+                >
+                  <i className="flex fi fi-rr-envelope text-xl"></i>
+                  Email
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
