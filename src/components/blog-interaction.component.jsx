@@ -154,7 +154,7 @@ const BlogInteraction = () => {
           {username === author_username ? (
             <Link
               to={`/editor/${blog_id}`}
-              className="underline hover:text-purple"
+              className="underline transition-custom text-xl hover:text-purple"
             >
               Edit
             </Link>
