@@ -167,7 +167,7 @@ const BlogInteraction = () => {
   return (
     <>
       <Toaster />
-      <div className="flex gap-6 justify-between">
+      <div className="flex gap-6 justify-between px-1">
         <div className="flex gap-4 items-center">
           <button
             onClick={handleLike}
@@ -215,7 +215,7 @@ const BlogInteraction = () => {
           <div className="relative">
             <button
               onClick={() => setShowShareMenu(!showShareMenu)}
-              className="text-dark-grey hover:text-purple transition-custom"
+              className="text-dark-grey flex hover:text-purple transition-custom"
               title="Share"
             >
               <i className="transition-custom flex fi fi-rr-share text-xl"></i>

@@ -252,7 +252,7 @@ const CommentCard = ({ index, leftVal, commentData }) => {
 
   return (
     <div className="w-full" style={{ paddingLeft: `${leftVal * 10}px` }}>
-      <div className="my-5 p-6 rounded-md border border-grey">
+      <div className="mb-5 p-6 rounded-md border border-grey">
         <div className="flex gap-3 items-center mb-8 ">
           <img
             src={profile_img}
@@ -305,17 +305,6 @@ const CommentCard = ({ index, leftVal, commentData }) => {
           >
             Reply
           </button>
-
-          {/* {username === commented_by_username || username === blog_author ? (
-            <button
-              onClick={handleDeleteComment}
-              className="p-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center transition-custom"
-            >
-              <i className="transition-custom flex fi fi-rr-trash pointer-events-auto"></i>
-            </button>
-          ) : (
-            ""
-          )} */}
 
           {currentUsername === commented_by_username && (
             <button

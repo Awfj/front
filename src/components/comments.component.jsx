@@ -76,7 +76,7 @@ const CommentContainer = () => {
 
   return (
     <div id="comments" className={"w-full mt-6"}>
-      <div className="relative">
+      <div className="relative flex flex-col">
         <CommentField action="comment" />
 
         {commentsArr && commentsArr.length ? (

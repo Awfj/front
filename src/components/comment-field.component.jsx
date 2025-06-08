@@ -158,7 +158,7 @@ const CommentField = ({
         )}
       </div>
 
-      <button className="btn-dark mt-5 px-10" onClick={handleComment}>
+      <button className="btn-dark mt-3 mb-6 px-10 self-end" onClick={handleComment}>
         {action}
       </button>
     </>

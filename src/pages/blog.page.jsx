@@ -261,7 +261,6 @@ const BlogPage = () => {
               {/* Tags Section */}
               {tags?.length > 0 && (
                 <div className="flex items-center gap-3 flex-wrap my-6">
-                  <span className="text-dark-grey font-medium">Tags:</span>
                   {tags.map((tag, i) => (
                     <Link
                       key={i}
