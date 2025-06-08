@@ -204,7 +204,7 @@ const BlogPage = () => {
                 <img
                   src={banner}
                   alt="Banner"
-                  className="aspect-video w-full h-full object-cover rounded-lg"
+                  className="aspect-video w-full h-full object-cover rounded-lg border border-purple"
                 />
               </div>
               <div className="mt-12">

@@ -92,7 +92,7 @@ const CommentContainer = () => {
             );
           })
         ) : (
-          <NoDataMessage message={"No Comments"} />
+          <NoDataMessage message={"No Comments"} noMargin={true} />
         )}
 
         {blog?.comments?.hasMore && (

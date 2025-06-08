@@ -30,8 +30,8 @@ const BlogInteraction = () => {
   const [showShareMenu, setShowShareMenu] = useState(false);
 
   let bookmarkedIcon = isBookmarkedByUser
-    ? "fi fi-ss-bookmark text-purple"
-    : "fi fi-rs-bookmark"; // bs
+    ? "fi fi-sr-bookmark text-purple"
+    : "fi fi-rr-bookmark"; // bs
 
   let {
     userAuth: { username, access_token },
@@ -192,10 +192,10 @@ const BlogInteraction = () => {
           {access_token && (
             <button
               onClick={handleBookmark}
-              className="flex items-center gap-2"
+              className="flex gap-2 self-center"
             >
               <i
-                className={`transition-custom hover:text-purple flex flex-center ${bookmarkedIcon} text-xl`}
+                className={`transition-custom hover:text-purple flex ${bookmarkedIcon} text-xl`}
               ></i>
             </button>
           )}
