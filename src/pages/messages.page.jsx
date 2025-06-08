@@ -624,7 +624,7 @@ const MessagesPage = () => {
                         handleTyping();
                       }}
                       placeholder="Type a message..."
-                      className="w-full p-[0.6rem] text-sm md:text-base rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10 input-with-emoji"
+                      className="w-full p-[0.6rem] text-xl rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10 input-with-emoji"
                     />
                     <button
                       type="button"
