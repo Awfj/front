@@ -41,12 +41,15 @@
   }
 
   .message-content {
-    @apply break-words font-['Noto_Color_Emoji',_sans-serif];
+    @apply break-words;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji", sans-serif;
   }
 
-  /* Добавим поддержку эмодзи для поля ввода */
   .input-with-emoji {
-    @apply font-['Noto_Color_Emoji',_sans-serif];
+    @apply break-words;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji", sans-serif;
   }
 
   .navbar {
