@@ -60,7 +60,7 @@ const NotificationCommentField = ({
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder="Leave an Reply..."
+        placeholder="Leave a reply..."
         className="input-box pl-5 placeholder:text-dark-grey resize-none h-[150px] overflow-auto"
       ></textarea>
       <button className="btn-dark mt-5 px-10" onClick={handleComment}>
