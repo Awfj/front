@@ -5,11 +5,14 @@ import toast from "react-hot-toast";
 import CommentField from "./comment-field.component";
 import { BlogContext } from "../pages/blog.page";
 import axios from "axios";
+import ConfirmDialog from "./confirm-dialog.component";
 
 const CommentCard = ({ index, leftVal, commentData }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(commentData.likes || 0);
   const [likeLoading, setLikeLoading] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   let {
     commented_by: {
@@ -112,8 +115,11 @@ const CommentCard = ({ index, leftVal, commentData }) => {
     });
   };
 
-  const handleDeleteComment = (e) => {
-    e.target.setAttribute("disabled", true);
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
     axios
       .post(
         import.meta.env.VITE_SERVER_DOMAIN + "/delete-comment",
@@ -125,13 +131,15 @@ const CommentCard = ({ index, leftVal, commentData }) => {
         }
       )
       .then(() => {
-        e.target.removeAttribute("disabled");
         removeCommentsCards(index + 1, true);
+        setShowDeleteConfirm(false);
       })
       .catch((err) => {
         console.log(err);
+        toast.error("Failed to delete comment");
       });
   };
+
   const hideReplies = () => {
     commentData.isReplyLoaded = false;
     removeCommentsCards(index + 1);
@@ -267,9 +275,9 @@ const CommentCard = ({ index, leftVal, commentData }) => {
             disabled={likeLoading}
           >
             <i
-              className={`transition-custom flex fi fi-${isLiked ? "sr" : "rr"}-heart text-xl ${
-                isLiked ? "text-purple" : ""
-              }`}
+              className={`transition-custom flex fi fi-${
+                isLiked ? "sr" : "rr"
+              }-heart text-xl ${isLiked ? "text-purple" : ""}`}
             ></i>
             <span className="text-xl transition-custom">{likesCount}</span>
           </button>
@@ -279,7 +287,8 @@ const CommentCard = ({ index, leftVal, commentData }) => {
               onClick={hideReplies}
               className="text-dark-grey hover:text-purple transition-custom rounded-md flex items-center gap-2 text-xl"
             >
-              <i className="transition-custom flex fi fi-rs-comment-dots text-xl"></i>Hide Reply
+              <i className="transition-custom flex fi fi-rs-comment-dots text-xl"></i>
+              Hide Reply
             </button>
           ) : (
             <button
@@ -290,11 +299,14 @@ const CommentCard = ({ index, leftVal, commentData }) => {
               {children.length}
             </button>
           )}
-          <button onClick={handleReplyClick} className="underline transition-custom hover:text-purple text-xl">
+          <button
+            onClick={handleReplyClick}
+            className="underline transition-custom hover:text-purple text-xl"
+          >
             Reply
           </button>
 
-          {username === commented_by_username || username === blog_author ? (
+          {/* {username === commented_by_username || username === blog_author ? (
             <button
               onClick={handleDeleteComment}
               className="p-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center transition-custom"
@@ -303,6 +315,15 @@ const CommentCard = ({ index, leftVal, commentData }) => {
             </button>
           ) : (
             ""
+          )} */}
+
+          {currentUsername === commented_by_username && (
+            <button
+              onClick={handleDelete}
+              className="p-3 rounded-md border border-grey ml-auto hover:bg-red/30 hover:text-red flex items-center transition-custom"
+            >
+              <i className="transition-custom flex fi fi-rr-trash pointer-events-auto"></i>
+            </button>
           )}
         </div>
 
@@ -321,6 +342,17 @@ const CommentCard = ({ index, leftVal, commentData }) => {
       </div>
 
       <LoadMoreReplies />
+
+      {/* Диалог подтверждения удаления */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Comment"
+        message="Are you sure you want to delete this comment? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 };
