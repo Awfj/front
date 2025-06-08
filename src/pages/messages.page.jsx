@@ -45,6 +45,56 @@ const MessagesPage = () => {
   const { theme } = useContext(ThemeContext);
   const emojiPickerRef = useRef(null);
 
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  const updateUnreadCount = useCallback((chatId, newCount) => {
+    setConversations((prev) =>
+      prev.map((conv) => {
+        if (conv._id._id === chatId) {
+          return {
+            ...conv,
+            unreadCount: newCount,
+          };
+        }
+        return conv;
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("receive_message", (message) => {
+        if (currentChat?._id === message.sender._id) {
+          // Если чат открыт, добавляем сообщение и не увеличиваем счетчик
+          setMessages((prev) => [...prev, message]);
+          scrollToBottom();
+        } else {
+          // Если чат не открыт, увеличиваем счетчик непрочитанных
+          setConversations((prev) =>
+            prev.map((conv) => {
+              if (conv._id._id === message.sender._id) {
+                return {
+                  ...conv,
+                  lastMessage: message,
+                  unreadCount: (conv.unreadCount || 0) + 1,
+                };
+              }
+              return conv;
+            })
+          );
+        }
+      });
+
+      return () => {
+        socket.off("receive_message");
+      };
+    }
+  }, [socket, currentChat, scrollToBottom]);
+
   const handleHideChat = async (chatPartnerId) => {
     try {
       await axios.post(
@@ -171,8 +221,8 @@ const MessagesPage = () => {
   }, [socket]);
 
   const fetchMessages = async (userId) => {
-    setLoadingMessages(true);
     try {
+      setLoadingMessages(true);
       const { data } = await axios.get(
         `${import.meta.env.VITE_SERVER_DOMAIN}/messages/${userId}`,
         {
@@ -181,8 +231,9 @@ const MessagesPage = () => {
           },
         }
       );
-
       setMessages(data.messages);
+      // Обнуляем счетчик непрочитанных сообщений для текущего чата
+      updateUnreadCount(userId, 0);
     } catch (error) {
       console.error(error);
       toast.error("Failed to load messages");
@@ -262,12 +313,6 @@ const MessagesPage = () => {
     }
   }, [socket, currentChat]);
 
-  const scrollToBottom = useCallback(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
-
   useEffect(() => {
     if (!loadingMessages && messagesEndRef.current) {
       // Прокручиваем моментально без анимации
@@ -312,20 +357,6 @@ const MessagesPage = () => {
       } else {
         setLoading(false);
       }
-
-      // Слушаем входящие сообщения
-      socket.on("receive_message", (newMessage) => {
-        if (currentChat?._id === newMessage.sender._id) {
-          setMessages((prev) => [...prev, newMessage]);
-          scrollToBottom();
-        }
-        // Обновляем список диалогов
-        fetchConversations();
-      });
-
-      return () => {
-        socket.off("receive_message");
-      };
     }
   }, [socket, userAuth.access_token]);
 
@@ -623,7 +654,7 @@ const MessagesPage = () => {
                   </>
                 )}
               </div>
-              
+
               <div className="relative">
                 {/* Статус набора текста */}
                 {isTyping && (
