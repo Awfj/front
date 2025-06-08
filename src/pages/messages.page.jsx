@@ -230,11 +230,37 @@ const MessagesPage = () => {
   };
 
   const handleTyping = () => {
-    socket.emit("typing", {
-      sender_id: userAuth._id,
-      recipient_id: currentChat._id,
-    });
+    if (socket && currentChat) {
+      // Отправляем событие о начале набора текста
+      socket.emit("typing", {
+        sender_id: userAuth._id,
+        recipient_id: currentChat._id,
+      });
+    }
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("user_typing", (data) => {
+        if (currentChat?._id === data.sender_id) {
+          setIsTyping(true);
+
+          // Сбрасываем статус через 3 секунды
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+          }, 3000);
+        }
+      });
+
+      return () => {
+        socket.off("user_typing");
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+      };
+    }
+  }, [socket, currentChat]);
 
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
@@ -297,18 +323,8 @@ const MessagesPage = () => {
         fetchConversations();
       });
 
-      // Слушаем статус набора текста
-      socket.on("user_typing", (data) => {
-        if (currentChat?._id === data.sender_id) {
-          setIsTyping(true);
-          clearTimeout(typingTimeoutRef.current);
-          typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 3000);
-        }
-      });
-
       return () => {
         socket.off("receive_message");
-        socket.off("user_typing");
       };
     }
   }, [socket, userAuth.access_token]);
@@ -370,7 +386,10 @@ const MessagesPage = () => {
           <div className="p-2 pl-0">
             {conversations?.length ? (
               conversations.map((conversation) => (
-                <div key={conversation._id._id} className="relative group transition-custom">
+                <div
+                  key={conversation._id._id}
+                  className="relative group transition-custom"
+                >
                   <div
                     onClick={() => {
                       setCurrentChat(conversation._id);
@@ -490,15 +509,11 @@ const MessagesPage = () => {
                     </p>
                   </div>
                 </div>
-
-                {isTyping && (
-                  <p className="text-sm text-dark-grey mt-1">Typing...</p>
-                )}
               </div>
 
               {/* Сообщения */}
               <div
-                className="flex-1 overflow-y-auto p-3 md:p-8 scrollbar-thin"
+                className="flex-1 overflow-y-auto px-3 pt-3 md:px-8 md:pt-8 scrollbar-thin"
                 style={{ scrollbarGutter: "stable" }}
               >
                 {loadingMessages ? (
@@ -608,61 +623,70 @@ const MessagesPage = () => {
                   </>
                 )}
               </div>
-
-              {/* Форма отправки */}
-              <form
-                onSubmit={handleSendMessage}
-                className="p-3 md:p-4 border-t border-grey relative"
-              >
-                <div className="flex gap-2 md:gap-4 max-w-3xl mx-auto">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => {
-                        setNewMessage(e.target.value);
-                        handleTyping();
-                      }}
-                      placeholder="Type a message..."
-                      className="w-full p-[0.6rem] text-xl rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10 input-with-emoji"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowEmoji(!showEmoji)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 text-dark-grey hover:text-purple transition-colors emoji-trigger" // добавляем класс emoji-trigger
-                    >
-                      <i className="flex fi fi-rr-smile text-xl transition-custom"></i>
-                    </button>
-
-                    {showEmoji && (
-                      <div
-                        className="absolute bottom-full left-0 mb-2"
-                        ref={emojiPickerRef}
-                      >
-                        <EmojiPicker
-                          theme={theme}
-                          onEmojiClick={onEmojiClick}
-                          autoFocusSearch={false}
-                          searchPlaceHolder="Search emoji..."
-                          width={300}
-                          height={400}
-                          // lazyLoadEmojis={false}
-                          previewConfig={{
-                            showPreview: false,
-                          }}
-                        />
-                      </div>
-                    )}
+              
+              <div className="relative">
+                {/* Статус набора текста */}
+                {isTyping && (
+                  <div className="absolute -top-[1.1rem] left-1/2 -translate-x-1/2 text-dark-grey text-sm">
+                    {currentChat.personal_info.fullname} is typing...
                   </div>
-                  <button
-                    type="submit"
-                    className="btn-dark px-4 md:px-6 py-2 cursor-pointer whitespace-nowrap"
-                    disabled={!newMessage.trim()}
-                  >
-                    Send
-                  </button>
-                </div>
-              </form>
+                )}
+
+                {/* Форма отправки */}
+                <form
+                  onSubmit={handleSendMessage}
+                  className="p-3 md:p-4 border-t border-grey relative"
+                >
+                  <div className="flex gap-2 md:gap-4 max-w-3xl mx-auto">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        value={newMessage}
+                        onChange={(e) => {
+                          setNewMessage(e.target.value);
+                          handleTyping();
+                        }}
+                        placeholder="Type a message..."
+                        className="w-full p-[0.6rem] text-xl rounded-lg border border-magenta bg-transparent focus:border-purple outline-none pl-10 input-with-emoji"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEmoji(!showEmoji)}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 text-dark-grey hover:text-purple transition-colors emoji-trigger" // добавляем класс emoji-trigger
+                      >
+                        <i className="flex fi fi-rr-smile text-xl transition-custom"></i>
+                      </button>
+
+                      {showEmoji && (
+                        <div
+                          className="absolute bottom-full left-0 mb-2"
+                          ref={emojiPickerRef}
+                        >
+                          <EmojiPicker
+                            theme={theme}
+                            onEmojiClick={onEmojiClick}
+                            autoFocusSearch={false}
+                            searchPlaceHolder="Search emoji..."
+                            width={300}
+                            height={400}
+                            // lazyLoadEmojis={false}
+                            previewConfig={{
+                              showPreview: false,
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      className="btn-dark px-4 md:px-6 py-2 cursor-pointer whitespace-nowrap"
+                      disabled={!newMessage.trim()}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </form>
+              </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-dark-grey p-4 text-center">
