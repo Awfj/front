@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
 import Loader from "../components/loader.component";
-import { UserContext } from "../App";
+import { UserContext, ThemeContext } from "../App";
 import AboutUser from "../components/about.component";
 import { filterPaginationData } from "../common/filter-pagination-data";
 import InPageNavigaion from "../components/inpage-navigation.component";
@@ -43,6 +43,8 @@ const ProfilePage = () => {
   const { id: profileId } = useParams();
   const [followers, setFollowers] = useState(null);
   const [following, setFollowing] = useState(null);
+
+  const { theme } = useContext(ThemeContext);
 
   const [showCustomization, setShowCustomization] = useState(false);
 
@@ -289,11 +291,15 @@ const ProfilePage = () => {
       ) : profile_username.length ? (
         <>
           <section
-            className="h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12"
+            className="h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12 relative"
             style={{
-              background: profile?.profile_customization?.backgroundUrl
-                ? `url(${profile.profile_customization.backgroundUrl}) center/cover`
-                : undefined,
+              backgroundImage: profile?.profile_customization?.backgroundUrl?.[
+                theme
+              ]
+                ? `url(${profile.profile_customization.backgroundUrl[theme]})`
+                : "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">

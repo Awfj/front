@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { toast } from "react-hot-toast";
+
+import { ThemeContext } from "../App";
 
 import bg1 from "../imgs/bg/bg-1.jpg";
 import bg2 from "../imgs/bg/bg-2.jpg";
@@ -24,7 +26,10 @@ const AVATAR_STYLES = [
 
 const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
   const [customization, setCustomization] = useState({
-    backgroundUrl: initialData?.backgroundUrl || "",
+    backgroundUrl: {
+      light: initialData?.backgroundUrl?.light || "",
+      dark: initialData?.backgroundUrl?.dark || "",
+    },
     avatarStyle: initialData?.avatarStyle || "gradient",
     visibility: {
       statistics: initialData?.visibility?.statistics ?? true,
@@ -32,6 +37,8 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
       socialLinks: initialData?.visibility?.socialLinks ?? true,
     },
   });
+
+  const { theme } = useContext(ThemeContext);
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -65,44 +72,93 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* Background Selection */}
           <div>
             <h3 className="text-xl mb-4">Profile Background</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {PRESET_BACKGROUNDS.map((bg, index) => (
-                <div
-                  key={index}
-                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 aspect-video ${
-                    customization.backgroundUrl === bg.url
-                      ? "border-purple"
-                      : "border-grey hover:border-purple/50"
-                  }`}
-                  onClick={() =>
-                    setCustomization((prev) => ({
-                      ...prev,
-                      backgroundUrl: bg.url,
-                    }))
-                  }
-                >
-                  <img
-                    src={bg.url}
-                    alt={bg.label}
-                    className="w-full h-full object-cover"
-                  />
-                  {customization.backgroundUrl === bg.url && (
-                    <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
-                      <i className="fi fi-sr-check text-white text-2xl"></i>
+            <div className="space-y-6">
+              {/* Light Theme Background */}
+              <div>
+                <p className="text-dark-grey mb-2">Light Theme Background</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {PRESET_BACKGROUNDS.map((bg, index) => (
+                    <div
+                      key={index}
+                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 aspect-video ${
+                        customization.backgroundUrl.light === bg.url
+                          ? "border-purple"
+                          : "border-grey hover:border-purple/50"
+                      }`}
+                      onClick={() =>
+                        setCustomization((prev) => ({
+                          ...prev,
+                          backgroundUrl: {
+                            ...prev.backgroundUrl,
+                            light: bg.url,
+                          },
+                        }))
+                      }
+                    >
+                      <img
+                        src={bg.url}
+                        alt={bg.label}
+                        className="w-full h-full object-cover"
+                      />
+                      {customization.backgroundUrl.light === bg.url && (
+                        <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
+                          <i className="flex fi fi-sr-check text-white dark:text-black text-2xl"></i>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Dark Theme Background */}
+              <div>
+                <p className="text-dark-grey mb-2">Dark Theme Background</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {PRESET_BACKGROUNDS.map((bg, index) => (
+                    <div
+                      key={index}
+                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 aspect-video ${
+                        customization.backgroundUrl.dark === bg.url
+                          ? "border-purple"
+                          : "border-grey hover:border-purple/50"
+                      }`}
+                      onClick={() =>
+                        setCustomization((prev) => ({
+                          ...prev,
+                          backgroundUrl: {
+                            ...prev.backgroundUrl,
+                            dark: bg.url,
+                          },
+                        }))
+                      }
+                    >
+                      <img
+                        src={bg.url}
+                        alt={bg.label}
+                        className="w-full h-full object-cover"
+                      />
+                      {customization.backgroundUrl.dark === bg.url && (
+                        <div className="absolute inset-0 bg-purple/20 flex items-center justify-center">
+                          <i className="flex fi fi-sr-check text-white dark:text-black text-2xl"></i>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Preview Section */}
           <div>
-            <h3 className="text-xl ">Preview</h3>
-            <div className="bg-light-grey rounded-lg p-6 pb-0">
+            <h3 className="text-xl mb-4">Preview</h3>
+            <div
+              className={`bg-${
+                theme === "light" ? "white" : "dark"
+              } rounded-lg p-6`}
+            >
               <div className="flex items-center gap-4">
                 {/* Avatar Preview */}
                 <div
@@ -116,18 +172,21 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
                     />
                   </div>
                 </div>
-                {/* Background Preview (if selected) */}
-                {customization.backgroundUrl && (
-                  <div className="flex-1">
-                    <div className="relative rounded-lg overflow-hidden h-20">
-                      <img
-                        src={customization.backgroundUrl}
-                        alt="Background Preview"
-                        className="w-full h-full object-cover"
-                      />
+
+                {/* Background Preview */}
+                <div className="relative rounded-lg overflow-hidden h-20 w-[75%]">
+                  {customization.backgroundUrl[theme] ? (
+                    <img
+                      src={customization.backgroundUrl[theme]}
+                      alt="Background Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-grey/20 text-dark-grey">
+                      No background selected
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
