@@ -102,12 +102,12 @@ const Navbar = () => {
             {searchValue ? (
               <button
                 onClick={clearSearch}
-                className="absolute right-[8%] top-1/2 -translate-y-1/2 text-dark-grey hover:text-black"
+                className="absolute right-[8%] top-1/2 -translate-y-1/2 text-dark-grey hover:text-black transition-custom"
               >
-                <i className="fi fi-br-cross text-sm"></i>
+                <i className="flex transition-custom fi fi-br-cross text-sm"></i>
               </button>
             ) : (
-              <i className="fi fi-rr-search flex-center absolute right-[8%] md:pointer-events-none top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
+              <i className="flex transition-custom fi fi-rr-search flex-center absolute right-[8%] md:pointer-events-none top-1/2 -translate-y-1/2 text-xl text-dark-grey"></i>
             )}
           </div>
         </div>
@@ -115,27 +115,30 @@ const Navbar = () => {
         <div className="flex items-center gap-3 md:gap-6 ml-auto ">
           {/* SEARCH BUTTON */}
           <button
-            className="md:hidden flex-center interactivity icon rounded-full"
+            className="md:hidden flex-center interactivity icon rounded-full transition-custom"
             onClick={() => setSearchBoxVisibility((currentVal) => !currentVal)}
           >
-            <i className="fi fi-ts-search-heart text-3xl flex-center"></i>
+            <i className="flex transition-custom fi fi-ts-search-heart text-3xl flex-center"></i>
           </button>
 
           {/* NEW POST */}
           {access_token && (
-            <Link to="/editor" className="hidden md:flex gap-2">
-              <i className="flex-center fi fi-tr-drawer-alt text-3xl interactivity icon"></i>
+            <Link
+              to="/editor"
+              className="hidden md:flex gap-2 transition-custom"
+            >
+              <i className="flex transition-custom flex-center fi fi-tr-drawer-alt text-3xl interactivity icon"></i>
             </Link>
           )}
 
           {/* THEME CHANGE */}
           <button
-            className="flex-center interactivity icon"
+            className="flex-center interactivity icon flex transition-custom"
             onClick={changeChage}
           >
             <i
               className={
-                "interactivity icon flex-center p-1 fi fi-tr-" +
+                "flex transition-custom interactivity icon flex-center p-1 fi fi-tr-" +
                 (theme == "light" ? "moon-stars" : "brightness") +
                 " text-3xl"
               }
@@ -148,12 +151,20 @@ const Navbar = () => {
               {/* NOTIFICATIONS */}
               <Link to="/dashboard/notifications" className="relative">
                 <div className="interactivity icon">
-                  <i className="flex-center fi fi-tr-bell-ring text-3xl"></i>
+                  <i className="flex transition-custom flex-center fi fi-tr-bell-ring text-3xl"></i>
                   {new_notification_available && (
                     <span className="notification-indicator absolute -top-1 -right-1 w-3 h-3 bg-red rounded-full"></span>
                   )}
                 </div>
               </Link>
+
+              {/* MESSAGES */}
+              <Link to="/dashboard/messages" className="relative">
+                <div className="interactivity icon">
+                  <i className="flex transition-custom flex-center fi fi-tr-messages text-3xl"></i>
+                </div>
+              </Link>
+
               <div
                 className="relative"
                 onClick={handleUserNavPanel}
