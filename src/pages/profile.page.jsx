@@ -326,7 +326,7 @@ const ProfilePage = () => {
                       {total_posts.toLocaleString()}
                     </span>
                     <span className="text-dark-grey text-md flex items-center gap-1">
-                      <i className="fi fi-rr-document"></i> Blogs
+                      <i className="fi fi-rr-document"></i> Posts
                     </span>
                   </div>
                 </div>
