@@ -319,48 +319,51 @@ const ProfilePage = () => {
               </div>
 
               {/* Статистика профиля */}
-              <div className="grid grid-cols-2 gap-4 w-full mb-2">
-                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                    <span className="text-3xl font-bold">
-                      {total_posts.toLocaleString()}
-                    </span>
-                    <span className="text-dark-grey text-md flex items-center gap-1">
-                      <i className="fi fi-rr-document"></i> Posts
-                    </span>
+              {profile?.profile_customization?.visibility?.statistics !==
+                false && (
+                <div className="grid grid-cols-2 gap-4 w-full mb-2">
+                  <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                    <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                      <span className="text-3xl font-bold">
+                        {total_posts.toLocaleString()}
+                      </span>
+                      <span className="text-dark-grey text-md flex items-center gap-1">
+                        <i className="fi fi-rr-document"></i> Posts
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                    <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                      <span className="text-3xl font-bold">
+                        {total_reads.toLocaleString()}
+                      </span>
+                      <span className="text-dark-grey text-md flex items-center gap-1">
+                        <i className="fi fi-rr-book-open-reader"></i> Reads
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                    <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                      <span className="text-3xl font-bold">
+                        {total_followers.toLocaleString()}
+                      </span>
+                      <span className="text-dark-grey text-md flex items-center gap-1">
+                        <i className="fi fi-rr-user"></i> Followers
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
+                    <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
+                      <span className="text-3xl font-bold">
+                        {total_following.toLocaleString()}
+                      </span>
+                      <span className="text-dark-grey text-md flex items-center gap-1">
+                        <i className="fi fi-rr-users-alt"></i> Following
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                    <span className="text-3xl font-bold">
-                      {total_reads.toLocaleString()}
-                    </span>
-                    <span className="text-dark-grey text-md flex items-center gap-1">
-                      <i className="fi fi-rr-book-open-reader"></i> Reads
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                    <span className="text-3xl font-bold">
-                      {total_followers.toLocaleString()}
-                    </span>
-                    <span className="text-dark-grey text-md flex items-center gap-1">
-                      <i className="fi fi-rr-user"></i> Followers
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-br from-purple via-magenta to-blue p-[2px] rounded-xl">
-                  <div className="flex flex-col items-center justify-center bg-white dark:bg-light-grey rounded-xl py-4">
-                    <span className="text-3xl font-bold">
-                      {total_following.toLocaleString()}
-                    </span>
-                    <span className="text-dark-grey text-md flex items-center gap-1">
-                      <i className="fi fi-rr-users-alt"></i> Following
-                    </span>
-                  </div>
-                </div>
-              </div>
+              )}
 
               {/* EDIT OR FOLLOW */}
               <div className="flex gap-4 mt-2">
@@ -402,28 +405,32 @@ const ProfilePage = () => {
                 )}
               </div>
 
-              <AboutUser
-                className="max-md:hidden"
-                bio={bio}
-                social_links={social_links}
-                joinedAt={joinedAt}
-              />
+              {profile?.profile_customization?.visibility?.socialLinks !==
+                false && (
+                <AboutUser
+                  className="max-md:hidden"
+                  bio={bio}
+                  social_links={social_links}
+                  joinedAt={joinedAt}
+                />
+              )}
 
               {/* Achievements Section */}
-              {achievements?.length > 0 && (
-                <div className="w-full border-t border-grey pt-6">
-                  <h2 className="text-xl font-medium mb-4">Achievements</h2>
-                  <div className="flex flex-wrap gap-4">
-                    {achievements.map((achievement) => (
-                      <AchievementBadge
-                        key={achievement.achievement._id}
-                        achievement={achievement.achievement}
-                        unlockedAt={achievement.unlockedAt}
-                      />
-                    ))}
+              {profile?.profile_customization?.visibility?.achievements !==
+                false &&
+                achievements?.length > 0 && (
+                  <div className="w-full border-t border-grey pt-6">
+                    <div className="flex flex-wrap gap-4">
+                      {achievements.map((achievement) => (
+                        <AchievementBadge
+                          key={achievement.achievement._id}
+                          achievement={achievement.achievement}
+                          unlockedAt={achievement.unlockedAt}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             <div className="max-md:mt-12 w-full">
