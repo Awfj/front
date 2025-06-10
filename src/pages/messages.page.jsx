@@ -454,7 +454,7 @@ const MessagesPage = () => {
                           {conversation.lastMessage.content}
                         </p>
                         {conversation.unreadCount > 0 && (
-                          <span className="bg-purple text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
+                          <span className="bg-magenta text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
                             {conversation.unreadCount}
                           </span>
                         )}
