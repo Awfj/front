@@ -865,7 +865,7 @@ const Home = () => {
                           </div>
                         </div>
                         <p className="text-dark-grey line-clamp-2">
-                          {author.personal_info.bio || "No bio available"}
+                          {author.personal_info.bio || ""}
                         </p>
                       </div>
                     </div>
