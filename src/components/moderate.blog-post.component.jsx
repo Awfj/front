@@ -288,7 +288,7 @@ export const ReportedBlogPost = ({ blog, author }) => {
                 className="ml-4 underline text-purple"
                 onClick={() => setShowReportsDialog(true)}
               >
-                View details
+                View Details
               </button>
             </div>
           </div>

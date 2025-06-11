@@ -147,7 +147,7 @@ const ModerateBlogsPage = () => {
       <Toaster />
 
       <InPageNavigaion
-        routes={["Pending Review", "Reported Posts"]}
+        routes={["Pending Review", "Reports"]}
         defaultActiveIndex={0}
       >
         {/* Вкладка 1: Ожидающие модерации */}
