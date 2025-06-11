@@ -119,7 +119,7 @@ export const ManagePublishedBlogCard = ({ blog }) => {
 
 // DRAFT -------------------------------------------------------------------------------
 export const ManageDraftBlogPost = ({ blog }) => {
-  let { title, blog_id, banner, des, index } = blog;
+  let { title, blog_id, banner, des, index, publishedAt } = blog;
   index++;
 
   let {
@@ -152,13 +152,11 @@ export const ManageDraftBlogPost = ({ blog }) => {
         <div className="flex flex-col justify-between py-2 w-full min-w-[300px]">
           <div>
             <h1 className="blog-title mb-3">{title}</h1>
-            <p className="line-clamp-2 font-gelasio">
-              {des.length ? des : "No Description"}
-            </p>
+            <p className="line-clamp-1">Created on {getDay(publishedAt)}</p>
           </div>
 
           <div className="flex gap-6 mt-3">
-            <Link className="pr-4 py-2 underline" to={`/editor/${blog_id}`}>
+            <Link className="py-2 underline" to={`/editor/${blog_id}`}>
               Edit
             </Link>
 
@@ -222,7 +220,7 @@ export const ManagePendingBlogCard = ({ blog }) => {
               {title}
             </Link>
 
-            <p className="line-clamp-1">Published on {getDay(publishedAt)}</p>
+            <p className="line-clamp-1">Submitted for review on {getDay(publishedAt)}</p>
           </div>
 
           <div className="flex gap-6 mt-3">
