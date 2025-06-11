@@ -612,6 +612,7 @@ const ProfilePage = () => {
               initialData={profile?.profile_customization}
               onSave={handleCustomization}
               onClose={() => setShowCustomization(false)}
+              userAvatar={profile_img}
             />
           )}
         </>

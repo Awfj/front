@@ -24,7 +24,7 @@ const AVATAR_STYLES = [
   { id: "float", label: "Floating Effect", icon: "fi fi-rr-cloud" },
 ];
 
-const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
+const ProfileCustomizationModal = ({ initialData, onSave, onClose, userAvatar }) => {
   const [customization, setCustomization] = useState({
     backgroundUrl: {
       light: initialData?.backgroundUrl?.light || "",
@@ -41,8 +41,8 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-light-grey rounded-xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 light:bg-black/90 dark:bg-white/90 z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-light-grey p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto border border-purple">
         <h2 className="text-2xl font-bold mb-6">Customize Your Profile</h2>
 
         <div className="space-y-8">
@@ -157,7 +157,7 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
             <div
               className={`bg-${
                 theme === "light" ? "white" : "dark"
-              } rounded-lg p-6`}
+              } rounded-lg p-2`}
             >
               <div className="flex items-center gap-4">
                 {/* Avatar Preview */}
@@ -166,7 +166,7 @@ const ProfileCustomizationModal = ({ initialData, onSave, onClose }) => {
                 >
                   <div className="rounded-full overflow-hidden border-4 border-grey">
                     <img
-                      src="https://api.dicebear.com/6.x/avataaars/svg?seed=19"
+                      src={userAvatar}
                       alt="Preview"
                       className="w-full h-full object-cover"
                     />
