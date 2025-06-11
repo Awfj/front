@@ -76,11 +76,31 @@ const LikesPage = () => {
 
   return (
     <>
-      <h1 className="max-md:hidden text-2xl font-medium mb-4">Liked Items</h1>
+      <h1 className="max-md:hidden text-2xl font-medium mb-8">Manage Likes</h1>
       <Toaster />
 
-      <InPageNavigaion routes={["Posts", "Comments"]} defaultActiveIndex={0}>
-        {/* Liked Posts */}
+      {loading ? (
+        <Loader />
+      ) : likedBlogs?.results?.length ? (
+        <>
+          {likedBlogs.results.map((blog, i) => (
+            <AnimationWrapper key={i} transition={{ delay: i * 0.08 }}>
+              <BlogPostCard content={blog} author={blog.author.personal_info} />
+            </AnimationWrapper>
+          ))}
+          <LoadMoreDataBtn
+            state={likedBlogs}
+            fetchDataFun={getLikedBlogs}
+            additionalParam={{
+              deletedDocCount: likedBlogs.deletedDocCount,
+            }}
+          />
+        </>
+      ) : (
+        <NoDataMessage message="No liked posts yet" />
+      )}
+
+      {/* <InPageNavigaion routes={["Posts", "Comments"]} defaultActiveIndex={0}>
         {loading ? (
           <Loader />
         ) : likedBlogs?.results?.length ? (
@@ -105,7 +125,6 @@ const LikesPage = () => {
           <NoDataMessage message="No liked posts yet" />
         )}
 
-        {/* Liked Comments */}
         {loading ? (
           <Loader />
         ) : likedComments?.results?.length ? (
@@ -130,7 +149,7 @@ const LikesPage = () => {
         ) : (
           <NoDataMessage message="No liked comments yet" />
         )}
-      </InPageNavigaion>
+      </InPageNavigaion> */}
     </>
   );
 };
