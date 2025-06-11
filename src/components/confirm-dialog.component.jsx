@@ -17,12 +17,12 @@ const ConfirmDialog = ({
       }`}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-25" onClick={onClose} />
+      <div className="fixed inset-0 bg-white bg-opacity-90" onClick={onClose} />
 
       {/* Dialog */}
-      <div className="fixed inset-0 flex items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center ">
         <div
-          className={`bg-white rounded-lg p-6 w-[90%] max-w-[400px] transform transition-all duration-300 ${
+          className={`border border-magenta bg-white rounded-lg p-6 w-[90%] max-w-[400px] transform transition-all duration-300 ${
             isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
         >
