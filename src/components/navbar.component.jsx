@@ -13,6 +13,8 @@ const Navbar = () => {
   const [userNavPanel, setUserNavPanel] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  const [unreadMessages, setUnreadMessages] = useState(2);
+
   let { theme, setTheme } = useContext(ThemeContext);
   const {
     userAuth,
@@ -162,6 +164,11 @@ const Navbar = () => {
               <Link to="/dashboard/messages" className="relative">
                 <div className="interactivity icon">
                   <i className="flex transition-custom flex-center fi fi-tr-messages text-3xl"></i>
+                  {/* {unreadMessages > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[20px] h-5 rounded-full bg-red text-white text-sm flex items-center justify-center px-1">
+                      {unreadMessages > 99 ? "99+" : unreadMessages}
+                    </span>
+                  )} */}
                 </div>
               </Link>
 
