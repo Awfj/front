@@ -71,6 +71,9 @@ const NotificationCard = ({ data, index, notificationState }) => {
   const handleReplyClick = () => {
     setRepling((preVal) => !preVal);
   };
+
+  if (!comment) return null;
+
   return (
     <div
       className={
